@@ -21,37 +21,10 @@
  */
 
 #include "Quaternion.h"
-#include "Mat4.h"
-#include "Vec3.h"
-
-#include <cmath>
 
 namespace PolandBall {
 
 namespace Math {
-
-Quaternion::Quaternion() {
-    this->vector[X] = 0.0f;
-    this->vector[Y] = 0.0f;
-    this->vector[Z] = 0.0f;
-    this->vector[W] = 1.0f;
-}
-
-Quaternion::Quaternion(float x, float y, float z, float w) {
-    this->vector[X] = x;
-    this->vector[Y] = y;
-    this->vector[Z] = z;
-    this->vector[W] = w;
-}
-
-Quaternion::Quaternion(const Vec3& axis, float angle) {
-    float sinAngle = sinf(angle / 2);
-    
-    this->vector[X] = axis.get(Vec3::X) * sinAngle;
-    this->vector[Y] = axis.get(Vec3::Y) * sinAngle;
-    this->vector[Z] = axis.get(Vec3::Z) * sinAngle;
-    this->vector[W] = cosf(angle / 2);
-}
 
 Quaternion Quaternion::operator *(const Quaternion& quaternion) const {
     Quaternion result;
@@ -78,46 +51,6 @@ Quaternion Quaternion::operator *(const Quaternion& quaternion) const {
 
     result.normalize();
     return result;
-}
-
-Quaternion& Quaternion::normalize() {
-    float length = this->length();
-    this->vector[X] /= length;
-    this->vector[Y] /= length;
-    this->vector[Z] /= length;
-    this->vector[W] /= length;
-    return *this;
-}
-
-float Quaternion::length() const {
-    return sqrtf(vector[X] * vector[X] +
-                 vector[Y] * vector[Y] +
-                 vector[Z] * vector[Z] +
-                 vector[W] * vector[W]);
-}
-
-float Quaternion::get(int index) const {
-    switch (index) {
-        case X:
-        case Y:
-        case Z:
-        case W:
-            return this->vector[index];
-
-        default:
-            return NAN;            
-    }
-}
-
-void Quaternion::set(int index, float value) {
-    switch (index) {
-        case X:
-        case Y:
-        case Z:
-        case W:
-            this->vector[index] = value;
-            break;           
-    }
 }
 
 Mat4 Quaternion::extractMat4() const {

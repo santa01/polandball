@@ -21,41 +21,8 @@
  */
 
 #include "RenderEffect.h"
-#include "ShaderLoader.h"
 
 namespace PolandBall {
-
-RenderEffect::RenderEffect() {
-    this->program = 0;
-}
-
-RenderEffect::~RenderEffect() {
-    if (this->program != 0) {
-        glDeleteProgram(this->program);
-    }
-}
-
-void RenderEffect::setMVP(const Math::Mat4& matrix) {
-    this->enable();
-
-    if (this->mvp > -1) {
-        glUniformMatrix4fv(this->mvp, 1, GL_TRUE, (GLfloat*)matrix.data());
-    }
-}
-
-void RenderEffect::setLW(const Math::Mat4& matrix) {
-    this->enable();
-    
-    if (this->lw > -1) {
-        glUniformMatrix4fv(this->lw, 1, GL_TRUE, (GLfloat*)matrix.data());
-    }
-}
-
-void RenderEffect::attachShader(const std::string& source, ShaderType type) {
-    if (this->program == 0) {
-        this->shaderList.push_back(ShaderLoader::createShader(source, type));
-    }
-}
 
 void RenderEffect::enable() {
     if (this->program == 0) {

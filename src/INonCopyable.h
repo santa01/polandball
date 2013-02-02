@@ -20,46 +20,18 @@
  * SOFTWARE.
  */
 
-#ifndef LOGGER_H
-#define	LOGGER_H
-
-#include "INonCopyable.h"
+#ifndef INONCOPYABLE_H
+#define	INONCOPYABLE_H
 
 namespace PolandBall {
 
-class Logger: public INonCopyable {
+class INonCopyable {
 public:
-    enum {
-        LOG_ERROR = 0,
-        LOG_WARNING = 1,
-        LOG_INFO = 2
-    };
-
-    static Logger& getInstance() {
-        static Logger instance;
-        return instance;
-    }
-
-    void log(int level, const char* message, ...);
-
-    void setThreshold(int threshold) {
-        switch (threshold) {
-            case Logger::LOG_INFO:
-            case Logger::LOG_WARNING:
-            case Logger::LOG_ERROR:
-                this->threshold = threshold;
-                break;
-        }
-    }
-
-private:
-    Logger() {
-        this->threshold = Logger::LOG_INFO;
-    }
-
-    int threshold;
+    INonCopyable() = default;
+    INonCopyable(const INonCopyable&) = delete;
+    INonCopyable& operator =(const INonCopyable&) = delete;
 };
 
 }  // namespace PolandBall
 
-#endif  // LOGGER_H
+#endif  // INONCOPYABLE_H

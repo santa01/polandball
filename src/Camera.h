@@ -32,22 +32,52 @@ namespace PolandBall {
 
 class Camera: public IMovable, public IRotatable {
 public:
-    Camera();
-    Camera(float x, float y, float z);
-    Camera(const Math::Vec3& position);
+    Camera() {
+        this->initialize();
+    }
+
+    Camera(float x, float y, float z) {
+        this->setPosition(x, y, z);
+        this->initialize();
+    }
+
+    Camera(const Math::Vec3& position) {
+        this->setPosition(position);
+        this->initialize();
+    }
 
     using IMovable::setPosition;
 
-    void setPosition(const Math::Vec3& position);
-    Math::Vec3 getPosition() const;
+    void setPosition(const Math::Vec3& position) {
+        this->translation.set(0, 3, -position.get(Math::Vec3::X));
+        this->translation.set(1, 3, -position.get(Math::Vec3::Y));
+        this->translation.set(2, 3, -position.get(Math::Vec3::Z));
+    }
+
+    Math::Vec3 getPosition() const {
+        return Math::Vec3(-this->translation.get(0, 3),
+                          -this->translation.get(1, 3),
+                          -this->translation.get(2, 3));
+    }
 
     const Math::Mat4& getTranslationMatrix() const {
         return this->translation;
     }
 
-    float getXAngle() const;
-    float getYAngle() const;
-    float getZAngle() const;
+    float getXAngle() const {
+        // TODO: implement
+        return 0.0f;
+    }
+
+    float getYAngle() const {
+        // TODO: implement
+        return 0.0f;
+    }
+
+    float getZAngle() const {
+        // TODO: implement
+        return 0.0f;
+    }
 
     void rotate(const Math::Vec3& vector, float angle);
 
@@ -55,29 +85,58 @@ public:
         return this->rotation;
     }
 
-    Math::Vec3 getUp() const;
-    Math::Vec3 getTarget() const;
+    Math::Vec3 getUp() const {
+        return Math::Vec3(this->rotation.get(1, 0),
+                          this->rotation.get(1, 1),
+                          this->rotation.get(1, 2));
+    }
+
+    Math::Vec3 getTarget() const {
+        return -Math::Vec3(this->rotation.get(2, 0),
+                           this->rotation.get(2, 1),
+                           this->rotation.get(2, 2));
+    }
+
     Math::Vec3 getRight() const;
 
-    void lookAt(float x, float y, float z);
+    void lookAt(float x, float y, float z) {
+        this->lookAt(Math::Vec3(x, y, z));
+    }
+
     void lookAt(const Math::Vec3& target);
 
-    void setNearPlane(float nearPlane);
+    void setNearPlane(float nearPlane) {
+        this->nearPlane = nearPlane;
+        this->updateClipDistances();
+    }
+
     float getNearPlane() const {
         return this->nearPlane;
     }
 
-    void setFarPlane(float farPlane);
+    void setFarPlane(float farPlane) {
+        this->farPlane = farPlane;
+        this->updateClipDistances();
+    }
+
     float getFarPlane() const {
         return this->farPlane;
     }
 
-    void setFov(float fov);
+    void setFov(float fov) {
+        this->fov = fov;
+        this->updateFieldOfView();
+    }
+
     float getFov() const {
         return this->fov;
     }
 
-    void setAspectRatio(float aspectRatio);
+    void setAspectRatio(float aspectRatio) {
+        this->aspectRatio = aspectRatio;
+        this->updateFieldOfView();
+    }
+
     float getAspectRatio() const {
         return this->aspectRatio;
     }
@@ -87,9 +146,20 @@ public:
     }
 
 private:
+    void updateClipDistances() {
+        this->projection.set(2, 2, (-this->farPlane - this->nearPlane) /
+                                   (this->farPlane - this->nearPlane));
+        this->projection.set(2, 3, (-2.0f * this->farPlane * this->nearPlane) /
+                                   (this->farPlane - this->nearPlane));
+    }
+
+    void updateFieldOfView() {
+        this->projection.set(0, 0, 1.0f / (tanf(this->fov * M_PI / 180.0f / 2.0f) *
+                                   this->aspectRatio));
+        this->projection.set(1, 1, 1.0f / (tanf(this->fov * M_PI / 180.0f / 2.0f)));
+    }
+
     void updateRotationMatrix(const Math::Vec3& right, const Math::Vec3& up, const Math::Vec3& target);
-    void updateClipDistances();
-    void updateFieldOfView();
     void initialize();
 
     Math::Mat4 translation;

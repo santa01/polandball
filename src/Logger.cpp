@@ -28,10 +28,6 @@
 
 namespace PolandBall {
 
-Logger::Logger() {
-    this->threshold = Logger::LOG_INFO;
-}
-
 void Logger::log(int level, const char* message, ...) {
     if (level > this->threshold) {
         return;
@@ -58,16 +54,6 @@ void Logger::log(int level, const char* message, ...) {
     va_end(ap);
 
     fprintf(stream, "\n");
-}
-
-void Logger::setThreshold(int threshold) {
-    switch (threshold) {
-        case Logger::LOG_INFO:
-        case Logger::LOG_WARNING:
-        case Logger::LOG_ERROR:
-            this->threshold = threshold;
-            break;
-    }
 }
 
 }  // namespace PolandBall

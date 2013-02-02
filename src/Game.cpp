@@ -31,18 +31,6 @@
 
 namespace PolandBall {
 
-Game::Game() {
-    this->initialize();
-    this->width = 800;
-    this->height = 600;
-}
-
-Game::Game(int width, int height) {
-    this->initialize();
-    this->width = width;
-    this->height = height;
-}
-
 int Game::exec() {
     if (!this->setUp()) {
         this->tearDown();
@@ -189,18 +177,13 @@ void Game::renderWorld() {
                    this->camera.getTranslationMatrix());
 
     for (auto& entity: this->entites) {
-        entity->getSprite()->getEffect()->setMVP(mvp);
-        entity->getSprite()->render();
+        if (entity->isRenderable()) {
+            entity->getSprite()->getEffect()->setMVP(mvp);
+            entity->getSprite()->render();
+        }
     }
 
     SDL_GL_SwapWindow(this->window);
-}
-
-void Game::initialize() {
-    this->running = true;
-    this->window = nullptr;
-    this->context = nullptr;
-    this->frameTime = 0.0f;
 }
 
 }  // namespace PolandBall

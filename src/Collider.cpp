@@ -24,19 +24,12 @@
 
 namespace PolandBall {
 
-Collider::Collider() {
-}
-
-Collider::Collider(const Collider& orig) {
-}
-
-Collider::~Collider() {
-}
-
 void Collider::setPosition(const Math::Vec3& position) {
 }
 
 Math::Vec3 Collider::getPosition() const {
+    // TODO: implement
+    return Math::Vec3::ZERO;
 }
 
 }  // namespace PolandBall

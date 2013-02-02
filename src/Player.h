@@ -25,16 +25,14 @@
 
 #include "Entity.h"
 #include "IMovable.h"
+#include "INonCopyable.h"
 
 #include <memory>
 
 namespace PolandBall {
 
-class Player: public IMovable {
+class Player: public IMovable, public INonCopyable {
 public:
-    Player();
-    ~Player();
-
     using IMovable::setPosition;
 
     void setPosition(const Math::Vec3& position) {
@@ -54,14 +52,9 @@ public:
     }
 
 private:
-    Player(const Player& orig) = delete;
-    Player& operator =(const Player& orig) = delete;
-
     std::shared_ptr<Entity> entity;
 };
 
-}
-
-//namespace PolandBall
+}  // namespace PolandBall
 
 #endif  // PLAYER_H

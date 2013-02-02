@@ -24,10 +24,4 @@
 
 namespace PolandBall {
 
-Entity::Entity() {
-}
-
-Entity::~Entity() {
-}
-
 }  // namespace PolandBall

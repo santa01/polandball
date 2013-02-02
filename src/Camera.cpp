@@ -22,54 +22,11 @@
 
 #include "Camera.h"
 #include "Mat3.h"
-#include "Mat4.h"
-#include "Vec3.h"
 #include "Quaternion.h"
 
 #include <cmath>
 
 namespace PolandBall {
-
-Camera::Camera() {
-    this->initialize();
-}
-
-Camera::Camera(float x, float y, float z) {
-    this->setPosition(x, y, z);
-    this->initialize();
-}
-
-Camera::Camera(const Math::Vec3& position) {
-    this->setPosition(position);
-    this->initialize();
-}
-
-void Camera::setPosition(const Math::Vec3& position) {
-    this->translation.set(0, 3, -position.get(Math::Vec3::X));
-    this->translation.set(1, 3, -position.get(Math::Vec3::Y));
-    this->translation.set(2, 3, -position.get(Math::Vec3::Z));
-}
-
-Math::Vec3 Camera::getPosition() const {
-    return Math::Vec3(-this->translation.get(0, 3),
-                      -this->translation.get(1, 3),
-                      -this->translation.get(2, 3));
-}
-
-float Camera::getXAngle() const {
-    // TODO: implement
-    return 0.0f;
-}
-
-float Camera::getYAngle() const {
-    // TODO: implement
-    return 0.0f;
-}
-
-float Camera::getZAngle() const {
-    // TODO: implement
-    return 0.0f;
-}
 
 void Camera::rotate(const Math::Vec3& vector, float angle) {
     if (vector == Math::Vec3::ZERO) {
@@ -96,18 +53,6 @@ void Camera::rotate(const Math::Vec3& vector, float angle) {
     this->updateRotationMatrix(right, up, target);
 }
 
-Math::Vec3 Camera::getUp() const {
-    return Math::Vec3(this->rotation.get(1, 0),
-                      this->rotation.get(1, 1),
-                      this->rotation.get(1, 2));
-}
-
-Math::Vec3 Camera::getTarget() const {
-    return -Math::Vec3(this->rotation.get(2, 0),
-                       this->rotation.get(2, 1),
-                       this->rotation.get(2, 2));
-}
-
 Math::Vec3 Camera::getRight() const {
     Math::Vec3 up(this->rotation.get(1, 0),
                   this->rotation.get(1, 1),
@@ -117,10 +62,6 @@ Math::Vec3 Camera::getRight() const {
                       this->rotation.get(2, 2));
     Math::Vec3 right = target.cross(up);
     return right.normalize();
-}
-
-void Camera::lookAt(float x, float y, float z) {
-    this->lookAt(Math::Vec3(x, y, z));
 }
 
 void Camera::lookAt(const Math::Vec3& vector) {
@@ -143,26 +84,6 @@ void Camera::lookAt(const Math::Vec3& vector) {
     this->updateRotationMatrix(right, up, target);
 }
 
-void Camera::setNearPlane(float nearPlane) {
-    this->nearPlane = nearPlane;
-    this->updateClipDistances();
-}
-
-void Camera::setFarPlane(float farPlane) {
-    this->farPlane = farPlane;
-    this->updateClipDistances();
-}
-
-void Camera::setFov(float fov) {
-    this->fov = fov;
-    this->updateFieldOfView();
-}
-
-void Camera::setAspectRatio(float aspectRatio) {
-    this->aspectRatio = aspectRatio;
-    this->updateFieldOfView();
-}
-
 void Camera::updateRotationMatrix(const Math::Vec3& right, const Math::Vec3& up, const Math::Vec3& target) {
     this->rotation.set(0, 0, right.get(Math::Vec3::X));
     this->rotation.set(0, 1, right.get(Math::Vec3::Y));
@@ -175,19 +96,6 @@ void Camera::updateRotationMatrix(const Math::Vec3& right, const Math::Vec3& up,
     this->rotation.set(2, 0, target.get(Math::Vec3::X));
     this->rotation.set(2, 1, target.get(Math::Vec3::Y));
     this->rotation.set(2, 2, target.get(Math::Vec3::Z));
-}
-
-void Camera::updateClipDistances() {
-    this->projection.set(2, 2, (-this->farPlane - this->nearPlane) /
-                               (this->farPlane - this->nearPlane));
-    this->projection.set(2, 3, (-2.0f * this->farPlane * this->nearPlane) /
-                               (this->farPlane - this->nearPlane));
-}
-
-void Camera::updateFieldOfView() {
-    this->projection.set(0, 0, 1.0f / (tanf(this->fov * M_PI / 180.0f / 2.0f) *
-                               this->aspectRatio));
-    this->projection.set(1, 1, 1.0f / (tanf(this->fov * M_PI / 180.0f / 2.0f)));
 }
 
 void Camera::initialize() {

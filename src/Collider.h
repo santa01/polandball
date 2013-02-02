@@ -29,10 +29,6 @@ namespace PolandBall {
 
 class Collider: public IMovable {
 public:
-    Collider();
-    Collider(const Collider& orig);
-    ~Collider();
-
     using IMovable::setPosition;
 
     void setPosition(const Math::Vec3& position);

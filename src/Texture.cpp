@@ -24,14 +24,6 @@
 
 namespace PolandBall {
 
-Texture::Texture() {
-    glGenTextures(1, &this->texture);
-}
-
-Texture::~Texture() {
-    glDeleteTextures(1, &this->texture);
-}
-
 void Texture::load(SDL_Surface* image) {
     if (image == nullptr) {
         return;
@@ -58,11 +50,6 @@ void Texture::load(SDL_Surface* image) {
     if (source != image) {  // Free only our copy if made
         SDL_FreeSurface(source);
     }
-}
-
-void Texture::bind() {
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, this->texture);
 }
 
 SDL_Surface* Texture::convertToRGBA(SDL_Surface* image) {

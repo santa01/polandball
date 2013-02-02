@@ -24,10 +24,4 @@
 
 namespace PolandBall {
 
-Player::Player() {
-}
-
-Player::~Player() {
-}
-
 }  // namespace PolandBall

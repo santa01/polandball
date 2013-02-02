@@ -25,9 +25,11 @@
 
 #include "Vec3.h"
 #include "Mat4.h"
+#include "Quaternion.h"
 #include "IMovable.h"
 #include "IScalable.h"
 #include "IRotatable.h"
+#include "INonCopyable.h"
 #include "Texture.h"
 #include "RenderEffect.h"
 
@@ -38,31 +40,86 @@
 
 namespace PolandBall {
 
-class Sprite: public IMovable, public IRotatable, public IScalable {
+class Sprite: public IMovable, public IRotatable, public IScalable, public INonCopyable {
 public:
-    Sprite();
-    Sprite(float x, float y, float z);
-    Sprite(const Math::Vec3& position);
-    ~Sprite();
+    Sprite() {
+        this->initialize();
+    }
+
+    Sprite(float x, float y, float z) {
+        this->initialize();
+        this->setPosition(x, y, z);
+    }
+
+    Sprite(const Math::Vec3& position) {
+        this->initialize();
+        this->setPosition(position);
+    }
+
+    ~Sprite() {
+        glDeleteVertexArrays(1, &this->vao);
+        glDeleteBuffers(2, this->buffers);
+    }
 
     using IMovable::setPosition;
 
-    void setPosition(const Math::Vec3& position);
-    Math::Vec3 getPosition() const;
+    void setPosition(const Math::Vec3& position) {
+        this->translation.set(0, 3, position.get(Math::Vec3::X));
+        this->translation.set(1, 3, position.get(Math::Vec3::Y));
+        this->translation.set(2, 3, position.get(Math::Vec3::Z));
+    }
 
-    float getXAngle() const;
-    float getYAngle() const;
-    float getZAngle() const;
+    Math::Vec3 getPosition() const {
+        return Math::Vec3(this->translation.get(0, 3),
+                          this->translation.get(1, 3),
+                          this->translation.get(2, 3));
+    }
 
-    void rotate(const Math::Vec3& vector, float angle);
+    float getXAngle() const {
+        // TODO: implement
+        return 0.0f;
+    }
 
-    void scaleX(float factor);
-    void scaleY(float factor);
-    void scaleZ(float factor);
+    float getYAngle() const {
+        // TODO: implement
+        return 0.0f;
+    }
 
-    float getXFactor() const;
-    float getYFactor() const;
-    float getZFactor() const;
+    float getZAngle() const {
+        // TODO: implement
+        return 0.0f;
+    }
+
+    void rotate(const Math::Vec3& vector, float angle) {
+        Math::Quaternion q(vector, angle * M_PI / 180.0f);
+        q.normalize();
+
+        this->rotation = q.extractMat4();
+    }
+
+    void scaleX(float factor) {
+        this->scaling.set(0, 0, this->scaling.get(0, 0) * factor);
+    }
+
+    void scaleY(float factor) {
+        this->scaling.set(1, 1, this->scaling.get(1, 1) * factor);
+    }
+
+    void scaleZ(float factor) {
+        this->scaling.set(2, 2, this->scaling.get(2, 2) * factor);
+    }
+
+    float getXFactor() const {
+        return this->scaling.get(0, 0);
+    }
+
+    float getYFactor() const {
+        return this->scaling.get(1, 1);
+    }
+
+    float getZFactor() const {
+        return this->scaling.get(2, 2);
+    }
 
     std::shared_ptr<RenderEffect>& getEffect() {
         return this->effect;
@@ -88,9 +145,6 @@ private:
         ELEMENT_BUFFER = 1
     };
 
-    Sprite(const Sprite& orig) = delete;
-    Sprite& operator =(const Sprite&) = delete;
-
     std::shared_ptr<Texture> texture;
     std::shared_ptr<RenderEffect> effect;
 
@@ -107,8 +161,6 @@ private:
     void initialize();
 };
 
-}
-
-// namespace PolandBall
+}  // namespace PolandBall
 
 #endif  // MESH_H

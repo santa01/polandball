@@ -25,6 +25,8 @@
 
 #include "Mat4.h"
 #include "Vec3.h"
+#include "INonCopyable.h"
+#include "ShaderLoader.h"
 
 #define GL_GLEXT_PROTOTYPES
 #include <SDL2/SDL_opengl.h>
@@ -33,26 +35,49 @@
 
 namespace PolandBall {
 
-class RenderEffect {
+class RenderEffect: public INonCopyable {
 public:
     enum ShaderType {
         TYPE_VERTEX = GL_VERTEX_SHADER,
         TYPE_FRAGMENT = GL_FRAGMENT_SHADER
     };
 
-    RenderEffect();
-    ~RenderEffect();
+    RenderEffect() {
+        this->program = 0;
+    }
 
-    void setMVP(const Math::Mat4& matrix);
-    void setLW(const Math::Mat4& matrix);  // local -> world space transformation matrix
+    ~RenderEffect() {
+        if (this->program != 0) {
+            glDeleteProgram(this->program);
+        }
+    }
 
-    void attachShader(const std::string& source, ShaderType type);
+    void setMVP(const Math::Mat4& matrix) {
+        this->enable();
+
+        if (this->mvp > -1) {
+            glUniformMatrix4fv(this->mvp, 1, GL_TRUE, (GLfloat*)matrix.data());
+        }
+    }
+
+    // local -> world space transformation matrix
+    void setLW(const Math::Mat4& matrix) {
+        this->enable();
+
+        if (this->lw > -1) {
+            glUniformMatrix4fv(this->lw, 1, GL_TRUE, (GLfloat*)matrix.data());
+        }
+    }
+
+    void attachShader(const std::string& source, ShaderType type) {
+        if (this->program == 0) {
+            this->shaderList.push_back(ShaderLoader::createShader(source, type));
+        }
+    }
+
     void enable();
 
 private:
-    RenderEffect(const RenderEffect& orig) = delete;
-    RenderEffect& operator =(const RenderEffect&) = delete;
-
     std::vector<GLuint> shaderList;
 
     GLuint program;

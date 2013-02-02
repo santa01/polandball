@@ -21,15 +21,7 @@
  */
 
 #include "Sprite.h"
-#include "Logger.h"
-#include "Vec3.h"
-#include "Quaternion.h"
-#include "RenderEffect.h"
 #include "ResourceManager.h"
-
-#include <cmath>
-#include <fstream>
-#include <string>
 
 namespace PolandBall {
 
@@ -50,85 +42,6 @@ const int Sprite::indices[] = {
     0, 1, 2,
     0, 2, 3,
 };
-
-Sprite::Sprite():
-        texture(),
-        effect() {
-    this->initialize();
-}
-
-Sprite::Sprite(float x, float y, float z) {
-    this->initialize();
-    this->setPosition(x, y, z);
-}
-
-Sprite::Sprite(const Math::Vec3& position) {
-    this->initialize();
-    this->setPosition(position);
-}
-
-Sprite::~Sprite() {
-    glDeleteVertexArrays(1, &this->vao);
-    glDeleteBuffers(2, this->buffers);
-}
-
-void Sprite::setPosition(const Math::Vec3& position) {
-    this->translation.set(0, 3, position.get(Math::Vec3::X));
-    this->translation.set(1, 3, position.get(Math::Vec3::Y));
-    this->translation.set(2, 3, position.get(Math::Vec3::Z));
-}
-
-Math::Vec3 Sprite::getPosition() const {
-    return Math::Vec3(this->translation.get(0, 3),
-                this->translation.get(1, 3),
-                this->translation.get(2, 3));
-}
-
-float Sprite::getXAngle() const {
-    // TODO: implement
-    return 0.0f;
-}
-
-float Sprite::getYAngle() const {
-    // TODO: implement
-    return 0.0f;
-}
-
-float Sprite::getZAngle() const {
-    // TODO: implement
-    return 0.0f;
-}
-
-void Sprite::rotate(const Math::Vec3& vector, float angle) {
-    Math::Quaternion q(vector, angle * M_PI / 180.0f);
-    q.normalize();
-    
-    this->rotation = q.extractMat4();
-}
-
-void Sprite::scaleX(float factor) {
-    this->scaling.set(0, 0, this->scaling.get(0, 0) * factor);
-}
-
-void Sprite::scaleY(float factor) {
-    this->scaling.set(1, 1, this->scaling.get(1, 1) * factor);
-}
-
-void Sprite::scaleZ(float factor) {
-    this->scaling.set(2, 2, this->scaling.get(2, 2) * factor);
-}
-
-float Sprite::getXFactor() const {
-    return this->scaling.get(0, 0);
-}
-
-float Sprite::getYFactor() const {
-    return this->scaling.get(1, 1);
-}
-
-float Sprite::getZFactor() const {
-    return this->scaling.get(2, 2);
-}
 
 void Sprite::render() {
     if (this->texture != nullptr) {

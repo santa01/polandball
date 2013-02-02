@@ -23,6 +23,8 @@
 #ifndef TEXTURE_H
 #define	TEXTURE_H
 
+#include "INonCopyable.h"
+
 #define GL_GLEXT_PROTOTYPES
 #include <SDL2/SDL_opengl.h>
 #include <SDL2/SDL_image.h>
@@ -30,22 +32,28 @@
 
 namespace PolandBall {
 
-class Texture {
+class Texture: public INonCopyable {
 public:
-    Texture();
-    ~Texture();
+    Texture() {
+        glGenTextures(1, &this->texture);
+    }
+
+    ~Texture() {
+        glDeleteTextures(1, &this->texture);
+    }
 
     GLuint getTextureHandle() const {
         return this->texture;
     }
 
     void load(SDL_Surface* image);
-    void bind();
+
+    void bind() {
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, this->texture);
+    }
 
 private:
-    Texture(const Texture&);
-    Texture& operator =(const Texture&);
-
     SDL_Surface* convertToRGBA(SDL_Surface* image);
 
     GLuint texture;

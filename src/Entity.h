@@ -25,33 +25,43 @@
 
 #include "Collider.h"
 #include "Sprite.h"
+#include "ResourceManager.h"
 
 #include <memory>
+#include <utility>
 
 namespace PolandBall {
 
 class Entity: public IMovable {
 public:
-    Entity();
-    ~Entity();
+    Entity():
+            collider(new Collider()),
+            sprite(new Sprite()) {
+        this->renderable = true;
+        this->collidable = true;
+    }
 
     using IMovable::setPosition;
 
     void setPosition(const Math::Vec3& position) {
-        //this->collider->setPosition(position);
         this->sprite->setPosition(position);
+        this->collider->setPosition(position);
     }
 
     Math::Vec3 getPosition() const {
-        return this->sprite->getPosition();  // Should be equal to collider position
+        return this->sprite->getPosition();
     }
 
-    std::shared_ptr<Collider>& getCollider() {
+    std::unique_ptr<Collider>& getCollider() {
         return this->collider;
     }
 
-    void setCollider(const std::shared_ptr<Collider>& collider) {
-        this->collider = collider;
+    // NOTE: As far as we use std::move, unique_ptr
+    // passed as parameter will be set to nullptr!
+    void setCollider(std::unique_ptr<Collider>& collider) {
+        if (collider != nullptr) {
+            this->collider = std::move(collider);
+        }
     }
 
     std::shared_ptr<Sprite>& getSprite() {
@@ -59,19 +69,35 @@ public:
     }
 
     void setSprite(const std::shared_ptr<Sprite>& sprite) {
-        this->sprite = sprite;
+        if (sprite != nullptr) {
+            this->sprite = sprite;
+        }
+    }
+
+    bool isCollidable() const {
+        return this->collidable;
+    }
+
+    void setCollidable(bool collidable) {
+        this->collidable = collidable;
+    }
+
+    bool isRenderable() const {
+        return this->renderable;
+    }
+
+    void setRenderable(bool renderable) {
+        this->renderable = renderable;
     }
 
 private:
-    Entity(const Entity&) = delete;
-    Entity& operator =(const Entity&) = delete;
-
-    std::shared_ptr<Collider> collider;
+    std::unique_ptr<Collider> collider;
     std::shared_ptr<Sprite> sprite;
+
+    bool renderable;
+    bool collidable;
 };
 
-}
-
-// namespace PolandBall
+} // namespace PolandBall
 
 #endif  // ENTITY_H

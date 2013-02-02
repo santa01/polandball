@@ -23,6 +23,8 @@
 #ifndef VEC3_H
 #define	VEC3_H
 
+#include <cmath>
+
 namespace PolandBall {
 
 namespace Math {
@@ -40,27 +42,121 @@ public:
     static const Vec3 UNIT_Z;
     static const Vec3 ZERO;
 
-    Vec3();
-    Vec3(float x, float y, float z);
+    Vec3() {
+        for (int i = 0; i < 3; i++) {
+            this->vector[i] = 0.0f;
+        }
+    }
 
-    Vec3 operator -(const Vec3& vector) const;
-    Vec3 operator +(const Vec3& vector) const;
-    Vec3 operator *(float scalar) const;
-    Vec3& operator -=(const Vec3& vector);
-    Vec3& operator +=(const Vec3& vector);
-    Vec3& operator *=(float scalar);
-    bool operator ==(const Vec3& vector) const;
-    bool operator !=(const Vec3& vector) const;
-    Vec3 operator -() const;
+    Vec3(float x, float y, float z) {
+        this->vector[X] = x;
+        this->vector[Y] = y;
+        this->vector[Z] = z;
+    }
 
-    float dot(const Vec3& vector) const;
-    Vec3 cross(const Vec3& vector) const;
-    Vec3& normalize();
-    float length() const;
-    float squareLength() const;
+    Vec3 operator -(const Vec3& vector) const {
+        Vec3 me(*this);
+        return me -= vector;
+    }
 
-    float get(int index) const;
-    void set(int index, float value);
+    Vec3 operator +(const Vec3& vector) const {
+        Vec3 me(*this);
+        return me += vector;
+    }
+
+    Vec3 operator *(float scalar) const {
+        Vec3 me(*this);
+        return me *= scalar;
+    }
+
+    Vec3& operator -=(const Vec3& vector) {
+        this->vector[X] -= vector.get(X);
+        this->vector[Y] -= vector.get(Y);
+        this->vector[Z] -= vector.get(Z);
+        return *this;
+    }
+
+    Vec3& operator +=(const Vec3& vector) {
+        this->vector[X] += vector.get(X);
+        this->vector[Y] += vector.get(Y);
+        this->vector[Z] += vector.get(Z);
+        return *this;
+    }
+
+    Vec3& operator *=(float scalar) {
+        this->vector[X] *= scalar;
+        this->vector[Y] *= scalar;
+        this->vector[Z] *= scalar;
+        return *this;
+    }
+
+    bool operator ==(const Vec3& vector) const {
+        return (this->vector[X] == vector.get(X)) &&
+               (this->vector[Y] == vector.get(Y)) &&
+               (this->vector[Z] == vector.get(Z));
+    }
+
+    bool operator !=(const Vec3& vector) const {
+        return !(*this == vector);
+    }
+
+    Vec3 operator -() const {
+        return Vec3(-this->vector[X],
+                    -this->vector[Y],
+                    -this->vector[Z]);
+    }
+
+    float dot(const Vec3& vector) const {
+        return this->vector[X] * vector.get(X) +
+               this->vector[Y] * vector.get(Y) +
+               this->vector[Z] * vector.get(Z);
+    }
+
+    Vec3 cross(const Vec3& vector) const {
+        return Vec3(this->vector[Y] * vector.get(Z) - this->vector[Z] * vector.get(Y),
+                    this->vector[Z] * vector.get(X) - this->vector[X] * vector.get(Z),
+                    this->vector[X] * vector.get(Y) - this->vector[Y] * vector.get(X));
+    }
+
+    Vec3& normalize() {
+        float length = this->length();
+        this->vector[X] /= length;
+        this->vector[Y] /= length;
+        this->vector[Z] /= length;
+        return *this;
+    }
+
+    float length() const {
+        return sqrtf(this->squareLength());
+    }
+
+    float squareLength() const {
+        return this->vector[X] * this->vector[X] +
+               this->vector[Y] * this->vector[Y] +
+               this->vector[Z] * this->vector[Z];
+    }
+
+    float get(int index) const {
+        switch (index) {
+            case X:
+            case Y:
+            case Z:
+                return this->vector[index];
+
+            default:
+                return NAN;
+        }
+    }
+
+    void set(int index, float value) {
+        switch (index) {
+            case X:
+            case Y:
+            case Z:
+                this->vector[index] = value;
+                break;
+        }
+    }
 
     const float* data() const  {
         return (float*)&this->vector;

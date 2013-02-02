@@ -26,6 +26,8 @@
 #include "Vec3.h"
 #include "Mat4.h"
 
+#include <cmath>
+
 namespace PolandBall {
 
 namespace Math {
@@ -39,17 +41,70 @@ public:
         W = 3
     };
 
-    Quaternion();
-    Quaternion(float x, float y, float z, float w);
-    Quaternion(const Vec3& axis, float angle);
+    Quaternion() {
+        this->vector[X] = 0.0f;
+        this->vector[Y] = 0.0f;
+        this->vector[Z] = 0.0f;
+        this->vector[W] = 1.0f;
+    }
+
+    Quaternion(float x, float y, float z, float w) {
+        this->vector[X] = x;
+        this->vector[Y] = y;
+        this->vector[Z] = z;
+        this->vector[W] = w;
+    }
+
+    Quaternion(const Vec3& axis, float angle) {
+        float sinAngle = sinf(angle / 2);
+
+        this->vector[X] = axis.get(Vec3::X) * sinAngle;
+        this->vector[Y] = axis.get(Vec3::Y) * sinAngle;
+        this->vector[Z] = axis.get(Vec3::Z) * sinAngle;
+        this->vector[W] = cosf(angle / 2);
+    }
 
     Quaternion operator *(const Quaternion& quaternmion) const;
 
-    Quaternion& normalize();
-    float length() const;
+    Quaternion& normalize() {
+        float length = this->length();
+        this->vector[X] /= length;
+        this->vector[Y] /= length;
+        this->vector[Z] /= length;
+        this->vector[W] /= length;
+        return *this;
+    }
 
-    float get(int index) const;
-    void set(int index, float value);
+    float length() const {
+        return sqrtf(vector[X] * vector[X] +
+                     vector[Y] * vector[Y] +
+                     vector[Z] * vector[Z] +
+                     vector[W] * vector[W]);
+    }
+
+    float get(int index) const {
+        switch (index) {
+            case X:
+            case Y:
+            case Z:
+            case W:
+                return this->vector[index];
+
+            default:
+                return NAN;
+        }
+    }
+
+    void set(int index, float value) {
+        switch (index) {
+            case X:
+            case Y:
+            case Z:
+            case W:
+                this->vector[index] = value;
+                break;
+        }
+    }
 
     Mat4 extractMat4() const;
 

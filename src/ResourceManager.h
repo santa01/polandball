@@ -25,6 +25,7 @@
 
 #include "Texture.h"
 #include "RenderEffect.h"
+#include "INonCopyable.h"
 
 #include <SDL2/SDL_image.h>
 #include <unordered_map>
@@ -33,7 +34,7 @@
 
 namespace PolandBall {
 
-class ResourceManager {
+class ResourceManager: public INonCopyable {
 public:
     static ResourceManager& getInstance() {
         static ResourceManager instance;
@@ -45,8 +46,6 @@ public:
 
 private:
     ResourceManager();
-    ResourceManager(const ResourceManager&) = delete;
-    ResourceManager& operator =(const ResourceManager&) = delete;
 
     void insertTexture(const std::string& name, SDL_Surface* image);
     void insertEffect(const std::string& name, const std::string& source);

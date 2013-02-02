@@ -26,6 +26,7 @@
 #include "Entity.h"
 #include "Camera.h"
 #include "Player.h"
+#include "INonCopyable.h"
 
 #include <SDL2/SDL_video.h>
 #include <memory>
@@ -34,7 +35,7 @@
 
 namespace PolandBall {
 
-class Game {
+class Game: public INonCopyable {
 public:
     enum {
         ERROR_OK = 0,
@@ -46,22 +47,33 @@ public:
         DEFAULT_SPEED = 2
     };
 
-    Game();
-    Game(int width, int height);
+    Game() {
+        this->initialize();
+        this->width = 800;
+        this->height = 600;
+    }
+
+    Game(int width, int height) {
+        this->initialize();
+        this->width = width;
+        this->height = height;
+    }
 
     int exec();
 
 private:
-    Game(const Game&) = delete;
-    Game& operator =(const Game&) = delete;
-
     bool setUp();
     void tearDown();
 
     void updateWorld();
     void renderWorld();
 
-    void initialize();
+    void initialize() {
+        this->running = true;
+        this->window = nullptr;
+        this->context = nullptr;
+        this->frameTime = 0.0f;
+    }
 
     SDL_Window *window;
     SDL_GLContext context;

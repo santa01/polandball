@@ -25,31 +25,134 @@
 
 #include "Mat3.h"
 
+#include <cmath>
+#include <algorithm>
+
 namespace PolandBall {
 
 namespace Math {
 
 class Mat4 {
 public:
-    Mat4();
+    Mat4() {
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                this->matrix[i][j] = 0.0f;
+            }
+        }
 
-    Mat4 operator *(const Mat4& mat) const;
-    Mat4 operator *(float scalar) const;
-    Mat4 operator +(const Mat4& matrix) const;
-    Mat4 operator -(const Mat4& matrix) const;
-    bool operator ==(const Mat4& matrix) const;
-    bool operator !=(const Mat4& matrix) const;
+        this->matrix[0][0] = 1.0f;
+        this->matrix[1][1] = 1.0f;
+        this->matrix[2][2] = 1.0f;
+        this->matrix[3][3] = 1.0f;
+    }
 
-    void transpose();
+    Mat4 operator *(const Mat4& matrix) const {
+        Mat4 result;
 
-    float get(int row, int column) const;
-    void set(int row, int column, float value);
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                result.set(i, j, this->matrix[i][0] * matrix.get(0, j) +
+                                 this->matrix[i][1] * matrix.get(1, j) +
+                                 this->matrix[i][2] * matrix.get(2, j) +
+                                 this->matrix[i][3] * matrix.get(3, j));
+            }
+        }
+
+        return result;
+    }
+
+    Mat4 operator *(float scalar) const {
+        Mat4 result;
+
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                result.set(i, j, this->matrix[i][j] * scalar);
+            }
+        }
+
+        return result;
+    }
+
+    Mat4 operator +(const Mat4& matrix) const {
+        Mat4 result;
+
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                result.set(i, j, this->matrix[i][j] + matrix.get(i, j));
+            }
+        }
+
+        return result;
+    }
+
+    Mat4 operator -(const Mat4& matrix) const {
+        Mat4 result;
+
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                result.set(i, j, this->matrix[i][j] - matrix.get(i, j));
+            }
+        }
+
+        return result;
+    }
+
+    bool operator ==(const Mat4& matrix) const {
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                if (this->matrix[i][j] != matrix.get(i, j)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    bool operator !=(const Mat4& matrix) const {
+        return !(*this == matrix);
+    }
+
+    void transpose() {
+        for (int i = 0; i < 3; i++) {
+            for (int j = i + 1; j < 4; j++) {
+                std::swap(this->matrix[j][i], this->matrix[i][j]);
+            }
+        }
+    }
+
+    float get(int row, int column) const {
+        if (column < 0 || column > 3 || row < 0 || row > 3) {
+            return NAN;
+        }
+
+        return this->matrix[row][column];
+    }
+
+    void set(int row, int column, float value) {
+        if (column < 0 || column > 3 || row < 0 || row > 3) {
+            return;
+        }
+
+        this->matrix[row][column] = value;
+    }
 
     const float* data() const  {
         return (float*)&this->matrix;
     }
 
-    Mat3 extractMat3() const;
+    Mat3 extractMat3() const {
+        Mat3 result;
+
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                result.set(i, j, this->matrix[i][j]);
+            }
+        }
+
+        return result;
+    }
 
 private:
     float matrix[4][4];
