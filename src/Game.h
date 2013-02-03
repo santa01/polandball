@@ -63,6 +63,7 @@ private:
     void tearDown();
 
     void updateWorld();
+    void updatePlayer();
     void renderWorld();
 
     void initialize() {

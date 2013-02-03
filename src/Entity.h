@@ -25,6 +25,8 @@
 
 #include "Collider.h"
 #include "Sprite.h"
+#include "IMovable.h"
+#include "IScalable.h"
 #include "ResourceManager.h"
 
 #include <memory>
@@ -32,13 +34,25 @@
 
 namespace PolandBall {
 
-class Entity: public IMovable {
+class Entity: public IMovable, public IScalable {
 public:
+    enum EntityType {
+        TYPE_STATIC = 0,
+        TYPE_DYNAMIC = 1
+    };
+
     Entity():
             collider(new Collider()),
             sprite(new Sprite()) {
-        this->renderable = true;
-        this->collidable = true;
+        this->type = TYPE_STATIC;
+        this->initialize();
+    }
+
+    Entity(EntityType type):
+            collider(new Collider()),
+            sprite(new Sprite()) {
+        this->type = type;
+        this->initialize();
     }
 
     using IMovable::setPosition;
@@ -49,7 +63,34 @@ public:
     }
 
     Math::Vec3 getPosition() const {
-        return this->sprite->getPosition();
+        return this->sprite->getPosition();  // Positions are syncronized
+    }
+
+    void scaleX(float factor) {
+        this->sprite->scaleX(factor);
+        this->collider->scaleX(factor);
+    }
+
+    void scaleY(float factor) {
+        this->sprite->scaleY(factor);
+        this->collider->scaleY(factor);
+    }
+
+    void scaleZ(float factor) {
+        this->sprite->scaleZ(factor);
+        this->collider->scaleZ(factor);
+    }
+
+    float getXFactor() const {
+        return this->sprite->getXFactor();  // Factors are syncronized
+    }
+
+    float getYFactor() const {
+        return this->sprite->getYFactor();  // Factors are syncronized
+    }
+
+    float getZFactor() const {
+        return this->sprite->getZFactor();  // Factors are syncronized
     }
 
     std::unique_ptr<Collider>& getCollider() {
@@ -90,6 +131,11 @@ public:
         this->renderable = renderable;
     }
 
+    // I have no idea why static entity could became dynamic, hence no setter
+    EntityType getEntityType() const {
+        return this->type;
+    }
+
     // Slot
     void onPositionUpdate(const Math::Vec3& positionDelta) {
         Math::Vec3 currentPosition = this->getPosition();
@@ -99,11 +145,17 @@ public:
     }
 
 private:
+    void initialize() {
+        this->renderable = true;
+        this->collidable = true;
+    }
+
     std::unique_ptr<Collider> collider;
     std::shared_ptr<Sprite> sprite;
 
     bool renderable;
     bool collidable;
+    EntityType type;
 };
 
 } // namespace PolandBall

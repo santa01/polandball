@@ -52,6 +52,7 @@ int Game::exec() {
         }
 
         this->updateWorld();
+        this->updatePlayer();
         this->renderWorld();
 
         endTime = std::chrono::system_clock::now();
@@ -134,7 +135,7 @@ bool Game::setUp() {
     }
 
     auto playerSprite = std::shared_ptr<Sprite>(new Sprite());
-    playerSprite->setTexture(ResourceManager::getInstance().makeTexture("textures/applejack.png"));
+    playerSprite->setTexture(ResourceManager::getInstance().makeTexture("textures/turkey_ball.png"));
     playerSprite->scale(0.25f);
 
     auto playerEntity = std::shared_ptr<Entity>(new Entity());
@@ -166,6 +167,19 @@ void Game::tearDown() {
 }
 
 void Game::updateWorld() {
+    for (unsigned int i = 0; i < this->entites.size() - 1; i++) {
+        auto entity = this->entites[i];
+
+        for (unsigned int j = i + 1; j < this->entites.size(); j++) {
+            if (entity->isCollidable()) {
+                bool collide = entity->getCollider()->collides(this->entites[j]->getCollider());
+                if (collide);
+            }
+        }
+    }
+}
+
+void Game::updatePlayer() {
     Uint8 *keyStates = SDL_GetKeyboardState(nullptr);
     if (keyStates[SDL_SCANCODE_ESCAPE]) {
         this->running = false;

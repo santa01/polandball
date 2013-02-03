@@ -40,6 +40,7 @@
 
 namespace PolandBall {
 
+// NOTE: IRotateble only for animation purposes
 class Sprite: public IMovable, public IRotatable, public IScalable, public INonCopyable {
 public:
     Sprite() {
