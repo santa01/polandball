@@ -20,70 +20,12 @@
  * SOFTWARE.
  */
 
-#ifndef POLANDBALL_H
-#define	POLANDBALL_H
-
-#include "Entity.h"
-#include "Camera.h"
-#include "Player.h"
-#include "INonCopyable.h"
-
-#include <SDL2/SDL_video.h>
-#include <memory>
-#include <chrono>
-#include <vector>
+#include "Signals.h"
 
 namespace PolandBall {
 
-class Game: public INonCopyable {
-public:
-    enum {
-        ERROR_OK = 0,
-        ERROR_SETUP = 1,
-        // Well this should go outside
-        CAMERA_OFFSET = 3
-    };
+namespace Signals {
 
-    Game() {
-        this->width = 800;
-        this->height = 600;
-        this->initialize();
-    }
-
-    Game(int width, int height) {
-        this->width = width;
-        this->height = height;
-        this->initialize();
-    }
-
-    int exec();
-
-private:
-    bool setUp();
-    void tearDown();
-
-    void updateWorld();
-    void renderWorld();
-
-    void initialize() {
-        this->running = true;
-        this->window = nullptr;
-        this->context = nullptr;
-        this->frameTime = 0.0f;
-    }
-
-    SDL_Window *window;
-    SDL_GLContext context;
-
-    std::vector<std::shared_ptr<Entity>> entites;
-    Camera camera;
-    Player player;
-
-    bool running;
-    int width, height;
-    float frameTime;
-};
+}  // namespace Signals
 
 }  // namespace PolandBall
-
-#endif  // POLANDBALL_H

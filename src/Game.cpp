@@ -113,27 +113,40 @@ bool Game::setUp() {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // GL_DEPTH_TEST is OFF! Manually arrange sprites, farthest renders first!
-    auto sprite = std::shared_ptr<Sprite>(new Sprite());
-    sprite->setTexture(ResourceManager::getInstance().makeTexture("textures/day_sky_3x4.png"));
-    sprite->setPosition(0.0f, 0.0f, SCENE_DEPTH);
-    sprite->scaleX(this->width / (this->height / 1.0f));  // Scale for aspect ratio
-    sprite->scale(1.5f);  // Fit the screen
+    auto backgroundSprite = std::shared_ptr<Sprite>(new Sprite());
+    backgroundSprite->setTexture(ResourceManager::getInstance().makeTexture("textures/day_sky_3x4.png"));
+    backgroundSprite->scaleX(this->width / (this->height / 1.0f));  // Scale for aspect ratio
+    backgroundSprite->scale(1.5f);  // Fit the screen
 
-    auto entity = std::shared_ptr<Entity>(new Entity());
-    entity->setSprite(sprite);
-    this->entites.push_back(entity);
+    auto backgroundEntity = std::shared_ptr<Entity>(new Entity());
+    backgroundEntity->setSprite(backgroundSprite);
+    this->entites.push_back(backgroundEntity);
 
-    sprite = std::shared_ptr<Sprite>(new Sprite());
-    sprite->setTexture(ResourceManager::getInstance().makeTexture("textures/applejack.png"));
-    sprite->setPosition(0.0f, -2.0f, SCENE_DEPTH);
-    sprite->scale(0.25f);
+    for (int i = 0; i < 18; i++) {
+        auto bricksSprite = std::shared_ptr<Sprite>(new Sprite());
+        bricksSprite->setTexture(ResourceManager::getInstance().makeTexture("textures/bricks.png"));
+        bricksSprite->scale(0.15f);
 
-    entity = std::shared_ptr<Entity>(new Entity());
-    entity->setSprite(sprite);
-    this->entites.push_back(entity);
+        auto bricksEntity = std::shared_ptr<Entity>(new Entity());
+        bricksEntity->setSprite(bricksSprite);
+        bricksEntity->setPosition(-3.7f + i * 0.6f, -2.7f, 0.0f);
+        this->entites.push_back(bricksEntity);
+    }
 
-    this->player.setEntity(entity);
+    auto playerSprite = std::shared_ptr<Sprite>(new Sprite());
+    playerSprite->setTexture(ResourceManager::getInstance().makeTexture("textures/applejack.png"));
+    playerSprite->scale(0.25f);
 
+    auto playerEntity = std::shared_ptr<Entity>(new Entity());
+    playerEntity->setSprite(playerSprite);
+    playerEntity->setPosition(0.0f, -1.5f, 0.0f);
+    this->entites.push_back(playerEntity);
+
+    this->player.setEntity(playerEntity);
+    this->player.updatePosition.connect(std::bind(&Entity::onPositionUpdate, backgroundEntity, std::placeholders::_1));
+    this->player.updatePosition.connect(std::bind(&Camera::onPositionUpdate, &this->camera, std::placeholders::_1));
+
+    this->camera.setPosition(0.0f, 0.0f, -CAMERA_OFFSET);
     return true;
 }
 
@@ -160,14 +173,14 @@ void Game::updateWorld() {
 
     Math::Vec3 playerPosition = this->player.getPosition();
     if (keyStates[SDL_SCANCODE_RIGHT]) {
-        playerPosition += Math::Vec3::UNIT_X * this->frameTime * DEFAULT_SPEED;
+        playerPosition += Math::Vec3::UNIT_X * this->frameTime * Player::DEFAULT_SPEED;
+        this->player.setPosition(playerPosition);
     }
 
     if (keyStates[SDL_SCANCODE_LEFT]) {
-        playerPosition -= Math::Vec3::UNIT_X * this->frameTime * DEFAULT_SPEED;
+        playerPosition -= Math::Vec3::UNIT_X * this->frameTime * Player::DEFAULT_SPEED;
+        this->player.setPosition(playerPosition);
     }
-
-    this->player.setPosition(playerPosition);
 }
 
 void Game::renderWorld() {

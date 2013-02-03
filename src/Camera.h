@@ -145,6 +145,14 @@ public:
         return this->projection;
     }
 
+    // Slot
+    void onPositionUpdate(const Math::Vec3& positionDelta) {
+        Math::Vec3 currentPosition = this->getPosition();
+        currentPosition.set(Math::Vec3::X, currentPosition.get(Math::Vec3::X) + positionDelta.get(Math::Vec3::X));
+        currentPosition.set(Math::Vec3::Y, currentPosition.get(Math::Vec3::Y) + positionDelta.get(Math::Vec3::Y));
+        this->setPosition(currentPosition);
+    }
+
 private:
     void updateClipDistances() {
         this->projection.set(2, 2, (-this->farPlane - this->nearPlane) /

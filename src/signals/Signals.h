@@ -20,70 +20,63 @@
  * SOFTWARE.
  */
 
-#ifndef POLANDBALL_H
-#define	POLANDBALL_H
+#ifndef SIGNALS_H
+#define	SIGNALS_H
 
-#include "Entity.h"
-#include "Camera.h"
-#include "Player.h"
-#include "INonCopyable.h"
-
-#include <SDL2/SDL_video.h>
-#include <memory>
-#include <chrono>
+#include <functional>
 #include <vector>
 
 namespace PolandBall {
 
-class Game: public INonCopyable {
+namespace Signals {
+
+template<typename... Types>
+class Slot {
 public:
-    enum {
-        ERROR_OK = 0,
-        ERROR_SETUP = 1,
-        // Well this should go outside
-        CAMERA_OFFSET = 3
-    };
-
-    Game() {
-        this->width = 800;
-        this->height = 600;
-        this->initialize();
+    Slot(const std::function<void(Types...)>& callable):
+            callable(callable) {
     }
 
-    Game(int width, int height) {
-        this->width = width;
-        this->height = height;
-        this->initialize();
+    Slot& operator =(const std::function<void(Types...)>& callable) {
+        this->callable = callable;
     }
 
-    int exec();
+    void operator() (Types... args) {
+        this->callable(args...);
+    }
 
 private:
-    bool setUp();
-    void tearDown();
-
-    void updateWorld();
-    void renderWorld();
-
-    void initialize() {
-        this->running = true;
-        this->window = nullptr;
-        this->context = nullptr;
-        this->frameTime = 0.0f;
-    }
-
-    SDL_Window *window;
-    SDL_GLContext context;
-
-    std::vector<std::shared_ptr<Entity>> entites;
-    Camera camera;
-    Player player;
-
-    bool running;
-    int width, height;
-    float frameTime;
+    std::function<void(Types...)> callable;
 };
 
-}  // namespace PolandBall
+template<typename... types>
+class Signal {
+public:
+    void operator() (types... args) {
+        for (auto& callable: this->callables) {
+            callable(args...);
+        }
+    }
 
-#endif  // POLANDBALL_H
+    int connect(const std::function<void(types...)>& callable) {
+        this->callables.push_back(Slot<types...>(callable));
+        return this->callables.size() - 1;
+    }
+
+    void disconnect(int callableHandle) {
+        this->callables.erase(this->callables.begin() + callableHandle);
+    }
+
+    void disconnectAll() {
+        this->callables.clear();
+    }
+
+private:
+    std::vector<Slot<types...>> callables;
+};
+
+}  // namespace Signals
+
+} // namespace PolandBall
+
+#endif  // SIGNALS_H

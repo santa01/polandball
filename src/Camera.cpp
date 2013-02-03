@@ -101,7 +101,7 @@ void Camera::updateRotationMatrix(const Math::Vec3& right, const Math::Vec3& up,
 void Camera::initialize() {
     this->aspectRatio = 1.3333f;
     this->nearPlane = 0.1f;
-    this->farPlane = 1000.0f;
+    this->farPlane = 10.0f;
     this->fov = 90.0f;
 
     this->projection.set(3, 2, -1.0f);

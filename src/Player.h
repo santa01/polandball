@@ -26,6 +26,7 @@
 #include "Entity.h"
 #include "IMovable.h"
 #include "INonCopyable.h"
+#include "Signals.h"
 
 #include <memory>
 
@@ -33,9 +34,14 @@ namespace PolandBall {
 
 class Player: public IMovable, public INonCopyable {
 public:
+    enum {
+        DEFAULT_SPEED = 2
+    };
+
     using IMovable::setPosition;
 
     void setPosition(const Math::Vec3& position) {
+        this->updatePosition(position - this->getPosition());  // Emit signal
         this->entity->setPosition(position);
     }
     
@@ -50,6 +56,8 @@ public:
     std::shared_ptr<Entity>& getEntity() {
         return this->entity;
     }
+
+    Signals::Signal<Math::Vec3> updatePosition;
 
 private:
     std::shared_ptr<Entity> entity;
