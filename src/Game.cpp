@@ -116,38 +116,39 @@ bool Game::setUp() {
     // GL_DEPTH_TEST is OFF! Manually arrange sprites, farthest renders first!
     auto backgroundSprite = std::shared_ptr<Sprite>(new Sprite());
     backgroundSprite->setTexture(ResourceManager::getInstance().makeTexture("textures/day_sky_3x4.png"));
-    backgroundSprite->scaleX(this->width / (this->height / 1.0f));  // Scale for aspect ratio
-    backgroundSprite->scale(1.5f);  // Fit the screen
 
     auto backgroundEntity = std::shared_ptr<Entity>(new Entity());
     backgroundEntity->setSprite(backgroundSprite);
+    backgroundEntity->setCollidable(false);
+    backgroundEntity->scaleX(this->width / (this->height / 1.0f));  // Scale for aspect ratio
+    backgroundEntity->scale(1.5f);  // Fit the screen
     this->entites.push_back(backgroundEntity);
 
     for (int i = 0; i < 18; i++) {
         auto bricksSprite = std::shared_ptr<Sprite>(new Sprite());
         bricksSprite->setTexture(ResourceManager::getInstance().makeTexture("textures/bricks.png"));
-        bricksSprite->scale(0.15f);
 
         auto bricksEntity = std::shared_ptr<Entity>(new Entity());
         bricksEntity->setSprite(bricksSprite);
         bricksEntity->setPosition(-3.7f + i * 0.6f, -2.7f, 0.0f);
+        bricksEntity->scale(0.15f);
         this->entites.push_back(bricksEntity);
     }
 
     auto playerSprite = std::shared_ptr<Sprite>(new Sprite());
     playerSprite->setTexture(ResourceManager::getInstance().makeTexture("textures/turkey_ball.png"));
-    playerSprite->scale(0.25f);
 
     auto playerEntity = std::shared_ptr<Entity>(new Entity());
     playerEntity->setSprite(playerSprite);
+    playerEntity->scale(0.25f);
     playerEntity->setPosition(0.0f, -1.5f, 0.0f);
     this->entites.push_back(playerEntity);
 
-    this->player.setEntity(playerEntity);
-    this->player.updatePosition.connect(std::bind(&Entity::onPositionUpdate, backgroundEntity, std::placeholders::_1));
-    this->player.updatePosition.connect(std::bind(&Camera::onPositionUpdate, &this->camera, std::placeholders::_1));
+    this->player = std::unique_ptr<Player>(new Player());
+    this->player->setEntity(playerEntity);
+    this->player->updatePosition.connect(std::bind(&Entity::onPositionUpdate, backgroundEntity, std::placeholders::_1));
+    this->player->updatePosition.connect(std::bind(&Camera::onPositionUpdate, &this->camera, std::placeholders::_1));
 
-    this->camera.setPosition(0.0f, 0.0f, -CAMERA_OFFSET);
     return true;
 }
 
@@ -167,13 +168,25 @@ void Game::tearDown() {
 }
 
 void Game::updateWorld() {
+    if (this->entites.empty()) {
+        return;
+    }
+
     for (unsigned int i = 0; i < this->entites.size() - 1; i++) {
         auto entity = this->entites[i];
+        if (!entity->isCollidable()) {
+            continue;
+        }
 
         for (unsigned int j = i + 1; j < this->entites.size(); j++) {
-            if (entity->isCollidable()) {
-                bool collide = entity->getCollider()->collides(this->entites[j]->getCollider());
-                if (collide);
+            if (!this->entites[j]->isCollidable()) {
+                continue;
+            }
+
+            int collide = entity->getCollider()->collides(this->entites[j]->getCollider());
+            if (collide > 0) {
+                static int index = 0;
+                Logger::getInstance().log(Logger::LOG_INFO, "Collision %d", index++);
             }
         }
     }
@@ -185,15 +198,25 @@ void Game::updatePlayer() {
         this->running = false;
     }
 
-    Math::Vec3 playerPosition = this->player.getPosition();
+    Math::Vec3 playerPosition = this->player->getPosition();
     if (keyStates[SDL_SCANCODE_RIGHT]) {
         playerPosition += Math::Vec3::UNIT_X * this->frameTime * Player::DEFAULT_SPEED;
-        this->player.setPosition(playerPosition);
+        this->player->setPosition(playerPosition);
     }
 
     if (keyStates[SDL_SCANCODE_LEFT]) {
         playerPosition -= Math::Vec3::UNIT_X * this->frameTime * Player::DEFAULT_SPEED;
-        this->player.setPosition(playerPosition);
+        this->player->setPosition(playerPosition);
+    }
+
+    if (keyStates[SDL_SCANCODE_UP]) {
+        playerPosition += Math::Vec3::UNIT_Y * this->frameTime * Player::DEFAULT_SPEED;
+        this->player->setPosition(playerPosition);
+    }
+
+    if (keyStates[SDL_SCANCODE_DOWN]) {
+        playerPosition -= Math::Vec3::UNIT_Y * this->frameTime * Player::DEFAULT_SPEED;
+        this->player->setPosition(playerPosition);
     }
 }
 

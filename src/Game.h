@@ -71,14 +71,17 @@ private:
         this->window = nullptr;
         this->context = nullptr;
         this->frameTime = 0.0f;
+
+        this->camera.setPosition(0.0f, 0.0f, -CAMERA_OFFSET);
     }
 
     SDL_Window *window;
     SDL_GLContext context;
 
     std::vector<std::shared_ptr<Entity>> entites;
+    std::unique_ptr<Player> player;
+
     Camera camera;
-    Player player;
 
     bool running;
     int width, height;

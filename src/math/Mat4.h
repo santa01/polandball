@@ -24,6 +24,7 @@
 #define	MAT4_H
 
 #include "Mat3.h"
+#include "Vec4.h"
 
 #include <cmath>
 #include <algorithm>
@@ -57,6 +58,19 @@ public:
                                  this->matrix[i][2] * matrix.get(2, j) +
                                  this->matrix[i][3] * matrix.get(3, j));
             }
+        }
+
+        return result;
+    }
+
+    Vec4 operator *(const Vec4& vector) const {
+        Vec4 result;
+
+        for (int i = 0; i < 4; i++) {
+            result.set(i, this->matrix[i][0] * vector.get(Vec4::X) +
+                          this->matrix[i][1] * vector.get(Vec4::Y) +
+                          this->matrix[i][2] * vector.get(Vec4::Z) +
+                          this->matrix[i][3] * vector.get(Vec4::W));
         }
 
         return result;

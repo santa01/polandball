@@ -20,53 +20,14 @@
  * SOFTWARE.
  */
 
-#ifndef PLAYER_H
-#define	PLAYER_H
-
-#include "Entity.h"
-#include "IMovable.h"
-#include "INonCopyable.h"
-#include "Signals.h"
-
-#include <memory>
+#include "Vec4.h"
 
 namespace PolandBall {
 
-class Player: public IMovable, public INonCopyable {
-public:
-    enum {
-        DEFAULT_SPEED = 2
-    };
+namespace Math {
 
-    Player():
-        entity(new Entity())  {
-    }
+const Vec4 Vec4::ZERO(0.0f, 0.0f, 0.0f, 0.0f);
 
-    using IMovable::setPosition;
-
-    void setPosition(const Math::Vec3& position) {
-        this->updatePosition(position - this->getPosition());  // Emit signal
-        this->entity->setPosition(position);
-    }
-    
-    Math::Vec3 getPosition() const {
-        return this->entity->getPosition();
-    }
-
-    void setEntity(const std::shared_ptr<Entity>& entity) {
-        this->entity = entity;
-    }
-
-    std::shared_ptr<Entity>& getEntity() {
-        return this->entity;
-    }
-
-    Signals::Signal<Math::Vec3> updatePosition;
-
-private:
-    std::shared_ptr<Entity> entity;
-};
+}  // namespace Math
 
 }  // namespace PolandBall
-
-#endif  // PLAYER_H

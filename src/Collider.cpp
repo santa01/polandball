@@ -24,8 +24,32 @@
 
 namespace PolandBall {
 
-bool Collider::collides(const std::unique_ptr<Collider>& another) const {
-    return false;
+int Collider::collides(const std::unique_ptr<Collider>& another) const {
+    // Broad phase
+    auto ourBox = this->getCollideBox();
+    auto anotherBox = another->getCollideBox();
+
+    bool intersect = false;
+    for (int i = 0; i < 4; i++) {
+        if (anotherBox[i].get(Math::Vec3::X) > ourBox[1].get(Math::Vec3::X) &&
+                anotherBox[i].get(Math::Vec3::X) < ourBox[0].get(Math::Vec3::X) &&
+                anotherBox[i].get(Math::Vec3::Y) < ourBox[0].get(Math::Vec3::Y) &&
+                anotherBox[i].get(Math::Vec3::Y) > ourBox[3].get(Math::Vec3::Y)) {
+            intersect = true;
+            break;
+        }
+    }
+
+    if (!intersect) {
+        return 0;
+    }
+
+    // Narrow phase
+    Math::Vec3 up = Math::Vec3::UNIT_Y;
+    
+    
+    
+    return COLLIDE_TOP;
 }
 
 }  // namespace PolandBall
