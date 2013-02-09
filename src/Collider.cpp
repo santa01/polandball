@@ -27,15 +27,10 @@
 namespace PolandBall {
 
 int Collider::collides(const std::unique_ptr<Collider>& another) const {
-    int result = 0;
-
     // Broad phase
-    if (this == another.get()) {
-        return result;
-    }
-
     auto ourBox = this->getCollideBox();
     auto anotherBox = another->getCollideBox();
+    int result = 0;
 
     bool intersect = false;
     for (int i = 0; i < 4; i++) {
