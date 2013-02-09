@@ -25,7 +25,7 @@
 
 #include "Entity.h"
 #include "Camera.h"
-#include "Player.h"
+#include "Vec3.h"
 #include "INonCopyable.h"
 
 #include <SDL2/SDL_video.h>
@@ -39,18 +39,20 @@ class Game: public INonCopyable {
 public:
     enum {
         ERROR_OK = 0,
-        ERROR_SETUP = 1,
-        // Well this should go outside
-        CAMERA_OFFSET = 3
+        ERROR_SETUP = 1
     };
 
-    Game() {
+    Game():
+            defaultAcceleration(0.01f, 0.0f, 0.0f),
+            gravityAcceleration(0.01f, 0.0f, 0.0f) {
         this->width = 800;
         this->height = 600;
         this->initialize();
     }
 
-    Game(int width, int height) {
+    Game(int width, int height):
+            defaultAcceleration(0.01f, 0.0f, 0.0f),
+            gravityAcceleration(0.01f, 0.0f, 0.0f) {
         this->width = width;
         this->height = height;
         this->initialize();
@@ -72,20 +74,28 @@ private:
         this->context = nullptr;
         this->frameTime = 0.0f;
 
-        this->camera.setPosition(0.0f, 0.0f, -CAMERA_OFFSET);
+        this->cameraOffset = 3.0f;
+        this->maxSpeed = 2.5f;
+
+        this->camera.setPosition(0.0f, 0.0f, -this->cameraOffset);
     }
 
     SDL_Window *window;
     SDL_GLContext context;
 
     std::vector<std::shared_ptr<Entity>> entites;
-    std::unique_ptr<Player> player;
+    std::shared_ptr<Entity> player;
 
+    Math::Vec3 defaultAcceleration;
+    Math::Vec3 gravityAcceleration;
     Camera camera;
 
     bool running;
     int width, height;
     float frameTime;
+
+    float cameraOffset;
+    float maxSpeed;
 };
 
 }  // namespace PolandBall

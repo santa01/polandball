@@ -138,14 +138,12 @@ bool Game::setUp() {
     auto playerSprite = std::shared_ptr<Sprite>(new Sprite());
     playerSprite->setTexture(ResourceManager::getInstance().makeTexture("textures/turkey_ball.png"));
 
-    auto playerEntity = std::shared_ptr<Entity>(new Entity());
-    playerEntity->setSprite(playerSprite);
-    playerEntity->scale(0.25f);
-    playerEntity->setPosition(0.0f, -1.5f, 0.0f);
-    this->entites.push_back(playerEntity);
+    this->player = std::shared_ptr<Entity>(new Entity());
+    this->player->setSprite(playerSprite);
+    this->player->scale(0.15f);
+    this->player->setPosition(0.0f, -1.5f, 0.0f);
+    this->entites.push_back(this->player);
 
-    this->player = std::unique_ptr<Player>(new Player());
-    this->player->setEntity(playerEntity);
     this->player->updatePosition.connect(std::bind(&Entity::onPositionUpdate, backgroundEntity, std::placeholders::_1));
     this->player->updatePosition.connect(std::bind(&Camera::onPositionUpdate, &this->camera, std::placeholders::_1));
 
@@ -172,8 +170,13 @@ void Game::updateWorld() {
         return;
     }
 
-    for (unsigned int i = 0; i < this->entites.size() - 1; i++) {
+    for (unsigned int i = 0; i < this->entites.size(); i++) {
         auto entity = this->entites[i];
+
+        if (entity->getSpeed().length() != 0) {
+            entity->setPosition(entity->getPosition() + entity->getSpeed() * this->frameTime);
+        }
+
         if (!entity->isCollidable()) {
             continue;
         }
@@ -198,25 +201,26 @@ void Game::updatePlayer() {
         this->running = false;
     }
 
-    Math::Vec3 playerPosition = this->player->getPosition();
-    if (keyStates[SDL_SCANCODE_RIGHT]) {
-        playerPosition += Math::Vec3::UNIT_X * this->frameTime * Player::DEFAULT_SPEED;
-        this->player->setPosition(playerPosition);
-    }
-
-    if (keyStates[SDL_SCANCODE_LEFT]) {
-        playerPosition -= Math::Vec3::UNIT_X * this->frameTime * Player::DEFAULT_SPEED;
-        this->player->setPosition(playerPosition);
+    Math::Vec3 playerSpeed = this->player->getSpeed();
+    if (keyStates[SDL_SCANCODE_RIGHT] && !keyStates[SDL_SCANCODE_LEFT]) {
+        if (playerSpeed.get(Math::Vec3::X) < this->maxSpeed) {
+            this->player->accelerateBy(this->defaultAcceleration);
+        }
+    } else if (keyStates[SDL_SCANCODE_LEFT] && !keyStates[SDL_SCANCODE_RIGHT]) {
+        if (playerSpeed.get(Math::Vec3::X) > -this->maxSpeed) {
+            this->player->accelerateBy(-this->defaultAcceleration);
+        }
+    } else if (!keyStates[SDL_SCANCODE_LEFT] && !keyStates[SDL_SCANCODE_RIGHT]) {
+        if (playerSpeed.get(Math::Vec3::X) < 0) {
+            this->player->accelerateBy(this->defaultAcceleration);
+        } else if (playerSpeed.get(Math::Vec3::X) > 0) {
+            this->player->accelerateBy(-this->defaultAcceleration);
+        }
     }
 
     if (keyStates[SDL_SCANCODE_UP]) {
-        playerPosition += Math::Vec3::UNIT_Y * this->frameTime * Player::DEFAULT_SPEED;
-        this->player->setPosition(playerPosition);
-    }
-
-    if (keyStates[SDL_SCANCODE_DOWN]) {
-        playerPosition -= Math::Vec3::UNIT_Y * this->frameTime * Player::DEFAULT_SPEED;
-        this->player->setPosition(playerPosition);
+        //playerPosition += Math::Vec3::UNIT_Y * this->frameTime * Player::DEFAULT_SPEED;
+        //this->player->setPosition(playerPosition);
     }
 }
 

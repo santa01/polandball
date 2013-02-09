@@ -25,9 +25,11 @@
 
 #include "Collider.h"
 #include "Sprite.h"
+#include "Vec3.h"
 #include "IMovable.h"
 #include "IScalable.h"
 #include "ResourceManager.h"
+#include "Signals.h"
 
 #include <memory>
 #include <utility>
@@ -58,6 +60,7 @@ public:
     using IMovable::setPosition;
 
     void setPosition(const Math::Vec3& position) {
+        this->updatePosition(position - this->getPosition());  // Emit signal
         this->sprite->setPosition(position);
         this->collider->setPosition(position);
     }
@@ -136,6 +139,21 @@ public:
         return this->type;
     }
 
+    const Math::Vec3& getSpeed() const {
+        return this->currentSpeed;
+    }
+
+    void setSpeed(const Math::Vec3& speed) {
+        this->currentSpeed = speed;
+    }
+
+    void accelerateBy(const Math::Vec3& acceleration) {
+        this->currentSpeed += acceleration;
+    }
+
+    // Signal
+    Signals::Signal<Math::Vec3> updatePosition;
+
     // Slot
     void onPositionUpdate(const Math::Vec3& positionDelta) {
         Math::Vec3 currentPosition = this->getPosition();
@@ -156,6 +174,8 @@ private:
     bool renderable;
     bool collidable;
     EntityType type;
+
+    Math::Vec3 currentSpeed;
 };
 
 } // namespace PolandBall

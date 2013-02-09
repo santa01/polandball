@@ -22,10 +22,18 @@
 
 #include "Collider.h"
 
+#include <cmath>
+
 namespace PolandBall {
 
 int Collider::collides(const std::unique_ptr<Collider>& another) const {
+    int result = 0;
+
     // Broad phase
+    if (this == another.get()) {
+        return result;
+    }
+
     auto ourBox = this->getCollideBox();
     auto anotherBox = another->getCollideBox();
 
@@ -41,15 +49,16 @@ int Collider::collides(const std::unique_ptr<Collider>& another) const {
     }
 
     if (!intersect) {
-        return 0;
+        return result;
     }
 
     // Narrow phase
-    Math::Vec3 up = Math::Vec3::UNIT_Y;
+    Math::Vec3 toZeroBottomFirst = anotherBox[0] - ourBox[3];
+    Math::Vec3 toZeroBottomSecond = anotherBox[0] - ourBox[2];
     
     
     
-    return COLLIDE_TOP;
+    return result | COLLIDE_TOP;
 }
 
 }  // namespace PolandBall
