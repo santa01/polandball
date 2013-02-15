@@ -20,9 +20,53 @@
  * SOFTWARE.
  */
 
-#include "Game.h"
+#ifndef PLAYER_H
+#define	PLAYER_H
 
-int main(int argc, char** argv) {
-    PolandBall::Game game;
-    return game.exec();
-}
+#include "Entity.h"
+#include "Collider.h"
+
+namespace PolandBall {
+
+class Player: public Entity {
+public:
+    Player():
+            Entity(Entity::TYPE_DYNAMIC) {
+        this->jumpTime = 0.0f;
+    }
+
+    Player(EntityType type):
+            Entity(type) {
+        this->jumpTime = 0.0f;
+    }
+
+    void collideSide(Collider::CollideSide side) {
+        switch (side) {
+            case Collider::CollideSide::SIDE_TOP:
+                this->jumpTime = 100.0f;  // Just god damn big value, bigger than the maximum jump time
+                break;
+
+            case Collider::CollideSide::SIDE_BOTTOM:
+                this->jumpTime = 0.0f;
+                break;
+
+            default:
+                break;
+        }
+    }
+    
+    float getJumpTime() const {
+        return this->jumpTime;
+    }
+
+    void updateJumpTime(float delta) {
+        this->jumpTime += delta;
+    }
+
+private:
+    float jumpTime;
+};
+
+}  // namespace PolandBall
+
+#endif  // PLAYER_H

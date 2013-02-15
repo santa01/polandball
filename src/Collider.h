@@ -37,11 +37,12 @@ namespace PolandBall {
 // NOTE: Not IRotateble!
 class Collider: public IMovable, public IScalable {
 public:
-    enum {
-        COLLIDE_TOP = 1 << 1,
-        COLLIDE_LEFT = 1 << 2,
-        COLLIDE_BOTTOM = 1 << 3,
-        COLLIDE_RIGHT = 1 << 4
+    enum CollideSide {
+        SIDE_NONE = 0,
+        SIDE_TOP = 1,
+        SIDE_LEFT = 2,
+        SIDE_BOTTOM = 3,
+        SIDE_RIGHT = 4
     };
 
     Collider() {
@@ -101,7 +102,8 @@ public:
         return realBox;
     }
 
-    int collides(const std::unique_ptr<Collider>& another) const;
+    CollideSide collides(const std::unique_ptr<Collider>& another) const;
+    bool vertexInsideBox(const Math::Vec3& vertex, const std::array<Math::Vec3, 4>& box) const;
 
 private:
     std::array<Math::Vec3, 4> collideBox;

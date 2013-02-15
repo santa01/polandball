@@ -20,9 +20,8 @@
  * SOFTWARE.
  */
 
-#include "Game.h"
+#include "Player.h"
 
-int main(int argc, char** argv) {
-    PolandBall::Game game;
-    return game.exec();
-}
+namespace PolandBall {
+
+}  // namespace PolandBall

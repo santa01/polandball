@@ -57,6 +57,8 @@ public:
         this->initialize();
     }
 
+    virtual ~Entity() {}
+
     using IMovable::setPosition;
 
     void setPosition(const Math::Vec3& position) {
@@ -135,7 +137,7 @@ public:
     }
 
     // I have no idea why static entity could became dynamic, hence no setter
-    EntityType getEntityType() const {
+    EntityType getType() const {
         return this->type;
     }
 
@@ -150,6 +152,8 @@ public:
     void accelerateBy(const Math::Vec3& acceleration) {
         this->currentSpeed += acceleration;
     }
+
+    virtual void collideSide(Collider::CollideSide side) {}
 
     // Signal
     Signals::Signal<Math::Vec3> updatePosition;

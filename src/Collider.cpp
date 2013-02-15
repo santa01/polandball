@@ -26,34 +26,127 @@
 
 namespace PolandBall {
 
-int Collider::collides(const std::unique_ptr<Collider>& another) const {
-    // Broad phase
+Collider::CollideSide Collider::collides(const std::unique_ptr<Collider>& another) const {
+    if (this == another.get()) {
+        return SIDE_NONE;
+    }
+
     auto ourBox = this->getCollideBox();
     auto anotherBox = another->getCollideBox();
-    int result = 0;
+    float width = 0, height = 0;
 
-    bool intersect = false;
-    for (int i = 0; i < 4; i++) {
-        if (anotherBox[i].get(Math::Vec3::X) > ourBox[1].get(Math::Vec3::X) &&
-                anotherBox[i].get(Math::Vec3::X) < ourBox[0].get(Math::Vec3::X) &&
-                anotherBox[i].get(Math::Vec3::Y) < ourBox[0].get(Math::Vec3::Y) &&
-                anotherBox[i].get(Math::Vec3::Y) > ourBox[3].get(Math::Vec3::Y)) {
-            intersect = true;
-            break;
+    // Their top is inside us
+    if ((anotherBox[0].get(Math::Vec3::Y) < ourBox[0].get(Math::Vec3::Y)) &&
+            (anotherBox[0].get(Math::Vec3::Y) > ourBox[3].get(Math::Vec3::Y)) &&
+            !((anotherBox[3].get(Math::Vec3::Y) < ourBox[0].get(Math::Vec3::Y)) &&
+            (anotherBox[3].get(Math::Vec3::Y) > ourBox[3].get(Math::Vec3::Y)))) {
+
+        bool topRightInside = this->vertexInsideBox(anotherBox[0], ourBox);
+        bool topLeftInside = this->vertexInsideBox(anotherBox[1], ourBox);
+
+        if (topLeftInside && topRightInside) {
+            return SIDE_BOTTOM;
+        }
+
+        if (topLeftInside) {
+            width = ourBox[3].get(Math::Vec3::X) - anotherBox[1].get(Math::Vec3::X);
+            height = anotherBox[1].get(Math::Vec3::Y) - ourBox[3].get(Math::Vec3::Y);
+            return (width > height) ? SIDE_BOTTOM : SIDE_RIGHT;
+        }
+
+        if (topRightInside) {
+            width = anotherBox[0].get(Math::Vec3::X) - ourBox[2].get(Math::Vec3::X);
+            height = anotherBox[0].get(Math::Vec3::Y) - ourBox[2].get(Math::Vec3::Y);
+            return (width > height) ? SIDE_BOTTOM : SIDE_LEFT;
+        }
+
+        if (!topLeftInside && !topRightInside &&
+                anotherBox[1].get(Math::Vec3::X) < ourBox[1].get(Math::Vec3::X) &&
+                anotherBox[0].get(Math::Vec3::X) > ourBox[0].get(Math::Vec3::X)) {
+            return SIDE_BOTTOM;
+        }
+    // Their bottom is inside us
+    } else if ((anotherBox[3].get(Math::Vec3::Y) < ourBox[0].get(Math::Vec3::Y)) &&
+            (anotherBox[3].get(Math::Vec3::Y) > ourBox[3].get(Math::Vec3::Y)) &&
+            !((anotherBox[0].get(Math::Vec3::Y) < ourBox[0].get(Math::Vec3::Y)) &&
+            (anotherBox[0].get(Math::Vec3::Y) > ourBox[3].get(Math::Vec3::Y)))) {
+
+        bool bottomRightInside = this->vertexInsideBox(anotherBox[3], ourBox);
+        bool bottomLeftInside = this->vertexInsideBox(anotherBox[2], ourBox);
+
+        // Both inside (narrorer) or both outside (wider)
+        if (bottomLeftInside && bottomRightInside) {
+            return SIDE_TOP;
+        }
+
+        if (bottomLeftInside) {
+            width = ourBox[0].get(Math::Vec3::X) - anotherBox[2].get(Math::Vec3::X);
+            height = ourBox[0].get(Math::Vec3::Y) - anotherBox[2].get(Math::Vec3::Y);
+            return (width > height) ? SIDE_TOP : SIDE_RIGHT;
+        }
+
+        if (bottomRightInside) {
+            width = anotherBox[3].get(Math::Vec3::X) - ourBox[1].get(Math::Vec3::X);
+            height = ourBox[1].get(Math::Vec3::Y) - anotherBox[3].get(Math::Vec3::Y);
+            return (width > height) ? SIDE_TOP : SIDE_LEFT;
+        }
+
+        if (!bottomLeftInside && !bottomRightInside &&
+                anotherBox[2].get(Math::Vec3::X) < ourBox[2].get(Math::Vec3::X) &&
+                anotherBox[3].get(Math::Vec3::X) > ourBox[3].get(Math::Vec3::X)) {
+            return SIDE_TOP;
+        }
+    // Their right is inside us
+    } else if ((anotherBox[0].get(Math::Vec3::X) < ourBox[0].get(Math::Vec3::X)) &&
+            (anotherBox[0].get(Math::Vec3::X) > ourBox[1].get(Math::Vec3::X)) &&
+            !((anotherBox[1].get(Math::Vec3::X) < ourBox[0].get(Math::Vec3::X)) &&
+            (anotherBox[1].get(Math::Vec3::X) > ourBox[1].get(Math::Vec3::X)))) {
+        // Partial intersection is already covered in previous clauses
+        bool rightTopInside = this->vertexInsideBox(anotherBox[0], ourBox);
+        bool rightBottomInside = this->vertexInsideBox(anotherBox[3], ourBox);
+
+        if (rightBottomInside && rightTopInside) {
+            return SIDE_LEFT;
+        }
+
+        if (!rightBottomInside && !rightTopInside &&
+                anotherBox[0].get(Math::Vec3::Y) > ourBox[1].get(Math::Vec3::Y) &&
+                anotherBox[3].get(Math::Vec3::Y) < ourBox[2].get(Math::Vec3::Y)) {
+            return SIDE_LEFT;
+        }
+    // Their left is inside us
+    } else if ((anotherBox[1].get(Math::Vec3::X) < ourBox[0].get(Math::Vec3::X)) &&
+            (anotherBox[1].get(Math::Vec3::X) > ourBox[1].get(Math::Vec3::X)) &&
+            !((anotherBox[0].get(Math::Vec3::X) < ourBox[0].get(Math::Vec3::X)) &&
+            (anotherBox[0].get(Math::Vec3::X) > ourBox[1].get(Math::Vec3::X)))) {
+        // Partial intersection is already covered in previous clauses
+        bool leftTopInside = this->vertexInsideBox(anotherBox[1], ourBox);
+        bool leftBottomInside = this->vertexInsideBox(anotherBox[2], ourBox);
+
+        // Both inside (narrorer) or both outside (wider)
+        if (leftBottomInside && leftTopInside) {
+            return SIDE_RIGHT;
+        }
+
+        if (!leftBottomInside && !leftTopInside &&
+                anotherBox[1].get(Math::Vec3::Y) > ourBox[0].get(Math::Vec3::Y) &&
+                anotherBox[2].get(Math::Vec3::Y) < ourBox[0].get(Math::Vec3::Y)) {
+            return SIDE_RIGHT;
         }
     }
 
-    if (!intersect) {
-        return result;
+    return SIDE_NONE;
+}
+
+bool Collider::vertexInsideBox(const Math::Vec3& vertex, const std::array<Math::Vec3, 4>& box) const {
+    if (vertex.get(Math::Vec3::X) < box[0].get(Math::Vec3::X) &&
+            vertex.get(Math::Vec3::X) > box[1].get(Math::Vec3::X) &&
+            vertex.get(Math::Vec3::Y) < box[0].get(Math::Vec3::Y) &&
+            vertex.get(Math::Vec3::Y) > box[3].get(Math::Vec3::Y)) {
+        return true;
     }
 
-    // Narrow phase
-    Math::Vec3 toZeroBottomFirst = anotherBox[0] - ourBox[3];
-    Math::Vec3 toZeroBottomSecond = anotherBox[0] - ourBox[2];
-    
-    
-    
-    return result | COLLIDE_TOP;
+    return false;
 }
 
 }  // namespace PolandBall

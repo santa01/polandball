@@ -24,6 +24,7 @@
 #define	POLANDBALL_H
 
 #include "Entity.h"
+#include "Player.h"
 #include "Camera.h"
 #include "Vec3.h"
 #include "INonCopyable.h"
@@ -43,16 +44,16 @@ public:
     };
 
     Game():
-            defaultAcceleration(0.01f, 0.0f, 0.0f),
-            gravityAcceleration(0.01f, 0.0f, 0.0f) {
+            defaultAcceleration(20.0f, 0.0f, 0.0f),
+            gravityAcceleration(0.0f, -10.0f, 0.0f) {
         this->width = 800;
         this->height = 600;
         this->initialize();
     }
 
     Game(int width, int height):
-            defaultAcceleration(0.01f, 0.0f, 0.0f),
-            gravityAcceleration(0.01f, 0.0f, 0.0f) {
+            defaultAcceleration(20.0f, 0.0f, 0.0f),
+            gravityAcceleration(0.0f, -10.0f, 0.0f) {
         this->width = width;
         this->height = height;
         this->initialize();
@@ -76,6 +77,7 @@ private:
 
         this->cameraOffset = 3.0f;
         this->maxSpeed = 2.5f;
+        this->maxJumpTime = 0.25f;
 
         this->camera.setPosition(0.0f, 0.0f, -this->cameraOffset);
     }
@@ -84,7 +86,7 @@ private:
     SDL_GLContext context;
 
     std::vector<std::shared_ptr<Entity>> entites;
-    std::shared_ptr<Entity> player;
+    std::shared_ptr<Player> player;
 
     Math::Vec3 defaultAcceleration;
     Math::Vec3 gravityAcceleration;
@@ -96,6 +98,7 @@ private:
 
     float cameraOffset;
     float maxSpeed;
+    float maxJumpTime;
 };
 
 }  // namespace PolandBall

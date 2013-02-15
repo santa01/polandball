@@ -51,8 +51,8 @@ int Game::exec() {
             }
         }
 
-        this->updateWorld();
         this->updatePlayer();
+        this->updateWorld();
         this->renderWorld();
 
         endTime = std::chrono::system_clock::now();
@@ -120,30 +120,54 @@ bool Game::setUp() {
     auto backgroundEntity = std::shared_ptr<Entity>(new Entity());
     backgroundEntity->setSprite(backgroundSprite);
     backgroundEntity->setCollidable(false);
-    backgroundEntity->scaleX(this->width / (this->height / 1.0f));  // Scale for aspect ratio
     backgroundEntity->scale(1.5f);  // Fit the screen
+    backgroundEntity->scaleX(this->width / (this->height / 1.0f));  // Scale for aspect ratio
     this->entites.push_back(backgroundEntity);
 
-    for (int i = 0; i < 18; i++) {
-        auto bricksSprite = std::shared_ptr<Sprite>(new Sprite());
-        bricksSprite->setTexture(ResourceManager::getInstance().makeTexture("textures/bricks.png"));
+    //-----------------
+    auto bricksSprite = std::shared_ptr<Sprite>(new Sprite());
+    bricksSprite->setTexture(ResourceManager::getInstance().makeTexture("textures/bricks.png"));
 
-        auto bricksEntity = std::shared_ptr<Entity>(new Entity());
-        bricksEntity->setSprite(bricksSprite);
-        bricksEntity->setPosition(-3.7f + i * 0.6f, -2.7f, 0.0f);
-        bricksEntity->scale(0.15f);
-        this->entites.push_back(bricksEntity);
-    }
+    auto bricksEntity = std::shared_ptr<Entity>(new Entity());
+    bricksEntity->setSprite(bricksSprite);
+    bricksEntity->setPosition(0.0f, -2.7f, 0.0f);
+    bricksEntity->scale(0.15f);
+    bricksEntity->scaleX(15.0f);
+    this->entites.push_back(bricksEntity);
 
+    //-----------------
+    bricksSprite = std::shared_ptr<Sprite>(new Sprite());
+    bricksSprite->setTexture(ResourceManager::getInstance().makeTexture("textures/bricks.png"));
+
+    bricksEntity = std::shared_ptr<Entity>(new Entity());
+    bricksEntity->setSprite(bricksSprite);
+    bricksEntity->setPosition(0.0f, -0.7f, 0.0f);
+    bricksEntity->scale(0.15f);
+    bricksEntity->scaleX(15.0f);
+    this->entites.push_back(bricksEntity);
+
+    //-----------------
+    bricksSprite = std::shared_ptr<Sprite>(new Sprite());
+    bricksSprite->setTexture(ResourceManager::getInstance().makeTexture("textures/bricks.png"));
+
+    bricksEntity = std::shared_ptr<Entity>(new Entity());
+    bricksEntity->setSprite(bricksSprite);
+    bricksEntity->setPosition(2.0f, 0.0f, 0.0f);
+    bricksEntity->scale(0.15f);
+    bricksEntity->scaleY(15.0f);
+    this->entites.push_back(bricksEntity);
+
+    //-----------------
     auto playerSprite = std::shared_ptr<Sprite>(new Sprite());
     playerSprite->setTexture(ResourceManager::getInstance().makeTexture("textures/turkey_ball.png"));
 
-    this->player = std::shared_ptr<Entity>(new Entity());
+    this->player = std::shared_ptr<Player>(new Player());
     this->player->setSprite(playerSprite);
     this->player->scale(0.15f);
-    this->player->setPosition(0.0f, -1.5f, 0.0f);
+    this->player->setPosition(0.0f, -1.0f, 0.0f);
     this->entites.push_back(this->player);
 
+    //-----------------
     this->player->updatePosition.connect(std::bind(&Entity::onPositionUpdate, backgroundEntity, std::placeholders::_1));
     this->player->updatePosition.connect(std::bind(&Camera::onPositionUpdate, &this->camera, std::placeholders::_1));
 
@@ -166,32 +190,57 @@ void Game::tearDown() {
 }
 
 void Game::updateWorld() {
-    if (this->entites.empty()) {
-        return;
-    }
-
-    for (unsigned int i = 0; i < this->entites.size(); i++) {
-        auto entity = this->entites[i];
-
-        if (entity->getSpeed().length() != 0) {
-            entity->setPosition(entity->getPosition() + entity->getSpeed() * this->frameTime);
-        }
-
-        if (!entity->isCollidable()) {
-            continue;
-        }
-
-        for (unsigned int j = i + 1; j < this->entites.size(); j++) {
-            if (!this->entites[j]->isCollidable()) {
+    for (auto& entity: this->entites) {
+        if (entity->getType() == Entity::TYPE_DYNAMIC) {
+            if (!entity->isCollidable()) {
                 continue;
             }
 
-            int collide = entity->getCollider()->collides(this->entites[j]->getCollider());
-            if (collide > 0) {
-                static int index = 0;
-                Logger::getInstance().log(Logger::LOG_INFO, "Collision %d", index++);
+            entity->setSpeed(entity->getSpeed() + this->gravityAcceleration * this->frameTime);
+
+            for (auto& another: this->entites) {
+                if (!another->isCollidable()) {
+                    continue;
+                }
+
+                Collider::CollideSide collide = entity->getCollider()->collides(another->getCollider());
+                Math::Vec3 speed = entity->getSpeed();
+
+                switch (collide) {
+                    case Collider::SIDE_BOTTOM:
+                        if (speed.get(Math::Vec3::Y) < 0.0f) {
+                            speed.set(Math::Vec3::Y, 0.0f);
+                        }
+                        break;
+
+                    case Collider::SIDE_TOP:
+                        if (speed.get(Math::Vec3::Y) > 0.0f) {
+                            speed.set(Math::Vec3::Y, 0.0f);
+                        }
+                        break;
+
+                    case Collider::SIDE_LEFT:
+                        if (speed.get(Math::Vec3::X) < 0.0f) {
+                            speed.set(Math::Vec3::X, 0.0f);
+                        }
+                        break;
+
+                    case Collider::SIDE_RIGHT:
+                        if (speed.get(Math::Vec3::X) > 0.0f) {
+                            speed.set(Math::Vec3::X, 0.0f);
+                        }
+                        break;
+
+                    default:
+                        break;
+                }
+
+                entity->setSpeed(speed);
+                entity->collideSide(collide);
             }
         }
+
+        entity->setPosition(entity->getPosition() + entity->getSpeed() * this->frameTime);
     }
 }
 
@@ -204,23 +253,30 @@ void Game::updatePlayer() {
     Math::Vec3 playerSpeed = this->player->getSpeed();
     if (keyStates[SDL_SCANCODE_RIGHT] && !keyStates[SDL_SCANCODE_LEFT]) {
         if (playerSpeed.get(Math::Vec3::X) < this->maxSpeed) {
-            this->player->accelerateBy(this->defaultAcceleration);
+            this->player->accelerateBy(this->defaultAcceleration * this->frameTime);
         }
     } else if (keyStates[SDL_SCANCODE_LEFT] && !keyStates[SDL_SCANCODE_RIGHT]) {
         if (playerSpeed.get(Math::Vec3::X) > -this->maxSpeed) {
-            this->player->accelerateBy(-this->defaultAcceleration);
+            this->player->accelerateBy(-this->defaultAcceleration * this->frameTime);
         }
     } else if (!keyStates[SDL_SCANCODE_LEFT] && !keyStates[SDL_SCANCODE_RIGHT]) {
-        if (playerSpeed.get(Math::Vec3::X) < 0) {
-            this->player->accelerateBy(this->defaultAcceleration);
-        } else if (playerSpeed.get(Math::Vec3::X) > 0) {
-            this->player->accelerateBy(-this->defaultAcceleration);
+        if (playerSpeed.get(Math::Vec3::Y) == 0.0f) {  // Descelerate only on foot
+            if (playerSpeed.get(Math::Vec3::X) < 0.0f) {
+                this->player->accelerateBy(this->defaultAcceleration * this->frameTime);
+            } else if (playerSpeed.get(Math::Vec3::X) > 0.0f) {
+                this->player->accelerateBy(-this->defaultAcceleration * this->frameTime);
+            }
         }
     }
 
     if (keyStates[SDL_SCANCODE_UP]) {
-        //playerPosition += Math::Vec3::UNIT_Y * this->frameTime * Player::DEFAULT_SPEED;
-        //this->player->setPosition(playerPosition);
+        if (this->player->getJumpTime() < this->maxJumpTime) {
+            if (playerSpeed.get(Math::Vec3::Y) < this->maxSpeed) {
+                this->player->accelerateBy(-this->gravityAcceleration * 100 * this->frameTime);
+            }
+
+            this->player->updateJumpTime(this->frameTime);
+        }
     }
 }
 
