@@ -43,17 +43,13 @@ public:
         ERROR_SETUP = 1
     };
 
-    Game():
-            defaultAcceleration(20.0f, 0.0f, 0.0f),
-            gravityAcceleration(0.0f, -10.0f, 0.0f) {
+    Game() {
         this->width = 800;
         this->height = 600;
         this->initialize();
     }
 
-    Game(int width, int height):
-            defaultAcceleration(20.0f, 0.0f, 0.0f),
-            gravityAcceleration(0.0f, -10.0f, 0.0f) {
+    Game(int width, int height) {
         this->width = width;
         this->height = height;
         this->initialize();
@@ -76,8 +72,12 @@ private:
         this->frameTime = 0.0f;
 
         this->cameraOffset = 3.0f;
-        this->maxSpeed = 2.5f;
         this->maxJumpTime = 0.25f;
+        this->maxJumpSpeed = 4.0f;
+        this->maxMoveSpeed = 2.5f;
+
+        this->defaultAcceleration = Math::Vec3(20.0f, 0.0f, 0.0f);
+        this->gravityAcceleration = Math::Vec3(0.0f, -10.0f, 0.0f);
 
         this->camera.setPosition(0.0f, 0.0f, -this->cameraOffset);
     }
@@ -97,8 +97,9 @@ private:
     float frameTime;
 
     float cameraOffset;
-    float maxSpeed;
     float maxJumpTime;
+    float maxJumpSpeed;
+    float maxMoveSpeed;
 };
 
 }  // namespace PolandBall

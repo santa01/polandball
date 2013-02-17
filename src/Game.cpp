@@ -141,17 +141,6 @@ bool Game::setUp() {
 
     bricksEntity = std::shared_ptr<Entity>(new Entity());
     bricksEntity->setSprite(bricksSprite);
-    bricksEntity->setPosition(0.0f, -0.7f, 0.0f);
-    bricksEntity->scale(0.15f);
-    bricksEntity->scaleX(15.0f);
-    this->entites.push_back(bricksEntity);
-
-    //-----------------
-    bricksSprite = std::shared_ptr<Sprite>(new Sprite());
-    bricksSprite->setTexture(ResourceManager::getInstance().makeTexture("textures/bricks.png"));
-
-    bricksEntity = std::shared_ptr<Entity>(new Entity());
-    bricksEntity->setSprite(bricksSprite);
     bricksEntity->setPosition(2.0f, 0.0f, 0.0f);
     bricksEntity->scale(0.15f);
     bricksEntity->scaleY(15.0f);
@@ -250,20 +239,22 @@ void Game::updatePlayer() {
         this->running = false;
     }
 
-    Math::Vec3 playerSpeed = this->player->getSpeed();
+    float playerMoveSpeed = this->player->getSpeed().get(Math::Vec3::X);
+    float playerUpSpeed = this->player->getSpeed().get(Math::Vec3::Y);
+
     if (keyStates[SDL_SCANCODE_RIGHT] && !keyStates[SDL_SCANCODE_LEFT]) {
-        if (playerSpeed.get(Math::Vec3::X) < this->maxSpeed) {
+        if (playerMoveSpeed < this->maxMoveSpeed) {
             this->player->accelerateBy(this->defaultAcceleration * this->frameTime);
         }
     } else if (keyStates[SDL_SCANCODE_LEFT] && !keyStates[SDL_SCANCODE_RIGHT]) {
-        if (playerSpeed.get(Math::Vec3::X) > -this->maxSpeed) {
+        if (playerMoveSpeed > -this->maxMoveSpeed) {
             this->player->accelerateBy(-this->defaultAcceleration * this->frameTime);
         }
     } else if (!keyStates[SDL_SCANCODE_LEFT] && !keyStates[SDL_SCANCODE_RIGHT]) {
-        if (playerSpeed.get(Math::Vec3::Y) == 0.0f) {  // Descelerate only on foot
-            if (playerSpeed.get(Math::Vec3::X) < 0.0f) {
+        if (playerUpSpeed == 0.0f) {  // Descelerate only on foot
+            if (playerMoveSpeed < 0.0f) {
                 this->player->accelerateBy(this->defaultAcceleration * this->frameTime);
-            } else if (playerSpeed.get(Math::Vec3::X) > 0.0f) {
+            } else if (playerMoveSpeed > 0.0f) {
                 this->player->accelerateBy(-this->defaultAcceleration * this->frameTime);
             }
         }
@@ -271,8 +262,9 @@ void Game::updatePlayer() {
 
     if (keyStates[SDL_SCANCODE_UP]) {
         if (this->player->getJumpTime() < this->maxJumpTime) {
-            if (playerSpeed.get(Math::Vec3::Y) < this->maxSpeed) {
-                this->player->accelerateBy(-this->gravityAcceleration * 100 * this->frameTime);
+            if (playerUpSpeed < this->maxJumpSpeed) {
+                Math::Vec3 jumpAcceleration(Math::Vec3::UNIT_Y * (this->maxJumpSpeed - playerUpSpeed));
+                this->player->accelerateBy(jumpAcceleration);
             }
 
             this->player->updateJumpTime(this->frameTime);
@@ -281,7 +273,8 @@ void Game::updatePlayer() {
 }
 
 void Game::renderWorld() {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT);
+
     Math::Mat4 mvp(this->camera.getProjectionMatrix() *
                    this->camera.getRotationMatrix() *
                    this->camera.getTranslationMatrix());
