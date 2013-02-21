@@ -280,15 +280,21 @@ void Game::updatePlayer() {
         this->player->accelerateBy(moveAcceleration);
     }
 
+    static bool jumpWasReleased = true;
     if (keyStates[SDL_SCANCODE_UP]) {
-        if (this->player->getJumpTime() < this->maxJumpTime) {
+        if (jumpWasReleased && this->player->getJumpTime() < this->maxJumpTime) {
             if (playerUpSpeed < this->maxJumpSpeed) {
                 Math::Vec3 jumpAcceleration(Math::Vec3::UNIT_Y * (this->maxJumpSpeed - playerUpSpeed));
                 this->player->accelerateBy(jumpAcceleration);
             }
 
             this->player->updateJumpTime(this->frameTime);
+        } else {
+            jumpWasReleased = false;
         }
+    } else {
+        // Release only on the ground
+        jumpWasReleased = (this->player->getJumpTime() == 0.0f) ? true : false;
     }
 }
 
