@@ -74,7 +74,7 @@ private:
         this->cameraOffset = 3.0f;
         this->maxJumpTime = 0.25f;
         this->maxJumpSpeed = 4.0f;
-        this->maxMoveSpeed = 2.5f;
+        this->maxMoveSpeed = 3.0f;
 
         this->defaultAcceleration = Math::Vec3(20.0f, 0.0f, 0.0f);
         this->gravityAcceleration = Math::Vec3(0.0f, -10.0f, 0.0f);

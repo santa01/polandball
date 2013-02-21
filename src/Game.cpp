@@ -27,7 +27,7 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include <SDL/SDL.h>
+#include <cmath>
 
 namespace PolandBall {
 
@@ -235,6 +235,7 @@ void Game::updateWorld() {
 
 void Game::updatePlayer() {
     Uint8 *keyStates = SDL_GetKeyboardState(nullptr);
+
     if (keyStates[SDL_SCANCODE_ESCAPE]) {
         this->running = false;
     }
@@ -242,22 +243,41 @@ void Game::updatePlayer() {
     float playerMoveSpeed = this->player->getSpeed().get(Math::Vec3::X);
     float playerUpSpeed = this->player->getSpeed().get(Math::Vec3::Y);
 
-    if (keyStates[SDL_SCANCODE_RIGHT] && !keyStates[SDL_SCANCODE_LEFT]) {
-        if (playerMoveSpeed < this->maxMoveSpeed) {
-            this->player->accelerateBy(this->defaultAcceleration * this->frameTime);
+    Math::Vec3 moveAcceleration;
+    float moveSpeedDelta = this->maxMoveSpeed * this->frameTime * 10.0f;
+
+    // Descelerate only on foot
+    if (!keyStates[SDL_SCANCODE_LEFT] && !keyStates[SDL_SCANCODE_RIGHT] && playerUpSpeed == 0.0f) {
+        if ((playerMoveSpeed > 0.0f && playerMoveSpeed - moveSpeedDelta < 0.0f) ||
+                (playerMoveSpeed < 0.0f && playerMoveSpeed + moveSpeedDelta > 0.0f)) {
+            moveAcceleration = Math::Vec3::UNIT_X * fabs(playerMoveSpeed);
+        } else {
+            moveAcceleration = Math::Vec3::UNIT_X * moveSpeedDelta;
         }
-    } else if (keyStates[SDL_SCANCODE_LEFT] && !keyStates[SDL_SCANCODE_RIGHT]) {
-        if (playerMoveSpeed > -this->maxMoveSpeed) {
-            this->player->accelerateBy(-this->defaultAcceleration * this->frameTime);
+
+        if (playerMoveSpeed < 0.0f) {
+            this->player->accelerateBy(moveAcceleration);
+        } else if (playerMoveSpeed > 0.0f) {
+            this->player->accelerateBy(-moveAcceleration);
         }
-    } else if (!keyStates[SDL_SCANCODE_LEFT] && !keyStates[SDL_SCANCODE_RIGHT]) {
-        if (playerUpSpeed == 0.0f) {  // Descelerate only on foot
-            if (playerMoveSpeed < 0.0f) {
-                this->player->accelerateBy(this->defaultAcceleration * this->frameTime);
-            } else if (playerMoveSpeed > 0.0f) {
-                this->player->accelerateBy(-this->defaultAcceleration * this->frameTime);
+    } else {
+        if (keyStates[SDL_SCANCODE_RIGHT] && !keyStates[SDL_SCANCODE_LEFT]) {
+            // We press RIGHT and we already moving RIGHT
+            if (playerMoveSpeed > 0.0f && fabs(playerMoveSpeed) + moveSpeedDelta > this->maxMoveSpeed) {
+                moveAcceleration = Math::Vec3::UNIT_X * (this->maxMoveSpeed - fabs(playerMoveSpeed));
+            } else {
+                moveAcceleration = Math::Vec3::UNIT_X * moveSpeedDelta;
+            }
+        } else if (keyStates[SDL_SCANCODE_LEFT] && !keyStates[SDL_SCANCODE_RIGHT]) {
+            // We press LEFT and we already moving LEFT
+            if (playerMoveSpeed < 0.0f && fabs(playerMoveSpeed) + moveSpeedDelta > this->maxMoveSpeed) {
+                moveAcceleration = -Math::Vec3::UNIT_X * (this->maxMoveSpeed - fabs(playerMoveSpeed));
+            } else {
+                moveAcceleration = -Math::Vec3::UNIT_X * moveSpeedDelta;
             }
         }
+
+        this->player->accelerateBy(moveAcceleration);
     }
 
     if (keyStates[SDL_SCANCODE_UP]) {
