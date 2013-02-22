@@ -20,26 +20,27 @@
  * SOFTWARE.
  */
 
-#include "RenderEffect.h"
+#ifndef REPLICABLE_H
+#define	REPLICABLE_H
 
 namespace PolandBall {
 
-void RenderEffect::enable() {
-    if (this->program == 0) {
-        this->program = ShaderLoader::createProgram(this->shaderList);
-        glUseProgram(this->program);
+class IReplicable {
+public:
+    virtual ~IReplicable() {}
 
-        this->mvp = glGetUniformLocation(this->program, "mvp");
-        this->lw = glGetUniformLocation(this->program, "lw");
-        this->replica = glGetUniformLocation(this->program, "replica");
+    virtual void replicateX(float factor) = 0;
+    virtual void replicateY(float factor) = 0;
 
-        GLint samplerLocation = glGetUniformLocation(this->program, "textureSampler");
-        if (samplerLocation > -1) {
-            glUniform1i(samplerLocation, 0);
-        }
-    } else {
-        glUseProgram(this->program);
+    virtual float getXReplicaFactor() const = 0;
+    virtual float getYReplicaFactor() const = 0;
+
+    void replicate(float factor) {
+        this->replicateX(factor);
+        this->replicateY(factor);
     }
-}
+};
 
 }  // namespace PolandBall
+
+#endif  // REPLICABLE_H

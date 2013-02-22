@@ -69,6 +69,14 @@ public:
         }
     }
 
+    void setReplica(const Math::Mat3& matrix) {
+        this->enable();
+
+        if (this->replica > -1) {
+            glUniformMatrix3fv(this->replica, 1, GL_TRUE, (GLfloat*)matrix.data());
+        }
+    }
+
     void attachShader(const std::string& source, ShaderType type) {
         if (this->program == 0) {
             this->shaderList.push_back(ShaderLoader::createShader(source, type));
@@ -82,8 +90,9 @@ private:
 
     GLuint program;
 
-    GLint mvp;  // vertex shader
-    GLint lw;   // vertex shader
+    GLint mvp;      // vertex shader
+    GLint lw;       // vertex shader
+    GLint replica;  // vertex shader
 };
 
 } // namespace PolandBall

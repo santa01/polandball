@@ -28,6 +28,7 @@
 #include "Vec3.h"
 #include "IMovable.h"
 #include "IScalable.h"
+#include "IReplicable.h"
 #include "ResourceManager.h"
 #include "Signals.h"
 
@@ -36,7 +37,7 @@
 
 namespace PolandBall {
 
-class Entity: public IMovable, public IScalable {
+class Entity: public IMovable, public IScalable, public IReplicable {
 public:
     enum EntityType {
         TYPE_STATIC = 0,
@@ -96,6 +97,24 @@ public:
 
     float getZFactor() const {
         return this->sprite->getZFactor();  // Factors are syncronized
+    }
+
+    void replicateX(float factor) {
+        this->sprite->replicateX(factor);
+        this->collider->scaleX(factor);
+    }
+
+    void replicateY(float factor) {
+        this->sprite->replicateY(factor);
+        this->collider->scaleY(factor);
+    }
+
+    float getXReplicaFactor() const {
+        return this->sprite->getXReplicaFactor();
+    }
+
+    float getYReplicaFactor() const {
+        return this->sprite->getYReplicaFactor();
     }
 
     std::unique_ptr<Collider>& getCollider() {

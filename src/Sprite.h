@@ -24,10 +24,12 @@
 #define	MESH_H
 
 #include "Vec3.h"
+#include "Mat3.h"
 #include "Mat4.h"
 #include "Quaternion.h"
 #include "IMovable.h"
 #include "IScalable.h"
+#include "IReplicable.h"
 #include "IRotatable.h"
 #include "INonCopyable.h"
 #include "Texture.h"
@@ -41,7 +43,7 @@
 namespace PolandBall {
 
 // NOTE: IRotateble only for animation purposes
-class Sprite: public IMovable, public IRotatable, public IScalable, public INonCopyable {
+class Sprite: public IMovable, public IRotatable, public IScalable, public IReplicable, public INonCopyable {
 public:
     Sprite() {
         this->initialize();
@@ -122,6 +124,24 @@ public:
         return this->scaling.get(2, 2);
     }
 
+    void replicateX(float factor) {
+        this->replica.set(0, 0, this->replica.get(0, 0) * factor);
+        this->scaleX(factor);
+    }
+
+    void replicateY(float factor) {
+        this->replica.set(1, 1, this->replica.get(1, 1) * factor);
+        this->scaleY(factor);
+    }
+
+    float getXReplicaFactor() const {
+        return this->replica.get(0, 0);
+    }
+
+    float getYReplicaFactor() const {
+        return this->replica.get(1, 1);
+    }
+
     std::shared_ptr<RenderEffect>& getEffect() {
         return this->effect;
     }
@@ -152,6 +172,7 @@ private:
     Math::Mat4 translation;
     Math::Mat4 rotation;
     Math::Mat4 scaling;
+    Math::Mat3 replica;
 
     GLuint buffers[2];
     GLuint vao;

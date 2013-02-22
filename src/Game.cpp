@@ -126,24 +126,14 @@ bool Game::setUp() {
 
     //-----------------
     auto bricksSprite = std::shared_ptr<Sprite>(new Sprite());
-    bricksSprite->setTexture(ResourceManager::getInstance().makeTexture("textures/bricks.png"));
+    bricksSprite->setTexture(ResourceManager::getInstance().makeTexture("textures/kazakhstan_brick.png"));
 
     auto bricksEntity = std::shared_ptr<Entity>(new Entity());
     bricksEntity->setSprite(bricksSprite);
     bricksEntity->setPosition(0.0f, -2.7f, 0.0f);
     bricksEntity->scale(0.15f);
-    bricksEntity->scaleX(15.0f);
-    this->entites.push_back(bricksEntity);
-
-    //-----------------
-    bricksSprite = std::shared_ptr<Sprite>(new Sprite());
-    bricksSprite->setTexture(ResourceManager::getInstance().makeTexture("textures/bricks.png"));
-
-    bricksEntity = std::shared_ptr<Entity>(new Entity());
-    bricksEntity->setSprite(bricksSprite);
-    bricksEntity->setPosition(2.0f, 0.0f, 0.0f);
-    bricksEntity->scale(0.15f);
-    bricksEntity->scaleY(15.0f);
+    bricksEntity->scaleX(1.5f);  // Scale for aspect ratio
+    bricksEntity->replicateX(20.0f);
     this->entites.push_back(bricksEntity);
 
     //-----------------
