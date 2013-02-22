@@ -26,6 +26,7 @@
 #include "ResourceManager.h"
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
 #include <cmath>
 
@@ -72,6 +73,11 @@ bool Game::setUp() {
         return false;
     }
 
+    if (TTF_Init()) {
+        Logger::getInstance().log(Logger::LOG_ERROR, "TTF_Init() failed: %s", SDL_GetError());
+        return false;
+    }
+
     if (!IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG)) {
         Logger::getInstance().log(Logger::LOG_ERROR, "IMG_Init() failed: %s", SDL_GetError());
         return false;
@@ -81,6 +87,14 @@ bool Game::setUp() {
     SDL_GetVersion(&sdlVersion);
     Logger::getInstance().log(Logger::LOG_INFO, "SDL version: %d.%d.%d",
             sdlVersion.major, sdlVersion.minor, sdlVersion.patch);
+
+    const SDL_version *sdlTtfVersion = TTF_Linked_Version();
+    Logger::getInstance().log(Logger::LOG_INFO, "SDL_ttf version: %d.%d.%d",
+            sdlTtfVersion->major, sdlTtfVersion->minor, sdlTtfVersion->patch);
+
+    const SDL_version *sdlImageVersion = IMG_Linked_Version();
+    Logger::getInstance().log(Logger::LOG_INFO, "SDL_image version: %d.%d.%d",
+            sdlImageVersion->major, sdlImageVersion->minor, sdlImageVersion->patch);
 
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
@@ -165,6 +179,7 @@ void Game::tearDown() {
     }
 
     IMG_Quit();
+    TTF_Quit();
     SDL_Quit();
 }
 
