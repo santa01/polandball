@@ -74,12 +74,12 @@ bool Game::setUp() {
     }
 
     if (TTF_Init()) {
-        Logger::getInstance().log(Logger::LOG_ERROR, "TTF_Init() failed: %s", SDL_GetError());
+        Logger::getInstance().log(Logger::LOG_ERROR, "TTF_Init() failed: %s", TTF_GetError());
         return false;
     }
 
     if (!IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG)) {
-        Logger::getInstance().log(Logger::LOG_ERROR, "IMG_Init() failed: %s", SDL_GetError());
+        Logger::getInstance().log(Logger::LOG_ERROR, "IMG_Init() failed: %s", IMG_GetError());
         return false;
     }
 

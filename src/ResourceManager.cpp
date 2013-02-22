@@ -77,7 +77,7 @@ std::shared_ptr<Texture>& ResourceManager::makeTexture(const std::string& name) 
 
         SDL_Surface* image = IMG_Load(name.c_str());
         if (!image) {
-            Logger::getInstance().log(Logger::LOG_ERROR, "IMG_Load(%s) failed: %s", name.c_str(), SDL_GetError());
+            Logger::getInstance().log(Logger::LOG_ERROR, "IMG_Load(%s) failed: %s", name.c_str(), IMG_GetError());
             return this->textureCache.at("default");
         }
 
