@@ -237,7 +237,7 @@ void Game::updatePlayer() {
     float moveSpeedDelta = this->maxMoveSpeed * this->frameTime * 10.0f;
 
     // Descelerate only on foot
-    if (!keyStates[SDL_SCANCODE_LEFT] && !keyStates[SDL_SCANCODE_RIGHT] && playerUpSpeed == 0.0f) {
+    if (keyStates[SDL_SCANCODE_LEFT] == keyStates[SDL_SCANCODE_RIGHT] && playerUpSpeed == 0.0f) {
         if ((playerMoveSpeed > 0.0f && playerMoveSpeed - moveSpeedDelta < 0.0f) ||
                 (playerMoveSpeed < 0.0f && playerMoveSpeed + moveSpeedDelta > 0.0f)) {
             moveAcceleration = Math::Vec3::UNIT_X * fabs(playerMoveSpeed);
