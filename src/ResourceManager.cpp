@@ -35,7 +35,7 @@ const std::string ResourceManager::defaultShader = "                  \n\
     #ifdef TYPE_VERTEX                                                \n\
         uniform mat4 mvp;                                             \n\
         uniform mat4 lw;                                              \n\
-        uniform mat3 replica;                                         \n\
+        uniform mat4 replica;                                         \n\
                                                                       \n\
         layout(location = 0) in vec3 vertexPosition;                  \n\
         layout(location = 1) in vec2 vertexUv;                        \n\
@@ -43,7 +43,7 @@ const std::string ResourceManager::defaultShader = "                  \n\
         smooth out vec2 fragmentUv;                                   \n\
                                                                       \n\
         void main () {                                                \n\
-            fragmentUv = (replica * vec3(vertexUv, 1.0f)).st;         \n\
+            fragmentUv = (replica * vec4(vertexUv, 1.0f, 1.0f)).st;   \n\
             gl_Position = mvp * lw * vec4(vertexPosition, 1.0f);      \n\
         }                                                             \n\
     #endif                                                            \n\

@@ -69,11 +69,11 @@ public:
         }
     }
 
-    void setReplica(const Math::Mat3& matrix) {
+    void setReplica(const Math::Mat4& matrix) {
         this->enable();
 
         if (this->replica > -1) {
-            glUniformMatrix3fv(this->replica, 1, GL_TRUE, (GLfloat*)matrix.data());
+            glUniformMatrix4fv(this->replica, 1, GL_TRUE, (GLfloat*)matrix.data());
         }
     }
 

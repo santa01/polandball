@@ -109,12 +109,21 @@ public:
         this->collider->scaleY(factor);
     }
 
+    void replicateZ(float factor) {
+        this->sprite->replicateZ(factor);
+        this->collider->scaleZ(factor);
+    }
+
     float getXReplicaFactor() const {
         return this->sprite->getXReplicaFactor();
     }
 
     float getYReplicaFactor() const {
         return this->sprite->getYReplicaFactor();
+    }
+
+    float getZReplicaFactor() const {
+        return this->sprite->getZReplicaFactor();
     }
 
     std::unique_ptr<Collider>& getCollider() {

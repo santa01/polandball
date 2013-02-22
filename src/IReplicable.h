@@ -31,13 +31,16 @@ public:
 
     virtual void replicateX(float factor) = 0;
     virtual void replicateY(float factor) = 0;
+    virtual void replicateZ(float factor) = 0;
 
     virtual float getXReplicaFactor() const = 0;
     virtual float getYReplicaFactor() const = 0;
+    virtual float getZReplicaFactor() const = 0;
 
     void replicate(float factor) {
         this->replicateX(factor);
         this->replicateY(factor);
+        this->replicateZ(factor);
     }
 };
 

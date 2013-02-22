@@ -24,7 +24,6 @@
 #define	MESH_H
 
 #include "Vec3.h"
-#include "Mat3.h"
 #include "Mat4.h"
 #include "Quaternion.h"
 #include "IMovable.h"
@@ -134,12 +133,21 @@ public:
         this->scaleY(factor);
     }
 
+    void replicateZ(float factor) {
+        this->replica.set(2, 2, this->replica.get(2, 2) * factor);
+        this->scaleZ(factor);
+    }
+
     float getXReplicaFactor() const {
         return this->replica.get(0, 0);
     }
 
     float getYReplicaFactor() const {
         return this->replica.get(1, 1);
+    }
+
+    float getZReplicaFactor() const {
+        return this->replica.get(2, 2);
     }
 
     std::shared_ptr<RenderEffect>& getEffect() {
@@ -172,7 +180,7 @@ private:
     Math::Mat4 translation;
     Math::Mat4 rotation;
     Math::Mat4 scaling;
-    Math::Mat3 replica;
+    Math::Mat4 replica;
 
     GLuint buffers[2];
     GLuint vao;
