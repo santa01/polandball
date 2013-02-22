@@ -60,8 +60,9 @@ const std::string ResourceManager::defaultShader = "                  \n\
     #endif                                                            \n";
 
 ResourceManager::ResourceManager() {
-    Uint32 data = 0xFF00FF00;  // Should be green
-    SDL_Surface* image = SDL_CreateRGBSurfaceFrom(&data, 1, 1, 32, 4,
+    // Keep data 2x2, 1x1 doesn't seem to work on a cleared color buffer
+    Uint32 data[] = { 0xFF00FF00, 0xFF00FF00, 0xFF00FF00, 0xFF00FF00 };
+    SDL_Surface* image = SDL_CreateRGBSurfaceFrom(&data, 2, 2, 32, 4,
             0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
     this->insertTexture("default", image);
     SDL_FreeSurface(image);
