@@ -194,6 +194,9 @@ public:
         this->setPosition(currentPosition);
     }
 
+protected:
+    Math::Vec3 currentSpeed;
+
 private:
     void initialize() {
         this->renderable = true;
@@ -206,10 +209,8 @@ private:
     bool renderable;
     bool collidable;
     EntityType type;
-
-    Math::Vec3 currentSpeed;
 };
 
-} // namespace PolandBall
+}  // namespace PolandBall
 
 #endif  // ENTITY_H

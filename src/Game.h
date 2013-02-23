@@ -70,11 +70,7 @@ private:
         this->window = nullptr;
         this->context = nullptr;
         this->frameTime = 0.0f;
-
         this->cameraOffset = 3.0f;
-        this->maxJumpTime = 0.25f;
-        this->maxJumpSpeed = 4.0f;
-        this->maxMoveSpeed = 3.0f;
 
         this->defaultAcceleration = Math::Vec3(20.0f, 0.0f, 0.0f);
         this->gravityAcceleration = Math::Vec3(0.0f, -10.0f, 0.0f);
@@ -95,11 +91,7 @@ private:
     bool running;
     int width, height;
     float frameTime;
-
     float cameraOffset;
-    float maxJumpTime;
-    float maxJumpSpeed;
-    float maxMoveSpeed;
 };
 
 }  // namespace PolandBall

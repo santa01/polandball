@@ -26,18 +26,20 @@
 #include "Entity.h"
 #include "Collider.h"
 
+#include <cmath>
+
 namespace PolandBall {
 
 class Player: public Entity {
 public:
     Player():
             Entity(Entity::TYPE_DYNAMIC) {
-        this->jumpTime = 0.0f;
+        this->initialize();
     }
 
     Player(EntityType type):
             Entity(type) {
-        this->jumpTime = 0.0f;
+        this->initialize();
     }
 
     void collideSide(Collider::CollideSide side) {
@@ -55,16 +57,55 @@ public:
         }
     }
     
-    float getJumpTime() const {
-        return this->jumpTime;
+    float getMaxMoveSpeed() const {
+        return this->maxMoveSpeed;
     }
 
-    void updateJumpTime(float delta) {
-        this->jumpTime += delta;
+    void setMaxMoveSpeed(float maxMoveSpeed) {
+        this->maxMoveSpeed = maxMoveSpeed;
+    }
+
+    float getMaxJumpSpeed() const {
+        return this->maxJumpSpeed;
+    }
+
+    void setMaxJumpSpeed(float maxJumpSpeed) {
+        this->maxJumpSpeed = maxJumpSpeed;
+    }
+
+    float getMaxJumpTime() const {
+        return this->maxJumpTime;
+    }
+
+    void setMaxJumpTime(float maxJumpTime) {
+        this->maxJumpTime = maxJumpTime;
+    }
+
+    void moveRight(float frameTime);
+    void moveLeft(float frameTime);
+    void slowDown(float frameTime);
+
+    void jump(float frameTime);
+    void breakJump() {
+        this->jumpWasReleased = (this->jumpTime == 0.0f) ? true : false;
     }
 
 private:
+    void initialize() {
+        this->maxMoveSpeed = 3.0f;
+        this->maxJumpSpeed = 4.0f;
+        this->maxJumpTime = 0.25f;
+
+        this->jumpTime = 0.0f;
+        this->jumpWasReleased = true;
+    }
+
+    float maxMoveSpeed;
+    float maxJumpSpeed;
+    float maxJumpTime;
+
     float jumpTime;
+    bool jumpWasReleased;
 };
 
 }  // namespace PolandBall

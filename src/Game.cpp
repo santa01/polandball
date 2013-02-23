@@ -28,7 +28,6 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
-#include <cmath>
 
 namespace PolandBall {
 
@@ -232,9 +231,9 @@ void Game::updateWorld() {
                 entity->setSpeed(speed);
                 entity->collideSide(collide);
             }
-        }
 
-        entity->setPosition(entity->getPosition() + entity->getSpeed() * this->frameTime);
+            entity->setPosition(entity->getPosition() + entity->getSpeed() * this->frameTime);
+        }
     }
 }
 
@@ -245,61 +244,19 @@ void Game::updatePlayer() {
         this->running = false;
     }
 
-    float playerMoveSpeed = this->player->getSpeed().get(Math::Vec3::X);
-    float playerUpSpeed = this->player->getSpeed().get(Math::Vec3::Y);
-
-    Math::Vec3 moveAcceleration;
-    float moveSpeedDelta = this->maxMoveSpeed * this->frameTime * 10.0f;
-
-    // Descelerate only on foot
-    if (keyStates[SDL_SCANCODE_LEFT] == keyStates[SDL_SCANCODE_RIGHT] && playerUpSpeed == 0.0f) {
-        if ((playerMoveSpeed > 0.0f && playerMoveSpeed - moveSpeedDelta < 0.0f) ||
-                (playerMoveSpeed < 0.0f && playerMoveSpeed + moveSpeedDelta > 0.0f)) {
-            moveAcceleration = Math::Vec3::UNIT_X * fabs(playerMoveSpeed);
-        } else {
-            moveAcceleration = Math::Vec3::UNIT_X * moveSpeedDelta;
-        }
-
-        if (playerMoveSpeed < 0.0f) {
-            this->player->accelerateBy(moveAcceleration);
-        } else if (playerMoveSpeed > 0.0f) {
-            this->player->accelerateBy(-moveAcceleration);
-        }
-    } else {
-        if (keyStates[SDL_SCANCODE_RIGHT] && !keyStates[SDL_SCANCODE_LEFT]) {
-            // We press RIGHT and we already moving RIGHT
-            if (playerMoveSpeed > 0.0f && fabs(playerMoveSpeed) + moveSpeedDelta > this->maxMoveSpeed) {
-                moveAcceleration = Math::Vec3::UNIT_X * (this->maxMoveSpeed - fabs(playerMoveSpeed));
-            } else {
-                moveAcceleration = Math::Vec3::UNIT_X * moveSpeedDelta;
-            }
-        } else if (keyStates[SDL_SCANCODE_LEFT] && !keyStates[SDL_SCANCODE_RIGHT]) {
-            // We press LEFT and we already moving LEFT
-            if (playerMoveSpeed < 0.0f && fabs(playerMoveSpeed) + moveSpeedDelta > this->maxMoveSpeed) {
-                moveAcceleration = -Math::Vec3::UNIT_X * (this->maxMoveSpeed - fabs(playerMoveSpeed));
-            } else {
-                moveAcceleration = -Math::Vec3::UNIT_X * moveSpeedDelta;
-            }
-        }
-
-        this->player->accelerateBy(moveAcceleration);
+    // Both pressed or released
+    if (keyStates[SDL_SCANCODE_LEFT] == keyStates[SDL_SCANCODE_RIGHT]) {
+        this->player->slowDown(this->frameTime);
+    } else if (keyStates[SDL_SCANCODE_RIGHT]) {
+        this->player->moveRight(this->frameTime);
+    } else if (keyStates[SDL_SCANCODE_LEFT]) {
+        this->player->moveLeft(this->frameTime);
     }
 
-    static bool jumpWasReleased = true;
     if (keyStates[SDL_SCANCODE_UP]) {
-        if (jumpWasReleased && this->player->getJumpTime() < this->maxJumpTime) {
-            if (playerUpSpeed < this->maxJumpSpeed) {
-                Math::Vec3 jumpAcceleration(Math::Vec3::UNIT_Y * (this->maxJumpSpeed - playerUpSpeed));
-                this->player->accelerateBy(jumpAcceleration);
-            }
-
-            this->player->updateJumpTime(this->frameTime);
-        } else {
-            jumpWasReleased = false;
-        }
+        this->player->jump(this->frameTime);
     } else {
-        // Release only on the ground
-        jumpWasReleased = (this->player->getJumpTime() == 0.0f) ? true : false;
+        this->player->breakJump();
     }
 }
 
