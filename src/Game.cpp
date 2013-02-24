@@ -65,34 +65,34 @@ int Game::exec() {
 }
 
 bool Game::setUp() {
-    Logger::getInstance().log(Logger::LOG_INFO, "Setting up...");
+    Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Setting up...");
 
     if (SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE)) {
-        Logger::getInstance().log(Logger::LOG_ERROR, "SDL_Init() failed: %s", SDL_GetError());
+        Utils::Logger::getInstance().log(Utils::Logger::LOG_ERROR, "SDL_Init() failed: %s", SDL_GetError());
         return false;
     }
 
     if (TTF_Init()) {
-        Logger::getInstance().log(Logger::LOG_ERROR, "TTF_Init() failed: %s", TTF_GetError());
+        Utils::Logger::getInstance().log(Utils::Logger::LOG_ERROR, "TTF_Init() failed: %s", TTF_GetError());
         return false;
     }
 
     if (!IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG)) {
-        Logger::getInstance().log(Logger::LOG_ERROR, "IMG_Init() failed: %s", IMG_GetError());
+        Utils::Logger::getInstance().log(Utils::Logger::LOG_ERROR, "IMG_Init() failed: %s", IMG_GetError());
         return false;
     }
 
     SDL_version sdlVersion;
     SDL_GetVersion(&sdlVersion);
-    Logger::getInstance().log(Logger::LOG_INFO, "SDL version: %d.%d.%d",
+    Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "SDL version: %d.%d.%d",
             sdlVersion.major, sdlVersion.minor, sdlVersion.patch);
 
     const SDL_version *sdlTtfVersion = TTF_Linked_Version();
-    Logger::getInstance().log(Logger::LOG_INFO, "SDL_ttf version: %d.%d.%d",
+    Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "SDL_ttf version: %d.%d.%d",
             sdlTtfVersion->major, sdlTtfVersion->minor, sdlTtfVersion->patch);
 
     const SDL_version *sdlImageVersion = IMG_Linked_Version();
-    Logger::getInstance().log(Logger::LOG_INFO, "SDL_image version: %d.%d.%d",
+    Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "SDL_image version: %d.%d.%d",
             sdlImageVersion->major, sdlImageVersion->minor, sdlImageVersion->patch);
 
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -102,24 +102,24 @@ bool Game::setUp() {
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
-    Logger::getInstance().log(Logger::LOG_INFO, "Initializing %d x %d viewport", this->width, this->height);
+    Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Initializing %d x %d viewport", this->width, this->height);
     this->window = SDL_CreateWindow("Polandball The Gaem", 0, 0, this->width, this->height,
             SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
     if (!this->window) {
-        Logger::getInstance().log(Logger::LOG_ERROR, "SDL_CreateWindow() failed: %s", SDL_GetError());
+        Utils::Logger::getInstance().log(Utils::Logger::LOG_ERROR, "SDL_CreateWindow() failed: %s", SDL_GetError());
         return false;
     }
 
     this->context = SDL_GL_CreateContext(this->window);
     if (!this->context) {
-        Logger::getInstance().log(Logger::LOG_ERROR, "SDL_GL_CreateContext() failed: %s", SDL_GetError());
+        Utils::Logger::getInstance().log(Utils::Logger::LOG_ERROR, "SDL_GL_CreateContext() failed: %s", SDL_GetError());
         return false;
     }
 
     SDL_ShowCursor(SDL_DISABLE);
 
-    Logger::getInstance().log(Logger::LOG_INFO, "OpenGL vendor: %s", glGetString(GL_VENDOR));
-    Logger::getInstance().log(Logger::LOG_INFO, "OpenGL version: %s", glGetString(GL_VERSION));
+    Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "OpenGL vendor: %s", glGetString(GL_VENDOR));
+    Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "OpenGL version: %s", glGetString(GL_VERSION));
 
     glEnable(GL_CULL_FACE);
 
@@ -128,7 +128,7 @@ bool Game::setUp() {
 
     // GL_DEPTH_TEST is OFF! Manually arrange sprites, farthest renders first!
     auto backgroundSprite = std::shared_ptr<Sprite>(new Sprite());
-    backgroundSprite->setTexture(ResourceManager::getInstance().makeTexture("textures/day_sky_3x4.png"));
+    backgroundSprite->setTexture(Utils::ResourceManager::getInstance().makeTexture("textures/day_sky_3x4.png"));
 
     auto backgroundEntity = std::shared_ptr<Entity>(new Entity());
     backgroundEntity->setSprite(backgroundSprite);
@@ -139,7 +139,7 @@ bool Game::setUp() {
 
     //-----------------
     auto bricksSprite = std::shared_ptr<Sprite>(new Sprite());
-    bricksSprite->setTexture(ResourceManager::getInstance().makeTexture("textures/kazakhstan_brick.png"));
+    bricksSprite->setTexture(Utils::ResourceManager::getInstance().makeTexture("textures/kazakhstan_brick.png"));
 
     auto bricksEntity = std::shared_ptr<Entity>(new Entity());
     bricksEntity->setSprite(bricksSprite);
@@ -151,7 +151,7 @@ bool Game::setUp() {
 
     //-----------------
     auto playerSprite = std::shared_ptr<Sprite>(new Sprite());
-    playerSprite->setTexture(ResourceManager::getInstance().makeTexture("textures/turkey_ball.png"));
+    playerSprite->setTexture(Utils::ResourceManager::getInstance().makeTexture("textures/turkey_ball.png"));
 
     this->player = std::shared_ptr<Player>(new Player());
     this->player->setSprite(playerSprite);
@@ -167,7 +167,7 @@ bool Game::setUp() {
 }
 
 void Game::tearDown() {
-    Logger::getInstance().log(Logger::LOG_INFO, "Tearing down...");
+    Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Tearing down...");
 
     if (this->context) {
         SDL_GL_DeleteContext(this->context);

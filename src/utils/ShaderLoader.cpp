@@ -28,6 +28,8 @@
 
 namespace PolandBall {
 
+namespace Utils {
+
 GLuint ShaderLoader::createProgram(const std::vector<GLuint>& shaders) {
     GLuint program = glCreateProgram();
     
@@ -76,5 +78,7 @@ GLuint ShaderLoader::createShader(const std::string& source, GLenum type) {
 
     return shader;
 }
+
+}  // namespace Utils
 
 }  // namespace PolandBall

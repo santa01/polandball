@@ -78,8 +78,8 @@ void Sprite::initialize() {
 
     glBindVertexArray(0);
 
-    this->effect = ResourceManager::getInstance().makeEffect("default");
-    this->texture = ResourceManager::getInstance().makeTexture("default");
+    this->effect = Utils::ResourceManager::getInstance().makeEffect("default");
+    this->texture = Utils::ResourceManager::getInstance().makeTexture("default");
 }
 
 }  // namespace PolandBall

@@ -20,42 +20,50 @@
  * SOFTWARE.
  */
 
-#ifndef RESOURCEMANAGER_H
-#define	RESOURCEMANAGER_H
+#ifndef LOGGER_H
+#define	LOGGER_H
 
-#include "Texture.h"
-#include "RenderEffect.h"
 #include "INonCopyable.h"
-
-#include <SDL2/SDL_image.h>
-#include <unordered_map>
-#include <string>
-#include <memory>
 
 namespace PolandBall {
 
-class ResourceManager: public INonCopyable {
+namespace Utils {
+
+class Logger: public INonCopyable {
 public:
-    static ResourceManager& getInstance() {
-        static ResourceManager instance;
+    enum {
+        LOG_ERROR = 0,
+        LOG_WARNING = 1,
+        LOG_INFO = 2
+    };
+
+    static Logger& getInstance() {
+        static Logger instance;
         return instance;
     }
 
-    std::shared_ptr<Texture>& makeTexture(const std::string& name);
-    std::shared_ptr<RenderEffect>& makeEffect(const std::string& name);
+    void log(int level, const char* message, ...);
+
+    void setThreshold(int threshold) {
+        switch (threshold) {
+            case Logger::LOG_INFO:
+            case Logger::LOG_WARNING:
+            case Logger::LOG_ERROR:
+                this->threshold = threshold;
+                break;
+        }
+    }
 
 private:
-    ResourceManager();
+    Logger() {
+        this->threshold = Logger::LOG_INFO;
+    }
 
-    void insertTexture(const std::string& name, SDL_Surface* image);
-    void insertEffect(const std::string& name, const std::string& source);
-
-    std::unordered_map<std::string, std::shared_ptr<Texture>> textureCache;
-    std::unordered_map<std::string, std::shared_ptr<RenderEffect>> effectCache;
-
-    static const std::string defaultShader;
+    int threshold;
 };
+
+}  // namespace Utils
 
 }  // namespace PolandBall
 
-#endif  // RESOURCEMANAGER_H
+#endif  // LOGGER_H

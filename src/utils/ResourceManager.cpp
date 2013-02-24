@@ -30,6 +30,8 @@
 
 namespace PolandBall {
 
+namespace Utils {
+
 const std::string ResourceManager::defaultShader = "                  \n\
     #version 330                                                      \n\
                                                                       \n\
@@ -60,17 +62,6 @@ const std::string ResourceManager::defaultShader = "                  \n\
             fragmentColor = texture(textureSampler, fragmentUv);      \n\
         }                                                             \n\
     #endif                                                            \n";
-
-ResourceManager::ResourceManager() {
-    // Keep data 2x2, 1x1 doesn't seem to work on a cleared color buffer
-    Uint32 data[] = { 0xFF00FF00, 0xFF00FF00, 0xFF00FF00, 0xFF00FF00 };
-    SDL_Surface* image = SDL_CreateRGBSurfaceFrom(&data, 2, 2, 32, 4,
-            0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
-    this->insertTexture("default", image);
-    SDL_FreeSurface(image);
-
-    this->insertEffect("default", ResourceManager::defaultShader);
-}
 
 std::shared_ptr<Texture>& ResourceManager::makeTexture(const std::string& name) {
     if (this->textureCache.find(name) == this->textureCache.end()) {
@@ -118,12 +109,6 @@ std::shared_ptr<RenderEffect>& ResourceManager::makeEffect(const std::string& na
     return this->effectCache.at(name);
 }
 
-void ResourceManager::insertTexture(const std::string& name, SDL_Surface* image) {
-    std::shared_ptr<Texture> texture(new Texture());
-    texture->load(image);
-    this->textureCache.insert(std::make_pair(name, texture));
-}
-
 void ResourceManager::insertEffect(const std::string& name, const std::string& source) {
     std::shared_ptr<RenderEffect> effect(new RenderEffect());
 
@@ -140,5 +125,7 @@ void ResourceManager::insertEffect(const std::string& name, const std::string& s
     effect->enable();  // Compile
     this->effectCache.insert(std::make_pair(name, effect));
 }
+
+}  // namespace Utils
 
 }  // namespace PolandBall

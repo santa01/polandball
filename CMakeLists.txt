@@ -28,7 +28,7 @@ find_package (SDL_ttf REQUIRED)
 find_package (SDL_image REQUIRED)
 
 file (GLOB_RECURSE POLANDBALL_SOURCES "src/*.cpp")
-include_directories ("src" "src/math" "src/signals")
+include_directories ("src" "src/math" "src/signals" "src/utils")
 
 set (POLANDBALL_EXECUTABLE "polandball")
 

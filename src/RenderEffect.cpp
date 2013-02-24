@@ -26,7 +26,7 @@ namespace PolandBall {
 
 void RenderEffect::enable() {
     if (this->program == 0) {
-        this->program = ShaderLoader::createProgram(this->shaderList);
+        this->program = Utils::ShaderLoader::createProgram(this->shaderList);
         glUseProgram(this->program);
 
         this->mvp = glGetUniformLocation(this->program, "mvp");

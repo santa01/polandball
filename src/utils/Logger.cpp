@@ -20,46 +20,44 @@
  * SOFTWARE.
  */
 
-#ifndef LOGGER_H
-#define	LOGGER_H
+#include "Logger.h"
 
-#include "INonCopyable.h"
+#include <cstdio>
+#include <cstdarg>
+#include <cstring>
 
 namespace PolandBall {
 
-class Logger: public INonCopyable {
-public:
-    enum {
-        LOG_ERROR = 0,
-        LOG_WARNING = 1,
-        LOG_INFO = 2
-    };
+namespace Utils {
 
-    static Logger& getInstance() {
-        static Logger instance;
-        return instance;
+void Logger::log(int level, const char* message, ...) {
+    if (level > this->threshold) {
+        return;
     }
 
-    void log(int level, const char* message, ...);
+    FILE* stream = (level == Logger::LOG_ERROR) ? stderr : stdout;
+    switch (level) {
+        case Logger::LOG_INFO:
+            fprintf(stream, "Info: ");
+            break;
 
-    void setThreshold(int threshold) {
-        switch (threshold) {
-            case Logger::LOG_INFO:
-            case Logger::LOG_WARNING:
-            case Logger::LOG_ERROR:
-                this->threshold = threshold;
-                break;
-        }
+        case Logger::LOG_WARNING:
+            fprintf(stream, "Warning: ");
+            break;
+
+        case Logger::LOG_ERROR:
+            fprintf(stream, "Error: ");
+            break;
     }
 
-private:
-    Logger() {
-        this->threshold = Logger::LOG_INFO;
-    }
+    va_list ap;
+    va_start(ap, message);
+    vfprintf(stream, message, ap);
+    va_end(ap);
 
-    int threshold;
-};
+    fprintf(stream, "\n");
+}
+
+}  // namespace Utils
 
 }  // namespace PolandBall
-
-#endif  // LOGGER_H

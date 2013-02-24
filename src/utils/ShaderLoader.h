@@ -20,40 +20,26 @@
  * SOFTWARE.
  */
 
-#include "Logger.h"
+#ifndef SHADERLOADER_H
+#define	SHADERLOADER_H
 
-#include <cstdio>
-#include <cstdarg>
-#include <cstring>
+#define GL_GLEXT_PROTOTYPES
+#include <SDL2/SDL_opengl.h>
+#include <string>
+#include <vector>
 
 namespace PolandBall {
 
-void Logger::log(int level, const char* message, ...) {
-    if (level > this->threshold) {
-        return;
-    }
+namespace Utils {
 
-    FILE* stream = (level == Logger::LOG_ERROR) ? stderr : stdout;
-    switch (level) {
-        case Logger::LOG_INFO:
-            fprintf(stream, "Info: ");
-            break;
+class ShaderLoader {
+    public:
+        static GLuint createShader(const std::string& source, GLenum type);
+        static GLuint createProgram(const std::vector<GLuint>& shaders);
+};
 
-        case Logger::LOG_WARNING:
-            fprintf(stream, "Warning: ");
-            break;
-
-        case Logger::LOG_ERROR:
-            fprintf(stream, "Error: ");
-            break;
-    }
-
-    va_list ap;
-    va_start(ap, message);
-    vfprintf(stream, message, ap);
-    va_end(ap);
-
-    fprintf(stream, "\n");
-}
+}  // namespace Utils
 
 }  // namespace PolandBall
+
+#endif  // SHADERLOADER_H
