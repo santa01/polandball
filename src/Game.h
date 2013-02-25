@@ -30,6 +30,7 @@
 #include "INonCopyable.h"
 
 #include <SDL2/SDL_video.h>
+#include <SDL2/SDL_ttf.h>
 #include <memory>
 #include <chrono>
 #include <vector>
@@ -66,9 +67,11 @@ private:
     void renderWorld();
 
     void initialize() {
-        this->running = true;
         this->window = nullptr;
         this->context = nullptr;
+        this->defaultFont = nullptr;
+
+        this->running = true;
         this->frameTime = 0.0f;
         this->cameraOffset = 3.0f;
 
@@ -78,8 +81,9 @@ private:
         this->camera.setPosition(0.0f, 0.0f, -this->cameraOffset);
     }
 
-    SDL_Window *window;
+    SDL_Window* window;
     SDL_GLContext context;
+    TTF_Font* defaultFont;
 
     std::vector<std::shared_ptr<Entity>> entites;
     std::shared_ptr<Player> player;

@@ -26,8 +26,8 @@
 #include "ResourceManager.h"
 
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
+#include <fontconfig/fontconfig.h>
 
 namespace PolandBall {
 
@@ -126,6 +126,46 @@ bool Game::setUp() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    if (!FcInit()) {
+        Utils::Logger::getInstance().log(Utils::Logger::LOG_ERROR, "FcInit() failed");
+        return false;
+    }
+
+    int fcVersion = FcGetVersion();
+    int fcMajor = fcVersion / 10000;
+    int fcMinor = (fcVersion - fcMajor * 10000) / 100;
+    int fcRevision = fcVersion - fcMajor * 10000 - fcMinor * 100;
+    Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Fontconfig version: %d.%d.%d",
+            fcMajor, fcMinor, fcRevision);
+
+    FcPattern* pattern = FcNameParse((const FcChar8*)"sans-serif");
+    FcConfigSubstitute(nullptr, pattern, FcMatchPattern);
+    FcDefaultSubstitute(pattern);
+
+    FcResult result;
+    FcPattern* match = FcFontMatch(nullptr, pattern, &result);
+    FcPatternDestroy(pattern);
+
+    if (!match) {
+        Utils::Logger::getInstance().log(Utils::Logger::LOG_ERROR, "FcFontMatch() failed: no `sans-serif' font found");
+        return false;
+    }
+
+    FcChar8* fontPath = FcPatternFormat(match, (const FcChar8*)"%{file}");
+    FcChar8* fontName = FcPatternFormat(match, (const FcChar8*)"%{family}");
+
+    this->defaultFont = TTF_OpenFont((const char*)fontPath, 8);
+    if (!this->defaultFont) {
+        Utils::Logger::getInstance().log(Utils::Logger::LOG_ERROR, "TTF_OpenFont failed: %s", TTF_GetError());
+        return false;
+    }
+
+    Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Using `%s' family font", fontName);
+
+    FcStrFree(fontName);
+    FcStrFree(fontPath);
+    FcPatternDestroy(match);
+
     // GL_DEPTH_TEST is OFF! Manually arrange sprites, farthest renders first!
     auto backgroundSprite = std::shared_ptr<Sprite>(new Sprite());
     backgroundSprite->setTexture(Utils::ResourceManager::getInstance().makeTexture("textures/day_sky_3x4.png"));
@@ -169,6 +209,10 @@ bool Game::setUp() {
 void Game::tearDown() {
     Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Tearing down...");
 
+    if (this->defaultFont) {
+        TTF_CloseFont(this->defaultFont);
+    }
+
     if (this->context) {
         SDL_GL_DeleteContext(this->context);
     }
@@ -177,6 +221,7 @@ void Game::tearDown() {
         SDL_DestroyWindow(this->window);
     }
 
+    FcFini();
     IMG_Quit();
     TTF_Quit();
     SDL_Quit();
