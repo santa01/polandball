@@ -67,6 +67,36 @@ int Game::exec() {
 bool Game::setUp() {
     Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Setting up...");
 
+    if (!this->initSDL() || !this->initOpenGL() || !this->initFontConfig()) {
+        return false;
+    }
+
+    this->initTestScene();
+    return true;
+}
+
+void Game::tearDown() {
+    Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Tearing down...");
+
+    if (this->defaultFont) {
+        TTF_CloseFont(this->defaultFont);
+    }
+
+    if (this->context) {
+        SDL_GL_DeleteContext(this->context);
+    }
+
+    if (this->window) {
+        SDL_DestroyWindow(this->window);
+    }
+
+    FcFini();
+    IMG_Quit();
+    TTF_Quit();
+    SDL_Quit();
+}
+
+bool Game::initSDL() {
     if (SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE)) {
         Utils::Logger::getInstance().log(Utils::Logger::LOG_ERROR, "SDL_Init() failed: %s", SDL_GetError());
         return false;
@@ -95,6 +125,10 @@ bool Game::setUp() {
     Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "SDL_image version: %d.%d.%d",
             sdlImageVersion->major, sdlImageVersion->minor, sdlImageVersion->patch);
 
+    return true;
+}
+
+bool Game::initOpenGL() {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
@@ -116,8 +150,6 @@ bool Game::setUp() {
         return false;
     }
 
-    SDL_ShowCursor(SDL_DISABLE);
-
     Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "OpenGL vendor: %s", glGetString(GL_VENDOR));
     Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "OpenGL version: %s", glGetString(GL_VERSION));
 
@@ -126,6 +158,10 @@ bool Game::setUp() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    return true;
+}
+
+bool Game::initFontConfig() {
     if (!FcInit()) {
         Utils::Logger::getInstance().log(Utils::Logger::LOG_ERROR, "FcInit() failed");
         return false;
@@ -166,6 +202,10 @@ bool Game::setUp() {
     FcStrFree(fontPath);
     FcPatternDestroy(match);
 
+    return true;
+}
+
+void Game::initTestScene() {
     // GL_DEPTH_TEST is OFF! Manually arrange sprites, farthest renders first!
     auto backgroundSprite = std::shared_ptr<Sprite>(new Sprite());
     backgroundSprite->setTexture(Utils::ResourceManager::getInstance().makeTexture("textures/day_sky_3x4.png"));
@@ -202,29 +242,6 @@ bool Game::setUp() {
     //-----------------
     this->player->updatePosition.connect(std::bind(&Entity::onPositionUpdate, backgroundEntity, std::placeholders::_1));
     this->player->updatePosition.connect(std::bind(&Camera::onPositionUpdate, &this->camera, std::placeholders::_1));
-
-    return true;
-}
-
-void Game::tearDown() {
-    Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Tearing down...");
-
-    if (this->defaultFont) {
-        TTF_CloseFont(this->defaultFont);
-    }
-
-    if (this->context) {
-        SDL_GL_DeleteContext(this->context);
-    }
-
-    if (this->window) {
-        SDL_DestroyWindow(this->window);
-    }
-
-    FcFini();
-    IMG_Quit();
-    TTF_Quit();
-    SDL_Quit();
 }
 
 void Game::updateWorld() {

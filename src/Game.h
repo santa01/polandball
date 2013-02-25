@@ -62,6 +62,11 @@ private:
     bool setUp();
     void tearDown();
 
+    bool initSDL();
+    bool initOpenGL();
+    bool initFontConfig();
+    void initTestScene();
+
     void updateWorld();
     void updatePlayer();
     void renderWorld();
