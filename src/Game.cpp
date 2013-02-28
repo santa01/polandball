@@ -357,7 +357,7 @@ void Game::updateFPS() {
 
     if (updateTime >= 0.25f) {
         std::stringstream fps;
-        fps << "fps: " << std::setw(4) << std::left << std::setprecision(0) << std::fixed << frames / updateTime;
+        fps << "fps: " << std::setw(5) << std::left << std::setprecision(0) << std::fixed << frames / updateTime;
 
         int textWidth, textHeight;
         TTF_SizeUTF8(this->defaultFont, fps.str().c_str(), &textWidth, &textHeight);
