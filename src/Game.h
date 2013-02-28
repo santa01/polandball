@@ -69,6 +69,7 @@ private:
 
     void updateWorld();
     void updatePlayer();
+    void updateFPS();
     void renderWorld();
 
     void initialize() {
@@ -92,6 +93,7 @@ private:
 
     std::vector<std::shared_ptr<Entity>> entites;
     std::shared_ptr<Player> player;
+    std::shared_ptr<Entity> fpsCounter;
 
     Math::Vec3 defaultAcceleration;
     Math::Vec3 gravityAcceleration;

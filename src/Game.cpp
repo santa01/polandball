@@ -25,6 +25,8 @@
 #include "Vec3.h"
 #include "ResourceManager.h"
 
+#include <sstream>
+#include <iomanip>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <fontconfig/fontconfig.h>
@@ -53,6 +55,7 @@ int Game::exec() {
 
         this->updatePlayer();
         this->updateWorld();
+        this->updateFPS();
         this->renderWorld();
 
         endTime = std::chrono::system_clock::now();
@@ -174,7 +177,7 @@ bool Game::initFontConfig() {
     Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Fontconfig version: %d.%d.%d",
             fcMajor, fcMinor, fcRevision);
 
-    FcPattern* pattern = FcNameParse((const FcChar8*)"sans-serif");
+    FcPattern* pattern = FcNameParse((const FcChar8*)"monospace");
     FcConfigSubstitute(nullptr, pattern, FcMatchPattern);
     FcDefaultSubstitute(pattern);
 
@@ -190,7 +193,7 @@ bool Game::initFontConfig() {
     FcChar8* fontPath = FcPatternFormat(match, (const FcChar8*)"%{file}");
     FcChar8* fontName = FcPatternFormat(match, (const FcChar8*)"%{family}");
 
-    this->defaultFont = TTF_OpenFont((const char*)fontPath, 8);
+    this->defaultFont = TTF_OpenFont((const char*)fontPath, 12);
     if (!this->defaultFont) {
         Utils::Logger::getInstance().log(Utils::Logger::LOG_ERROR, "TTF_OpenFont failed: %s", TTF_GetError());
         return false;
@@ -240,8 +243,16 @@ void Game::initTestScene() {
     this->entites.push_back(this->player);
 
     //-----------------
+    this->fpsCounter = std::shared_ptr<Entity>(new Entity());
+    this->fpsCounter->setCollidable(false);
+    this->fpsCounter->scale(0.04f);
+    this->fpsCounter->setPosition(-3.55f, 2.85f, 0.0f);
+    this->entites.push_back(this->fpsCounter);
+
+    //-----------------
     this->player->updatePosition.connect(std::bind(&Entity::onPositionUpdate, backgroundEntity, std::placeholders::_1));
     this->player->updatePosition.connect(std::bind(&Camera::onPositionUpdate, &this->camera, std::placeholders::_1));
+    this->player->updatePosition.connect(std::bind(&Entity::onPositionUpdate, this->fpsCounter, std::placeholders::_1));
 }
 
 void Game::updateWorld() {
@@ -337,6 +348,34 @@ void Game::renderWorld() {
     }
 
     SDL_GL_SwapWindow(this->window);
+}
+
+void Game::updateFPS() {
+    static float updateTime = 1.0f;
+    static float frames = 0.0f;
+    static float textAspectRatio = 1.0f;
+
+    if (updateTime >= 0.25f) {
+        std::stringstream fps;
+        fps << "fps: " << std::setw(4) << std::left << std::setprecision(0) << std::fixed << frames / updateTime;
+
+        int textWidth, textHeight;
+        TTF_SizeUTF8(this->defaultFont, fps.str().c_str(), &textWidth, &textHeight);
+        this->fpsCounter->scaleX(1.0f / textAspectRatio);
+        textAspectRatio = textWidth / (textHeight / 1.0f);
+        this->fpsCounter->scaleX(textAspectRatio);
+
+        SDL_Color color = {0, 0, 0, 0};
+        SDL_Surface *textOverlay = TTF_RenderUTF8_Blended(this->defaultFont, fps.str().c_str(), color);
+        this->fpsCounter->getSprite()->getTexture()->load(textOverlay);
+        SDL_FreeSurface(textOverlay);
+
+        updateTime = 0.0f;
+        frames = 0.0f;
+    }
+
+    updateTime += this->frameTime;
+    frames++;
 }
 
 }  // namespace PolandBall
