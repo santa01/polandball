@@ -181,7 +181,7 @@ public:
         this->currentSpeed += acceleration;
     }
 
-    virtual void collideSide(Collider::CollideSide side) {}
+    virtual void collideWith(const std::shared_ptr<Entity>& another, Collider::CollideSide side) {}
 
     // Signal
     Signals::Signal<Math::Vec3> updatePosition;

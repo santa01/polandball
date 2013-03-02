@@ -226,10 +226,21 @@ void Game::initTestScene() {
 
     auto bricksEntity = std::shared_ptr<Entity>(new Entity());
     bricksEntity->setSprite(bricksSprite);
-    bricksEntity->setPosition(0.0f, -2.7f, 0.0f);
+    bricksEntity->setPosition(1.0f, -4.7f, 0.0f);
     bricksEntity->scale(0.15f);
     bricksEntity->scaleX(1.5f);  // Scale for aspect ratio
     bricksEntity->replicateX(20.0f);
+    this->entites.push_back(bricksEntity);
+
+    //-----------------
+    bricksSprite = std::shared_ptr<Sprite>(new Sprite());
+    bricksSprite->setTexture(Utils::ResourceManager::getInstance().makeTexture("textures/kazakhstan_brick.png"));
+
+    bricksEntity = std::shared_ptr<Entity>(new Entity());
+    bricksEntity->setSprite(bricksSprite);
+    bricksEntity->setPosition(0.0f, -2.7f, 0.0f);
+    bricksEntity->scale(0.15f);
+    bricksEntity->scaleX(1.5f);  // Scale for aspect ratio
     this->entites.push_back(bricksEntity);
 
     //-----------------
@@ -257,12 +268,15 @@ void Game::initTestScene() {
 
 void Game::updateWorld() {
     for (auto& entity: this->entites) {
-        if (entity->getType() == Entity::TYPE_DYNAMIC) {
-            if (!entity->isCollidable()) {
-                continue;
-            }
+        if (entity->getType() != Entity::TYPE_DYNAMIC || !entity->isCollidable()) {
+            continue;
+        }
 
-            entity->setSpeed(entity->getSpeed() + this->gravityAcceleration * this->frameTime);
+        float scaleFactor = (this->frameTime > this->frameTime) ? this->frameTime : this->frameStep;
+        float totalTime = scaleFactor;
+
+        while (totalTime <= this->frameTime && scaleFactor > 0.0f) {
+            entity->setSpeed(entity->getSpeed() + this->gravityAcceleration * scaleFactor);
 
             for (auto& another: this->entites) {
                 if (!another->isCollidable()) {
@@ -302,10 +316,13 @@ void Game::updateWorld() {
                 }
 
                 entity->setSpeed(speed);
-                entity->collideSide(collide);
+                entity->collideWith(another, collide);
             }
 
-            entity->setPosition(entity->getPosition() + entity->getSpeed() * this->frameTime);
+            entity->setPosition(entity->getPosition() + entity->getSpeed() * scaleFactor);
+
+            scaleFactor = (this->frameTime - totalTime > this->frameStep) ? this->frameStep : this->frameTime - totalTime;
+            totalTime += scaleFactor;
         }
     }
 }

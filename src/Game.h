@@ -79,6 +79,7 @@ private:
 
         this->running = true;
         this->frameTime = 0.0f;
+        this->frameStep = 0.001f;
         this->cameraOffset = 3.0f;
 
         this->defaultAcceleration = Math::Vec3(20.0f, 0.0f, 0.0f);
@@ -102,6 +103,7 @@ private:
     bool running;
     int width, height;
     float frameTime;
+    float frameStep;
     float cameraOffset;
 };
 

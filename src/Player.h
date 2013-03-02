@@ -27,6 +27,7 @@
 #include "Collider.h"
 
 #include <cmath>
+#include <memory>
 
 namespace PolandBall {
 
@@ -42,7 +43,7 @@ public:
         this->initialize();
     }
 
-    void collideSide(Collider::CollideSide side) {
+    void collideWith(const std::shared_ptr<Entity>& another, Collider::CollideSide side) {
         switch (side) {
             case Collider::CollideSide::SIDE_TOP:
                 this->jumpTime = 100.0f;  // Just god damn big value, bigger than the maximum jump time
@@ -56,7 +57,7 @@ public:
                 break;
         }
     }
-    
+
     float getMaxMoveSpeed() const {
         return this->maxMoveSpeed;
     }
@@ -94,7 +95,7 @@ private:
     void initialize() {
         this->maxMoveSpeed = 3.0f;
         this->maxJumpSpeed = 4.0f;
-        this->maxJumpTime = 0.25f;
+        this->maxJumpTime = 0.4f;
 
         this->jumpTime = 0.0f;
         this->jumpWasReleased = true;
