@@ -226,7 +226,7 @@ void Game::initTestScene() {
 
     auto bricksEntity = std::shared_ptr<Entity>(new Entity());
     bricksEntity->setSprite(bricksSprite);
-    bricksEntity->setPosition(1.0f, -4.7f, 0.0f);
+    bricksEntity->setPosition(0.0f, -2.7f, 0.0f);
     bricksEntity->scale(0.15f);
     bricksEntity->scaleX(1.5f);  // Scale for aspect ratio
     bricksEntity->replicateX(20.0f);
@@ -238,7 +238,7 @@ void Game::initTestScene() {
 
     bricksEntity = std::shared_ptr<Entity>(new Entity());
     bricksEntity->setSprite(bricksSprite);
-    bricksEntity->setPosition(0.0f, -2.7f, 0.0f);
+    bricksEntity->setPosition(1.0f, -0.7f, 0.0f);
     bricksEntity->scale(0.15f);
     bricksEntity->scaleX(1.5f);  // Scale for aspect ratio
     this->entites.push_back(bricksEntity);
