@@ -86,6 +86,7 @@ private:
         this->gravityAcceleration = Math::Vec3(0.0f, -10.0f, 0.0f);
 
         this->camera.setPosition(0.0f, 0.0f, -this->cameraOffset);
+        this->camera.setAspectRatio(this->width / (this->height / 1.0f));
     }
 
     SDL_Window* window;
