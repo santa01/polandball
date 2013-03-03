@@ -78,7 +78,7 @@ void Player::slowDown(float frameTime) {
 void Player::jump(float frameTime) {
     float playerUpSpeed = this->currentSpeed.get(Math::Vec3::Y);
 
-    if (this->jumpWasReleased && this->jumpTime < this->maxJumpTime) {
+    if (this->jumpWasReleased && this->jumpTime < this->maxJumpTime && playerUpSpeed >= 0.0f) {
         if (playerUpSpeed < this->maxJumpSpeed) {
             Math::Vec3 jumpAcceleration(Math::Vec3::UNIT_Y * (this->maxJumpSpeed - playerUpSpeed));
             this->accelerateBy(jumpAcceleration);
