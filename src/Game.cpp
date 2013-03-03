@@ -39,11 +39,9 @@ int Game::exec() {
         return ERROR_SETUP;
     }
 
-    std::chrono::system_clock::time_point startTime, endTime;
-
     SDL_Event event;
     while (this->running) {
-        startTime = std::chrono::system_clock::now();  // TODO: steady_clock
+        unsigned int beginFrame = SDL_GetTicks();
 
         while (SDL_PollEvent(&event)) {
             switch (event.type) {
@@ -58,9 +56,7 @@ int Game::exec() {
         this->updateFPS();
         this->renderWorld();
 
-        endTime = std::chrono::system_clock::now();
-        this->frameTime = (std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count() /
-                1000000.0f);
+        this->frameTime = (SDL_GetTicks() - beginFrame) / 1000.0f;
     }
 
     this->tearDown();

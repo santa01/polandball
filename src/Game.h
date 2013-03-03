@@ -29,11 +29,10 @@
 #include "Vec3.h"
 #include "INonCopyable.h"
 
+#include <memory>
+#include <vector>
 #include <SDL2/SDL_video.h>
 #include <SDL2/SDL_ttf.h>
-#include <memory>
-#include <chrono>
-#include <vector>
 
 namespace PolandBall {
 
