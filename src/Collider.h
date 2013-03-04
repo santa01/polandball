@@ -47,10 +47,10 @@ public:
 
     Collider() {
         // NOTE: This is the same as Sprite default geometry
-        this->collideBox[0] = Math::Vec3( 2.0f,  2.0f,  0.0f);  // 0  1<--0
-        this->collideBox[1] = Math::Vec3(-2.0f,  2.0f,  0.0f);  // 1  |   ^
-        this->collideBox[2] = Math::Vec3(-2.0f, -2.0f,  0.0f);  // 2  v   |
-        this->collideBox[3] = Math::Vec3( 2.0f, -2.0f,  0.0f);  // 3  2-->3
+        this->collideBox[0] = Math::Vec3( 1.0f,  1.0f,  0.0f);  // 0  1<--0
+        this->collideBox[1] = Math::Vec3(-1.0f,  1.0f,  0.0f);  // 1  |   ^
+        this->collideBox[2] = Math::Vec3(-1.0f, -1.0f,  0.0f);  // 2  v   |
+        this->collideBox[3] = Math::Vec3( 1.0f, -1.0f,  0.0f);  // 3  2-->3
     }
 
     using IMovable::setPosition;

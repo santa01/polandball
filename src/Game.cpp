@@ -212,7 +212,7 @@ void Game::initTestScene() {
     auto backgroundEntity = std::shared_ptr<Entity>(new Entity());
     backgroundEntity->setSprite(backgroundSprite);
     backgroundEntity->setCollidable(false);
-    backgroundEntity->scale(1.5f);  // Fit the screen
+    backgroundEntity->scale(10.0f);  // Fit the screen
     backgroundEntity->scaleX(this->width / (this->height / 1.0f));  // Scale for aspect ratio
     this->entites.push_back(backgroundEntity);
 
@@ -222,8 +222,7 @@ void Game::initTestScene() {
 
     auto bricksEntity = std::shared_ptr<Entity>(new Entity());
     bricksEntity->setSprite(bricksSprite);
-    bricksEntity->setPosition(0.0f, -2.7f, 0.0f);
-    bricksEntity->scale(0.15f);
+    bricksEntity->setPosition(0.0f, -4.0f, 0.0f);
     bricksEntity->scaleX(1.5f);  // Scale for aspect ratio
     bricksEntity->replicateX(20.0f);
     this->entites.push_back(bricksEntity);
@@ -234,8 +233,7 @@ void Game::initTestScene() {
 
     bricksEntity = std::shared_ptr<Entity>(new Entity());
     bricksEntity->setSprite(bricksSprite);
-    bricksEntity->setPosition(1.0f, -0.7f, 0.0f);
-    bricksEntity->scale(0.15f);
+    bricksEntity->setPosition(1.0f, 1.0f, 0.0f);
     bricksEntity->scaleX(1.5f);  // Scale for aspect ratio
     this->entites.push_back(bricksEntity);
 
@@ -245,15 +243,14 @@ void Game::initTestScene() {
 
     this->player = std::shared_ptr<Player>(new Player());
     this->player->setSprite(playerSprite);
-    this->player->scale(0.15f);
-    this->player->setPosition(0.0f, -1.0f, 0.0f);
+    this->player->setPosition(0.0f, 5.0f, 0.0f);
     this->entites.push_back(this->player);
 
     //-----------------
     this->fpsCounter = std::shared_ptr<Entity>(new Entity());
     this->fpsCounter->setCollidable(false);
-    this->fpsCounter->scale(0.04f);
-    this->fpsCounter->setPosition(-3.55f, 2.85f, 0.0f);
+    this->fpsCounter->scale(0.25f);
+    this->fpsCounter->setPosition(-12.0f, 9.5f, 0.0f);
     this->entites.push_back(this->fpsCounter);
 
     //-----------------

@@ -93,9 +93,9 @@ public:
 
 private:
     void initialize() {
-        this->maxMoveSpeed = 3.0f;
-        this->maxJumpSpeed = 4.0f;
-        this->maxJumpTime = 0.4f;
+        this->maxMoveSpeed = 8.0f;
+        this->maxJumpSpeed = 15.0f;
+        this->maxJumpTime = 0.15f;
 
         this->jumpTime = 0.0f;
         this->jumpWasReleased = true;

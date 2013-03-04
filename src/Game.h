@@ -78,13 +78,11 @@ private:
 
         this->running = true;
         this->frameTime = 0.0f;
-        this->frameStep = 0.0001f;
-        this->cameraOffset = 3.0f;
+        this->frameStep = 0.001f;
 
-        this->defaultAcceleration = Math::Vec3(20.0f, 0.0f, 0.0f);
-        this->gravityAcceleration = Math::Vec3(0.0f, -10.0f, 0.0f);
+        this->gravityAcceleration = Math::Vec3(0.0f, -35.0f, 0.0f);
 
-        this->camera.setPosition(0.0f, 0.0f, -this->cameraOffset);
+        this->camera.setPosition(0.0f, 0.0f, -10.0f);
         this->camera.setAspectRatio(this->width / (this->height / 1.0f));
     }
 
@@ -96,7 +94,6 @@ private:
     std::shared_ptr<Player> player;
     std::shared_ptr<Entity> fpsCounter;
 
-    Math::Vec3 defaultAcceleration;
     Math::Vec3 gravityAcceleration;
     Camera camera;
 
@@ -104,7 +101,6 @@ private:
     int width, height;
     float frameTime;
     float frameStep;
-    float cameraOffset;
 };
 
 }  // namespace PolandBall

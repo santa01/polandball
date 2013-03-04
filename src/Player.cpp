@@ -56,7 +56,7 @@ void Player::moveLeft(float frameTime) {
 
 void Player::slowDown(float frameTime) {
     float playerMoveSpeed = this->currentSpeed.get(Math::Vec3::X);
-    float moveSpeedDelta = this->maxMoveSpeed * frameTime * 10.0f;
+    float moveSpeedDelta = this->maxMoveSpeed * frameTime * 5.0f;
     Math::Vec3 moveAcceleration;
 
     if (this->currentSpeed.get(Math::Vec3::Y) == 0.0f) {
