@@ -233,7 +233,7 @@ void Game::initTestScene() {
 
     bricksEntity = std::shared_ptr<Entity>(new Entity());
     bricksEntity->setSprite(bricksSprite);
-    bricksEntity->setPosition(1.0f, 1.0f, 0.0f);
+    bricksEntity->setPosition(4.0f, 1.0f, 0.0f);
     bricksEntity->scaleX(1.5f);  // Scale for aspect ratio
     this->entites.push_back(bricksEntity);
 
@@ -243,7 +243,7 @@ void Game::initTestScene() {
 
     this->player = std::shared_ptr<Player>(new Player());
     this->player->setSprite(playerSprite);
-    this->player->setPosition(0.0f, 5.0f, 0.0f);
+    this->player->setPosition(0.0f, 0.0f, 0.0f);
     this->entites.push_back(this->player);
 
     //-----------------
