@@ -37,7 +37,8 @@
 
 namespace PolandBall {
 
-class Entity: public IMovable, public IScalable, public IReplicable {
+// NOTE: IRotateble only for animation purposes
+class Entity: public IMovable, public IRotatable, public IScalable, public IReplicable {
 public:
     enum EntityType {
         TYPE_STATIC = 0,
@@ -70,6 +71,22 @@ public:
 
     Math::Vec3 getPosition() const {
         return this->sprite->getPosition();  // Positions are syncronized
+    }
+
+    float getXAngle() const {
+        return this->sprite->getXAngle();
+    }
+
+    float getYAngle() const {
+        return this->sprite->getYAngle();
+    }
+
+    float getZAngle() const {
+        return this->sprite->getZAngle();
+    }
+
+    void rotate(const Math::Vec3& vector, float angle) {
+        this->sprite->rotate(vector, angle);
     }
 
     void scaleX(float factor) {

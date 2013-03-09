@@ -103,11 +103,15 @@ void Player::aimAt(const Math::Vec3& target) {
     }
 
     float deltaAngle = acosf(this->target.dot(newTarget)) * 180.0f / M_PI;
+    if (deltaAngle == NAN) {
+        return;
+    }
+
     float currentAngle = this->sprite->getXAngle();
     Math::Vec3 normal = this->target.cross(newTarget);
     float signCorrection = (normal.get(Math::Vec3::Z) > 0) ? -1.0f : 1.0f;
 
-    this->sprite->roll(currentAngle + deltaAngle * signCorrection);
+    this->roll(currentAngle + deltaAngle * signCorrection);
     this->target = newTarget;
 }
 
