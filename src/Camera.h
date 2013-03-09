@@ -65,18 +65,15 @@ public:
     }
 
     float getXAngle() const {
-        // TODO: implement
-        return 0.0f;
+        return this->xAngle;
     }
 
     float getYAngle() const {
-        // TODO: implement
-        return 0.0f;
+        return this->yAngle;
     }
 
     float getZAngle() const {
-        // TODO: implement
-        return 0.0f;
+        return this->zAngle;
     }
 
     void rotate(const Math::Vec3& vector, float angle);
@@ -178,6 +175,10 @@ private:
     float nearPlane;
     float farPlane;
     float fov;
+
+    float xAngle;
+    float yAngle;
+    float zAngle;
 };
 
 }  // namespace PolandBall

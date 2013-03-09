@@ -43,6 +43,25 @@ const int Sprite::indices[] = {
     0, 2, 3,
 };
 
+void Sprite::rotate(const Math::Vec3& vector, float angle) {
+    if (vector == Math::Vec3::ZERO) {
+        return;
+    }
+
+    Math::Vec3 axis(vector);
+    Math::Quaternion q(axis.normalize(), angle * M_PI / 180.0f);
+    q.normalize();
+
+    this->rotation = q.extractMat4();
+
+    float xAngleNew, yAngleNew, zAngleNew;
+    q.extractEulerAgngles(xAngleNew, yAngleNew, zAngleNew);
+
+    this->xAngle = xAngleNew * 180.f / M_PI;
+    this->yAngle = yAngleNew * 180.f / M_PI;
+    this->zAngle = zAngleNew * 180.f / M_PI;
+}
+
 void Sprite::render() {
     if (this->texture != nullptr) {
         this->texture->bind();
@@ -80,6 +99,10 @@ void Sprite::initialize() {
 
     this->effect = Utils::ResourceManager::getInstance().makeEffect("default");
     this->texture = Utils::ResourceManager::getInstance().makeTexture("default");
+
+    this->xAngle = 0.0f;
+    this->yAngle = 0.0f;
+    this->zAngle = 0.0f;
 }
 
 }  // namespace PolandBall

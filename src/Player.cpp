@@ -90,4 +90,25 @@ void Player::jump(float frameTime) {
     }
 }
 
+void Player::aimAt(const Math::Vec3& target) {
+    if (target == Math::Vec3::ZERO) {
+        return;
+    }
+
+    Math::Vec3 newTarget(target);
+    newTarget.normalize();
+
+    if (newTarget == this->target) {
+        return;
+    }
+
+    float deltaAngle = acosf(this->target.dot(newTarget)) * 180.0f / M_PI;
+    float currentAngle = this->sprite->getXAngle();
+    Math::Vec3 normal = this->target.cross(newTarget);
+    float signCorrection = (normal.get(Math::Vec3::Z) > 0) ? -1.0f : 1.0f;
+
+    this->sprite->roll(currentAngle + deltaAngle * signCorrection);
+    this->target = newTarget;
+}
+
 }  // namespace PolandBall

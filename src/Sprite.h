@@ -78,26 +78,18 @@ public:
     }
 
     float getXAngle() const {
-        // TODO: implement
-        return 0.0f;
+        return this->xAngle;
     }
 
     float getYAngle() const {
-        // TODO: implement
-        return 0.0f;
+        return this->yAngle;
     }
 
     float getZAngle() const {
-        // TODO: implement
-        return 0.0f;
+        return this->zAngle;
     }
 
-    void rotate(const Math::Vec3& vector, float angle) {
-        Math::Quaternion q(vector, angle * M_PI / 180.0f);
-        q.normalize();
-
-        this->rotation = q.extractMat4();
-    }
+    void rotate(const Math::Vec3& vector, float angle);
 
     void scaleX(float factor) {
         this->scaling.set(0, 0, this->scaling.get(0, 0) * factor);
@@ -181,6 +173,10 @@ private:
     Math::Mat4 rotation;
     Math::Mat4 scaling;
     Math::Mat4 replica;
+
+    float xAngle;
+    float yAngle;
+    float zAngle;
 
     GLuint buffers[2];
     GLuint vao;

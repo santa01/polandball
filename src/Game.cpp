@@ -33,6 +33,23 @@
 
 namespace PolandBall {
 
+Game::Game() {
+    this->window = nullptr;
+    this->context = nullptr;
+    this->defaultFont = nullptr;
+
+    this->running = true;
+    this->width = 800;
+    this->height = 600;
+    this->frameTime = 0.0f;
+    this->frameStep = 0.001f;
+
+    this->gravityAcceleration = Math::Vec3(0.0f, -35.0f, 0.0f);
+
+    this->camera.setPosition(0.0f, 0.0f, -10.0f);
+    this->camera.setAspectRatio(this->width / (this->height / 1.0f));
+}
+
 int Game::exec() {
     if (!this->setUp()) {
         this->tearDown();
@@ -47,6 +64,13 @@ int Game::exec() {
             switch (event.type) {
                 case SDL_QUIT:
                     this->running = false;
+                    break;
+
+                case SDL_MOUSEMOTION:
+                    Math::Vec3 playerPosition(this->translateToScreen(this->player->getPosition()));
+                    Math::Vec3 target(Math::Vec3(event.motion.x, event.motion.y, 0.0f) - playerPosition);
+                    target.normalize();
+                    this->player->aimAt(target);
                     break;
             }
         }
@@ -207,7 +231,7 @@ bool Game::initFontConfig() {
 void Game::initTestScene() {
     // GL_DEPTH_TEST is OFF! Manually arrange sprites, farthest renders first!
     auto backgroundSprite = std::shared_ptr<Sprite>(new Sprite());
-    backgroundSprite->setTexture(Utils::ResourceManager::getInstance().makeTexture("textures/day_sky_3x4.png"));
+    backgroundSprite->setTexture(Utils::ResourceManager::getInstance().makeTexture("textures/background_static_800_600.png"));
 
     auto backgroundEntity = std::shared_ptr<Entity>(new Entity());
     backgroundEntity->setSprite(backgroundSprite);
@@ -218,7 +242,7 @@ void Game::initTestScene() {
 
     //-----------------
     auto bricksSprite = std::shared_ptr<Sprite>(new Sprite());
-    bricksSprite->setTexture(Utils::ResourceManager::getInstance().makeTexture("textures/kazakhstan_brick.png"));
+    bricksSprite->setTexture(Utils::ResourceManager::getInstance().makeTexture("textures/entity_static_kz.png"));
 
     auto bricksEntity = std::shared_ptr<Entity>(new Entity());
     bricksEntity->setSprite(bricksSprite);
@@ -229,7 +253,7 @@ void Game::initTestScene() {
 
     //-----------------
     bricksSprite = std::shared_ptr<Sprite>(new Sprite());
-    bricksSprite->setTexture(Utils::ResourceManager::getInstance().makeTexture("textures/kazakhstan_brick.png"));
+    bricksSprite->setTexture(Utils::ResourceManager::getInstance().makeTexture("textures/entity_static_kz.png"));
 
     bricksEntity = std::shared_ptr<Entity>(new Entity());
     bricksEntity->setSprite(bricksSprite);
@@ -243,7 +267,6 @@ void Game::initTestScene() {
 
     this->player = std::shared_ptr<Player>(new Player());
     this->player->setSprite(playerSprite);
-    this->player->setPosition(0.0f, 0.0f, 0.0f);
     this->entites.push_back(this->player);
 
     //-----------------
@@ -386,6 +409,22 @@ void Game::updateFPS() {
 
     updateTime += this->frameTime;
     frames++;
+}
+
+Math::Vec3 Game::translateToScreen(const Math::Vec3 vector) {
+    Math::Vec4 position(vector, 1.0f);
+    Math::Mat4 mvp(this->camera.getProjectionMatrix() *
+                   this->camera.getRotationMatrix() *
+                   this->camera.getTranslationMatrix());
+    position = mvp * position;
+
+    Math::Vec3 screenPosition(position.get(Math::Vec4::X) / position.get(Math::Vec4::W),
+                              position.get(Math::Vec4::Y) / position.get(Math::Vec4::W),
+                              0.0f);
+    screenPosition = Math::Vec3((screenPosition.get(Math::Vec4::X) + 1.0f) * this->width / 2.0f,
+                                (1.0f - screenPosition.get(Math::Vec4::Y)) * this->height / 2.0f,
+                                0.0f);
+    return screenPosition;
 }
 
 }  // namespace PolandBall

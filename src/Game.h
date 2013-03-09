@@ -43,18 +43,7 @@ public:
         ERROR_SETUP = 1
     };
 
-    Game() {
-        this->width = 800;
-        this->height = 600;
-        this->initialize();
-    }
-
-    Game(int width, int height) {
-        this->width = width;
-        this->height = height;
-        this->initialize();
-    }
-
+    Game();
     int exec();
 
 private:
@@ -71,20 +60,7 @@ private:
     void updateFPS();
     void renderWorld();
 
-    void initialize() {
-        this->window = nullptr;
-        this->context = nullptr;
-        this->defaultFont = nullptr;
-
-        this->running = true;
-        this->frameTime = 0.0f;
-        this->frameStep = 0.001f;
-
-        this->gravityAcceleration = Math::Vec3(0.0f, -35.0f, 0.0f);
-
-        this->camera.setPosition(0.0f, 0.0f, -10.0f);
-        this->camera.setAspectRatio(this->width / (this->height / 1.0f));
-    }
+    Math::Vec3 translateToScreen(const Math::Vec3 vector);
 
     SDL_Window* window;
     SDL_GLContext context;

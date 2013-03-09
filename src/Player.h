@@ -25,6 +25,7 @@
 
 #include "Entity.h"
 #include "Collider.h"
+#include "Vec3.h"
 
 #include <cmath>
 #include <memory>
@@ -34,13 +35,14 @@ namespace PolandBall {
 class Player: public Entity {
 public:
     Player():
-            Entity(Entity::TYPE_DYNAMIC) {
-        this->initialize();
-    }
+            Entity(Entity::TYPE_DYNAMIC),
+            target(Math::Vec3::UNIT_X) {
+        this->maxMoveSpeed = 8.0f;
+        this->maxJumpSpeed = 15.0f;
+        this->maxJumpTime = 0.15f;
 
-    Player(EntityType type):
-            Entity(type) {
-        this->initialize();
+        this->jumpTime = 0.0f;
+        this->jumpWasReleased = true;
     }
 
     void collideWith(const std::shared_ptr<Entity>& another, Collider::CollideSide side) {
@@ -56,6 +58,10 @@ public:
             default:
                 break;
         }
+    }
+
+    const Math::Vec3& getTarget() const {
+        return this->target;
     }
 
     float getMaxMoveSpeed() const {
@@ -91,15 +97,10 @@ public:
         this->jumpWasReleased = (this->jumpTime == 0.0f) ? true : false;
     }
 
-private:
-    void initialize() {
-        this->maxMoveSpeed = 8.0f;
-        this->maxJumpSpeed = 15.0f;
-        this->maxJumpTime = 0.15f;
+    void aimAt(const Math::Vec3& target);
 
-        this->jumpTime = 0.0f;
-        this->jumpWasReleased = true;
-    }
+private:
+    Math::Vec3 target;  // Window space!
 
     float maxMoveSpeed;
     float maxJumpSpeed;

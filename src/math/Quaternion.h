@@ -76,10 +76,10 @@ public:
     }
 
     float length() const {
-        return sqrtf(vector[X] * vector[X] +
-                     vector[Y] * vector[Y] +
-                     vector[Z] * vector[Z] +
-                     vector[W] * vector[W]);
+        return sqrtf(this->vector[X] * this->vector[X] +
+                     this->vector[Y] * this->vector[Y] +
+                     this->vector[Z] * this->vector[Z] +
+                     this->vector[W] * this->vector[W]);
     }
 
     float get(int index) const {
@@ -107,6 +107,14 @@ public:
     }
 
     Mat4 extractMat4() const;
+
+    void extractEulerAgngles(float& xAngle, float& yAngle, float& zAngle) const {
+        xAngle = atan2f(2 * (this->vector[X] * this->vector[Y] + this->vector[Z] * this->vector[W]),
+                        1 - 2 * (this->vector[Y] * this->vector[Y] + this->vector[Z] * this->vector[Z]));
+        yAngle = asinf(2 * (this->vector[X] * this->vector[Z] - this->vector[Y] * this->vector[W]));
+        zAngle = atan2f(2 * (this->vector[X] * this->vector[W] + this->vector[Y] * this->vector[Z]),
+                        1 - 2 * (this->vector[Z] * this->vector[Z] + this->vector[W] * this->vector[W]));
+    }
 
 private:
     float vector[4];

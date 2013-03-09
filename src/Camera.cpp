@@ -51,6 +51,13 @@ void Camera::rotate(const Math::Vec3& vector, float angle) {
     right.normalize();
 
     this->updateRotationMatrix(right, up, target);
+
+    float xAngleNew, yAngleNew, zAngleNew;
+    q.extractEulerAgngles(xAngleNew, yAngleNew, zAngleNew);
+
+    this->xAngle = xAngleNew * 180.f / M_PI;
+    this->yAngle = yAngleNew * 180.f / M_PI;
+    this->zAngle = zAngleNew * 180.f / M_PI;
 }
 
 Math::Vec3 Camera::getRight() const {

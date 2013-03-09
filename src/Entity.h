@@ -195,6 +195,9 @@ public:
     }
 
 protected:
+    std::unique_ptr<Collider> collider;
+    std::shared_ptr<Sprite> sprite;
+
     Math::Vec3 currentSpeed;
 
 private:
@@ -202,9 +205,6 @@ private:
         this->renderable = true;
         this->collidable = true;
     }
-
-    std::unique_ptr<Collider> collider;
-    std::shared_ptr<Sprite> sprite;
 
     bool renderable;
     bool collidable;
