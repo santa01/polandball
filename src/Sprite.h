@@ -28,7 +28,7 @@
 #include "Quaternion.h"
 #include "IMovable.h"
 #include "IScalable.h"
-#include "IReplicable.h"
+#include "ITransformable.h"
 #include "IRotatable.h"
 #include "INonCopyable.h"
 #include "Texture.h"
@@ -42,7 +42,7 @@
 namespace PolandBall {
 
 // NOTE: IRotateble only for animation purposes
-class Sprite: public IMovable, public IRotatable, public IScalable, public IReplicable, public INonCopyable {
+class Sprite: public IMovable, public IRotatable, public IScalable, public ITransformable, public INonCopyable {
 public:
     Sprite() {
         this->initialize();
@@ -116,30 +116,66 @@ public:
     }
 
     void replicateX(float factor) {
-        this->replica.set(0, 0, this->replica.get(0, 0) * factor);
+        this->replication.set(0, 0, this->replication.get(0, 0) * factor);
         this->scaleX(factor);
     }
 
     void replicateY(float factor) {
-        this->replica.set(1, 1, this->replica.get(1, 1) * factor);
+        this->replication.set(1, 1, this->replication.get(1, 1) * factor);
         this->scaleY(factor);
     }
 
     void replicateZ(float factor) {
-        this->replica.set(2, 2, this->replica.get(2, 2) * factor);
+        this->replication.set(2, 2, this->replication.get(2, 2) * factor);
         this->scaleZ(factor);
     }
 
     float getXReplicaFactor() const {
-        return this->replica.get(0, 0);
+        return this->replication.get(0, 0);
     }
 
     float getYReplicaFactor() const {
-        return this->replica.get(1, 1);
+        return this->replication.get(1, 1);
     }
 
     float getZReplicaFactor() const {
-        return this->replica.get(2, 2);
+        return this->replication.get(2, 2);
+    }
+
+    void shearX(int slice, int totalSlices) {
+        if (slice < totalSlices) {
+            this->shear.set(0, 0, 1.0f / totalSlices);
+            this->shear.set(0, 3, slice / 1.0f / totalSlices);
+        }
+    }
+
+    void shearY(int slice, int totalSlices) {
+        if (slice < totalSlices) {
+            this->shear.set(1, 1, 1.0f / totalSlices);
+            this->shear.set(1, 3, slice / 1.0f / totalSlices);
+        }
+    }
+
+    void shearZ(int slice, int totalSlices) {
+        if (slice < totalSlices) {
+            this->shear.set(2, 2, 1.0f / totalSlices);
+            this->shear.set(2, 3, slice / 1.0f / totalSlices);
+        }
+    }
+
+    void getXShearFactor(int& slice, int& totalSlices) const {
+        totalSlices = 1.0f / this->shear.get(0, 0);
+        slice = this->shear.get(0, 3) / this->shear.get(0, 0);
+    }
+
+    void getYShearFactor(int& slice, int& totalSlices) const {
+        totalSlices = 1.0f / this->shear.get(1, 1);
+        slice = this->shear.get(1, 3) / this->shear.get(1, 1);
+    }
+
+    void getZShearFactor(int& slice, int& totalSlices) const {
+        totalSlices = 1.0f / this->shear.get(2, 2);
+        slice = this->shear.get(2, 3) / this->shear.get(2, 2);
     }
 
     std::shared_ptr<RenderEffect>& getEffect() {
@@ -172,7 +208,9 @@ private:
     Math::Mat4 translation;
     Math::Mat4 rotation;
     Math::Mat4 scaling;
-    Math::Mat4 replica;
+
+    Math::Mat4 replication;
+    Math::Mat4 shear;
 
     float xAngle;
     float yAngle;

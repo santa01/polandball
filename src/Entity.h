@@ -28,7 +28,7 @@
 #include "Vec3.h"
 #include "IMovable.h"
 #include "IScalable.h"
-#include "IReplicable.h"
+#include "ITransformable.h"
 #include "ResourceManager.h"
 #include "Signals.h"
 
@@ -38,7 +38,7 @@
 namespace PolandBall {
 
 // NOTE: IRotateble only for animation purposes
-class Entity: public IMovable, public IRotatable, public IScalable, public IReplicable {
+class Entity: public IMovable, public IRotatable, public IScalable, public ITransformable {
 public:
     enum EntityType {
         TYPE_STATIC = 0,
@@ -141,6 +141,30 @@ public:
 
     float getZReplicaFactor() const {
         return this->sprite->getZReplicaFactor();
+    }
+
+    void shearX(int slice, int totalSlices) {
+        this->sprite->shearX(slice, totalSlices);
+    }
+
+    void shearY(int slice, int totalSlices) {
+        this->sprite->shearY(slice, totalSlices);
+    }
+
+    void shearZ(int slice, int totalSlices) {
+        this->sprite->shearZ(slice, totalSlices);
+    }
+
+    void getXShearFactor(int& slice, int& totalSlices) const {
+        this->sprite->getXShearFactor(slice, totalSlices);
+    }
+
+    void getYShearFactor(int& slice, int& totalSlices) const {
+        this->sprite->getYShearFactor(slice, totalSlices);
+    }
+
+    void getZShearFactor(int& slice, int& totalSlices) const {
+        this->sprite->getZShearFactor(slice, totalSlices);
     }
 
     std::unique_ptr<Collider>& getCollider() {

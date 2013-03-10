@@ -25,9 +25,9 @@
 
 namespace PolandBall {
 
-class IReplicable {
+class ITransformable {
 public:
-    virtual ~IReplicable() {}
+    virtual ~ITransformable() {}
 
     virtual void replicateX(float factor) = 0;
     virtual void replicateY(float factor) = 0;
@@ -41,6 +41,20 @@ public:
         this->replicateX(factor);
         this->replicateY(factor);
         this->replicateZ(factor);
+    }
+
+    virtual void shearX(int slice, int totalSlices) = 0;
+    virtual void shearY(int slice, int totalSlices) = 0;
+    virtual void shearZ(int slice, int totalSlices) = 0;
+
+    virtual void getXShearFactor(int& slice, int& totalSlices) const = 0;
+    virtual void getYShearFactor(int& slice, int& totalSlices) const = 0;
+    virtual void getZShearFactor(int& slice, int& totalSlices) const = 0;
+
+    void shear(int slice, int totalSlices) {
+        this->shearX(slice, totalSlices);
+        this->shearY(slice, totalSlices);
+        this->shearZ(slice, totalSlices);
     }
 };
 

@@ -263,10 +263,11 @@ void Game::initTestScene() {
 
     //-----------------
     auto playerSprite = std::shared_ptr<Sprite>(new Sprite());
-    playerSprite->setTexture(Utils::ResourceManager::getInstance().makeTexture("textures/turkey_ball.png"));
+    playerSprite->setTexture(Utils::ResourceManager::getInstance().makeTexture("textures/player_tk.png"));
 
     this->player = std::shared_ptr<Player>(new Player());
     this->player->setSprite(playerSprite);
+    this->player->shearX(1, 2);
     this->entites.push_back(this->player);
 
     //-----------------

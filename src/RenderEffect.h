@@ -69,11 +69,11 @@ public:
         }
     }
 
-    void setReplica(const Math::Mat4& matrix) {
+    void setTransform(const Math::Mat4& matrix) {
         this->enable();
 
-        if (this->replica > -1) {
-            glUniformMatrix4fv(this->replica, 1, GL_TRUE, (GLfloat*)matrix.data());
+        if (this->transform > -1) {
+            glUniformMatrix4fv(this->transform, 1, GL_TRUE, (GLfloat*)matrix.data());
         }
     }
 
@@ -90,9 +90,9 @@ private:
 
     GLuint program;
 
-    GLint mvp;      // vertex shader
-    GLint lw;       // vertex shader
-    GLint replica;  // vertex shader
+    GLint mvp;        // vertex shader
+    GLint lw;         // vertex shader
+    GLint transform;  // vertex shader
 };
 
 } // namespace PolandBall

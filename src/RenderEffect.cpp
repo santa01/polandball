@@ -31,7 +31,7 @@ void RenderEffect::enable() {
 
         this->mvp = glGetUniformLocation(this->program, "mvp");
         this->lw = glGetUniformLocation(this->program, "lw");
-        this->replica = glGetUniformLocation(this->program, "replica");
+        this->transform = glGetUniformLocation(this->program, "transform");
 
         GLint samplerLocation = glGetUniformLocation(this->program, "textureSampler");
         if (samplerLocation > -1) {
