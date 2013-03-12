@@ -100,7 +100,7 @@ public:
     void aimAt(const Math::Vec3& target);
 
 private:
-    Math::Vec3 target;  // Window space!
+    Math::Vec3 target;
 
     float maxMoveSpeed;
     float maxJumpSpeed;

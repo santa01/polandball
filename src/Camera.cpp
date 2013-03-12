@@ -50,7 +50,7 @@ void Camera::rotate(const Math::Vec3& vector, float angle) {
     Math::Vec3 right = target.cross(up);
     right.normalize();
 
-    this->updateRotationMatrix(right, up, target);
+    this->updateRotation(right, up, target);
 
     float xAngleNew, yAngleNew, zAngleNew;
     q.extractEulerAgngles(xAngleNew, yAngleNew, zAngleNew);
@@ -88,36 +88,7 @@ void Camera::lookAt(const Math::Vec3& vector) {
     Math::Vec3 up = right.cross(target);
     up.normalize();
     
-    this->updateRotationMatrix(right, up, target);
-}
-
-void Camera::updateRotationMatrix(const Math::Vec3& right, const Math::Vec3& up, const Math::Vec3& target) {
-    this->rotation.set(0, 0, right.get(Math::Vec3::X));
-    this->rotation.set(0, 1, right.get(Math::Vec3::Y));
-    this->rotation.set(0, 2, right.get(Math::Vec3::Z));
-    
-    this->rotation.set(1, 0, up.get(Math::Vec3::X));
-    this->rotation.set(1, 1, up.get(Math::Vec3::Y));
-    this->rotation.set(1, 2, up.get(Math::Vec3::Z));
-    
-    this->rotation.set(2, 0, target.get(Math::Vec3::X));
-    this->rotation.set(2, 1, target.get(Math::Vec3::Y));
-    this->rotation.set(2, 2, target.get(Math::Vec3::Z));
-}
-
-void Camera::initialize() {
-    this->aspectRatio = 1.3333f;
-    this->nearPlane = 0.1f;
-    this->farPlane = 10.0f;
-    this->fov = 90.0f;
-
-    this->projection.set(3, 2, -1.0f);
-    this->projection.set(3, 3, 0.0f);
-
-    this->updateFieldOfView();
-    this->updateClipDistances();
-
-    this->lookAt(Math::Vec3::UNIT_Z);
+    this->updateRotation(right, up, target);
 }
 
 }  // namespace PolandBall

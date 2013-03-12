@@ -60,7 +60,13 @@ private:
     void updateFPS();
     void renderWorld();
 
-    Math::Vec3 translateToScreen(const Math::Vec3 vector);
+    Math::Vec3 toWorld(const Math::Vec3 vector) const;
+
+    void updateMousePosition() const {
+        SDL_Event event = { SDL_MOUSEMOTION };
+        SDL_GetMouseState(&event.motion.x, &event.motion.y);
+        SDL_PushEvent(&event);
+    }
 
     SDL_Window* window;
     SDL_GLContext context;
@@ -68,6 +74,7 @@ private:
 
     std::vector<std::shared_ptr<Entity>> entites;
     std::shared_ptr<Player> player;
+    std::shared_ptr<Entity> cursor;
     std::shared_ptr<Entity> fpsCounter;
 
     Math::Vec3 gravityAcceleration;

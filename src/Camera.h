@@ -102,36 +102,18 @@ public:
 
     void lookAt(const Math::Vec3& target);
 
-    void setNearPlane(float nearPlane) {
-        this->nearPlane = nearPlane;
-        this->updateClipDistances();
+    void setPlaneDistance(float planeDistance) {
+        this->planeDistance = planeDistance;
+        this->updateProjection();
     }
 
-    float getNearPlane() const {
-        return this->nearPlane;
-    }
-
-    void setFarPlane(float farPlane) {
-        this->farPlane = farPlane;
-        this->updateClipDistances();
-    }
-
-    float getFarPlane() const {
-        return this->farPlane;
-    }
-
-    void setFov(float fov) {
-        this->fov = fov;
-        this->updateFieldOfView();
-    }
-
-    float getFov() const {
-        return this->fov;
+    float getPlaneDistance() const {
+        return this->planeDistance;
     }
 
     void setAspectRatio(float aspectRatio) {
         this->aspectRatio = aspectRatio;
-        this->updateFieldOfView();
+        this->updateProjection();
     }
 
     float getAspectRatio() const {
@@ -142,39 +124,41 @@ public:
         return this->projection;
     }
 
-    // Slot
-    void onPositionUpdate(const Math::Vec3& positionDelta) {
-        Math::Vec3 currentPosition = this->getPosition();
-        currentPosition.set(Math::Vec3::X, currentPosition.get(Math::Vec3::X) + positionDelta.get(Math::Vec3::X));
-        currentPosition.set(Math::Vec3::Y, currentPosition.get(Math::Vec3::Y) + positionDelta.get(Math::Vec3::Y));
-        this->setPosition(currentPosition);
-    }
-
 private:
-    void updateClipDistances() {
-        this->projection.set(2, 2, (-this->farPlane - this->nearPlane) /
-                                   (this->farPlane - this->nearPlane));
-        this->projection.set(2, 3, (-2.0f * this->farPlane * this->nearPlane) /
-                                   (this->farPlane - this->nearPlane));
+    void updateProjection() {
+        this->projection.set(0, 0, 1.0f / (this->planeDistance * this->aspectRatio));
+        this->projection.set(1, 1, 1.0f / this->planeDistance);
+        this->projection.set(2, 2, -1.0f / this->planeDistance);
     }
 
-    void updateFieldOfView() {
-        this->projection.set(0, 0, 1.0f / (tanf(this->fov * M_PI / 180.0f / 2.0f) *
-                                   this->aspectRatio));
-        this->projection.set(1, 1, 1.0f / (tanf(this->fov * M_PI / 180.0f / 2.0f)));
+    void updateRotation(const Math::Vec3& right, const Math::Vec3& up, const Math::Vec3& target) {
+        this->rotation.set(0, 0, right.get(Math::Vec3::X));
+        this->rotation.set(0, 1, right.get(Math::Vec3::Y));
+        this->rotation.set(0, 2, right.get(Math::Vec3::Z));
+
+        this->rotation.set(1, 0, up.get(Math::Vec3::X));
+        this->rotation.set(1, 1, up.get(Math::Vec3::Y));
+        this->rotation.set(1, 2, up.get(Math::Vec3::Z));
+
+        this->rotation.set(2, 0, target.get(Math::Vec3::X));
+        this->rotation.set(2, 1, target.get(Math::Vec3::Y));
+        this->rotation.set(2, 2, target.get(Math::Vec3::Z));
     }
 
-    void updateRotationMatrix(const Math::Vec3& right, const Math::Vec3& up, const Math::Vec3& target);
-    void initialize();
+    void initialize() {
+        this->aspectRatio = 1.3333f;
+        this->planeDistance = 10.0f;
+
+        this->updateProjection();
+        this->lookAt(Math::Vec3::UNIT_Z);
+    }
 
     Math::Mat4 translation;
     Math::Mat4 rotation;
     Math::Mat4 projection;
 
     float aspectRatio;
-    float nearPlane;
-    float farPlane;
-    float fov;
+    float planeDistance;
 
     float xAngle;
     float yAngle;

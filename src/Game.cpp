@@ -45,8 +45,6 @@ Game::Game() {
     this->frameStep = 0.001f;
 
     this->gravityAcceleration = Math::Vec3(0.0f, -35.0f, 0.0f);
-
-    this->camera.setPosition(0.0f, 0.0f, -10.0f);
     this->camera.setAspectRatio(this->width / (this->height / 1.0f));
 }
 
@@ -67,10 +65,9 @@ int Game::exec() {
                     break;
 
                 case SDL_MOUSEMOTION:
-                    Math::Vec3 playerPosition(this->translateToScreen(this->player->getPosition()));
-                    Math::Vec3 target(Math::Vec3(event.motion.x, event.motion.y, 0.0f) - playerPosition);
-                    target.normalize();
-                    this->player->aimAt(target);
+                    Math::Vec3 cursorPosition(this->toWorld(Math::Vec3(event.motion.x, event.motion.y, 0.0f)));
+                    this->cursor->setPosition(cursorPosition + this->player->getPosition());
+                    this->player->aimAt(cursorPosition);
                     break;
             }
         }
@@ -148,6 +145,7 @@ bool Game::initSDL() {
     Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "SDL_image version: %d.%d.%d",
             sdlImageVersion->major, sdlImageVersion->minor, sdlImageVersion->patch);
 
+    SDL_ShowCursor(0);
     return true;
 }
 
@@ -267,8 +265,18 @@ void Game::initTestScene() {
 
     this->player = std::shared_ptr<Player>(new Player());
     this->player->setSprite(playerSprite);
-    this->player->shearX(1, 2);
+    this->player->shearX(0, 2);
     this->entites.push_back(this->player);
+
+    //-----------------
+    auto cursorSprite = std::shared_ptr<Sprite>(new Sprite());
+    cursorSprite->setTexture(Utils::ResourceManager::getInstance().makeTexture("textures/cursor.png"));
+
+    this->cursor = std::shared_ptr<Entity>(new Entity());
+    this->cursor->setSprite(cursorSprite);
+    this->cursor->setCollidable(false);
+    this->cursor->scale(0.5f);
+    this->entites.push_back(this->cursor);
 
     //-----------------
     this->fpsCounter = std::shared_ptr<Entity>(new Entity());
@@ -278,9 +286,16 @@ void Game::initTestScene() {
     this->entites.push_back(this->fpsCounter);
 
     //-----------------
-    this->player->updatePosition.connect(std::bind(&Entity::onPositionUpdate, backgroundEntity, std::placeholders::_1));
-    this->player->updatePosition.connect(std::bind(&Camera::onPositionUpdate, &this->camera, std::placeholders::_1));
-    this->player->updatePosition.connect(std::bind(&Entity::onPositionUpdate, this->fpsCounter, std::placeholders::_1));
+    this->player->positionChanged.connect(
+            std::bind(static_cast<void(Entity::*)(const Math::Vec3&)>(&Entity::setPosition),
+            backgroundEntity, std::placeholders::_1));
+    this->player->positionChanged.connect(
+            std::bind(static_cast<void(Camera::*)(const Math::Vec3&)>(&Camera::setPosition),
+            &this->camera, std::placeholders::_1));
+    this->player->positionChanged.connect(
+            std::bind(static_cast<void(Entity::*)(const Math::Vec3&)>(&Entity::setPosition),
+            this->fpsCounter, std::placeholders::_1));
+    this->player->positionChanged.connect(std::bind(&Game::updateMousePosition, this));
 }
 
 void Game::updateWorld() {
@@ -346,7 +361,6 @@ void Game::updateWorld() {
 
 void Game::updatePlayer() {
     Uint8 *keyStates = SDL_GetKeyboardState(nullptr);
-
     if (keyStates[SDL_SCANCODE_ESCAPE]) {
         this->running = false;
     }
@@ -412,20 +426,19 @@ void Game::updateFPS() {
     frames++;
 }
 
-Math::Vec3 Game::translateToScreen(const Math::Vec3 vector) {
-    Math::Vec4 position(vector, 1.0f);
-    Math::Mat4 mvp(this->camera.getProjectionMatrix() *
-                   this->camera.getRotationMatrix() *
-                   this->camera.getTranslationMatrix());
-    position = mvp * position;
+Math::Vec3 Game::toWorld(const Math::Vec3 vector) const {
+    Math::Vec4 worldPosition(vector, 1.0f);
+    Math::Mat4 translation;
 
-    Math::Vec3 screenPosition(position.get(Math::Vec4::X) / position.get(Math::Vec4::W),
-                              position.get(Math::Vec4::Y) / position.get(Math::Vec4::W),
-                              0.0f);
-    screenPosition = Math::Vec3((screenPosition.get(Math::Vec4::X) + 1.0f) * this->width / 2.0f,
-                                (1.0f - screenPosition.get(Math::Vec4::Y)) * this->height / 2.0f,
-                                0.0f);
-    return screenPosition;
+    translation.set(0, 0, this->camera.getPlaneDistance() * 2.0f / this->width);
+    translation.set(0, 3, -this->camera.getPlaneDistance());
+    translation.set(1, 1, -this->camera.getPlaneDistance() * 2.0f / this->height);
+    translation.set(1, 3, this->camera.getPlaneDistance());
+
+    worldPosition = translation * worldPosition;
+    return Math::Vec3(worldPosition.get(Math::Vec3::X) * this->camera.getAspectRatio(),
+                      worldPosition.get(Math::Vec3::Y),
+                      worldPosition.get(Math::Vec3::Z));
 }
 
 }  // namespace PolandBall
