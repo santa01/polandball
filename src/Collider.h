@@ -68,15 +68,15 @@ public:
     }
 
     void scaleX(float factor) {
-        this->scaling.set(0, 0, this->scaling.get(0, 0) * factor);
+        this->scaling.set(0, 0, factor);
     }
 
     void scaleY(float factor) {
-        this->scaling.set(1, 1, this->scaling.get(1, 1) * factor);
+        this->scaling.set(1, 1, factor);
     }
 
     void scaleZ(float factor) {
-        this->scaling.set(2, 2, this->scaling.get(2, 2) * factor);
+        this->scaling.set(2, 2, factor);
     }
 
     float getXFactor() const {

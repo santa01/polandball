@@ -116,18 +116,15 @@ public:
     }
 
     void replicateX(float factor) {
-        this->replication.set(0, 0, this->replication.get(0, 0) * factor);
-        this->scaleX(factor);
+        this->replication.set(0, 0, factor);
     }
 
     void replicateY(float factor) {
-        this->replication.set(1, 1, this->replication.get(1, 1) * factor);
-        this->scaleY(factor);
+        this->replication.set(1, 1, factor);
     }
 
     void replicateZ(float factor) {
-        this->replication.set(2, 2, this->replication.get(2, 2) * factor);
-        this->scaleZ(factor);
+        this->replication.set(2, 2, factor);
     }
 
     float getXReplicaFactor() const {

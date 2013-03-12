@@ -118,17 +118,14 @@ public:
 
     void replicateX(float factor) {
         this->sprite->replicateX(factor);
-        this->collider->scaleX(factor);
     }
 
     void replicateY(float factor) {
         this->sprite->replicateY(factor);
-        this->collider->scaleY(factor);
     }
 
     void replicateZ(float factor) {
         this->sprite->replicateZ(factor);
-        this->collider->scaleZ(factor);
     }
 
     float getXReplicaFactor() const {
