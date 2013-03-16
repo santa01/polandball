@@ -35,7 +35,6 @@ namespace PolandBall {
 class Player: public Entity {
 public:
     Player():
-            Entity(Entity::TYPE_DYNAMIC),
             target(Math::Vec3::UNIT_X) {
         this->maxMoveSpeed = 8.0f;
         this->maxJumpSpeed = 15.0f;
@@ -43,6 +42,8 @@ public:
 
         this->jumpTime = 0.0f;
         this->jumpWasReleased = true;
+
+        this->type = Entity::EntityType::TYPE_PLAYER;
     }
 
     void collideWith(const std::shared_ptr<Entity>& another, Collider::CollideSide side) {

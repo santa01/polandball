@@ -41,22 +41,24 @@ namespace PolandBall {
 class Entity: public IMovable, public IRotatable, public IScalable, public ITransformable {
 public:
     enum EntityType {
-        TYPE_STATIC = 0,
-        TYPE_DYNAMIC = 1
+        // Non-movable
+        TYPE_SOLID = 0,     // Visible, collidable
+        TYPE_CLIP = 1,      // Invisible, collidable
+        TYPE_PASSABLE = 3,  // Visible, non-collidable
+        // Movable
+        TYPE_PLAYER = 4    // Player entity
     };
 
     Entity():
             collider(new Collider()),
             sprite(new Sprite()) {
-        this->type = TYPE_STATIC;
-        this->initialize();
+        this->type = TYPE_SOLID;
     }
 
     Entity(EntityType type):
             collider(new Collider()),
             sprite(new Sprite()) {
         this->type = type;
-        this->initialize();
     }
 
     virtual ~Entity() {}
@@ -64,9 +66,10 @@ public:
     using IMovable::setPosition;
 
     void setPosition(const Math::Vec3& position) {
-        this->sprite->setPosition(position);
-        this->collider->setPosition(position);
-        this->positionChanged(position);  // Emit signal
+        Math::Vec3 newPosition(position + this->offset);
+        this->sprite->setPosition(newPosition);
+        this->collider->setPosition(newPosition);
+        this->positionChanged(newPosition);  // Emit signal
     }
 
     Math::Vec3 getPosition() const {
@@ -186,23 +189,6 @@ public:
         }
     }
 
-    bool isCollidable() const {
-        return this->collidable;
-    }
-
-    void setCollidable(bool collidable) {
-        this->collidable = collidable;
-    }
-
-    bool isRenderable() const {
-        return this->renderable;
-    }
-
-    void setRenderable(bool renderable) {
-        this->renderable = renderable;
-    }
-
-    // I have no idea why static entity could became dynamic, hence no setter
     EntityType getType() const {
         return this->type;
     }
@@ -215,11 +201,24 @@ public:
         this->currentSpeed = speed;
     }
 
+    const Math::Vec3& getOffset() const {
+        return this->offset;
+    }
+
+    void setOffset(const Math::Vec3& offset) {
+        this->offset = offset;
+    }
+
     void accelerateBy(const Math::Vec3& acceleration) {
         this->currentSpeed += acceleration;
     }
 
     virtual void collideWith(const std::shared_ptr<Entity>& another, Collider::CollideSide side) {}
+    virtual void animate(float frameTime) {}
+
+    virtual void render() {
+        this->sprite->render();
+    }
 
     Signals::Signal<Math::Vec3> positionChanged;
 
@@ -228,15 +227,7 @@ protected:
     std::shared_ptr<Sprite> sprite;
 
     Math::Vec3 currentSpeed;
-
-private:
-    void initialize() {
-        this->renderable = true;
-        this->collidable = true;
-    }
-
-    bool renderable;
-    bool collidable;
+    Math::Vec3 offset;
     EntityType type;
 };
 

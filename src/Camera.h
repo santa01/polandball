@@ -25,6 +25,7 @@
 
 #include "Mat4.h"
 #include "Vec3.h"
+#include "Signals.h"
 #include "IMovable.h"
 #include "IRotatable.h"
 
@@ -52,6 +53,7 @@ public:
         this->translation.set(0, 3, -position.get(Math::Vec3::X));
         this->translation.set(1, 3, -position.get(Math::Vec3::Y));
         this->translation.set(2, 3, -position.get(Math::Vec3::Z));
+        this->positionChanged(position);  // Emit signal
     }
 
     Math::Vec3 getPosition() const {
@@ -123,6 +125,8 @@ public:
     const Math::Mat4& getProjectionMatrix() const {
         return this->projection;
     }
+
+    Signals::Signal<Math::Vec3> positionChanged;
 
 private:
     void updateProjection() {

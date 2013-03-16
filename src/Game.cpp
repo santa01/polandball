@@ -231,9 +231,8 @@ void Game::initTestScene() {
     auto backgroundSprite = std::shared_ptr<Sprite>(new Sprite());
     backgroundSprite->setTexture(Utils::ResourceManager::getInstance().makeTexture("textures/background_static_800_600.png"));
 
-    auto backgroundEntity = std::shared_ptr<Entity>(new Entity());
+    auto backgroundEntity = std::shared_ptr<Entity>(new Entity(Entity::EntityType::TYPE_PASSABLE));
     backgroundEntity->setSprite(backgroundSprite);
-    backgroundEntity->setCollidable(false);
     backgroundEntity->scaleY(10.0f);
     backgroundEntity->scaleX(10.0f * this->camera.getAspectRatio());
     this->entites.push_back(backgroundEntity);
@@ -272,17 +271,16 @@ void Game::initTestScene() {
     auto cursorSprite = std::shared_ptr<Sprite>(new Sprite());
     cursorSprite->setTexture(Utils::ResourceManager::getInstance().makeTexture("textures/cursor.png"));
 
-    this->cursor = std::shared_ptr<Entity>(new Entity());
+    this->cursor = std::shared_ptr<Entity>(new Entity(Entity::EntityType::TYPE_PASSABLE));
     this->cursor->setSprite(cursorSprite);
-    this->cursor->setCollidable(false);
     this->cursor->scale(0.5f);
     this->entites.push_back(this->cursor);
 
     //-----------------
-    this->fpsCounter = std::shared_ptr<Entity>(new Entity());
-    this->fpsCounter->setCollidable(false);
-    this->fpsCounter->scale(0.25f);
+    this->fpsCounter = std::shared_ptr<Entity>(new Entity(Entity::EntityType::TYPE_PASSABLE));
     this->fpsCounter->setPosition(-12.0f, 9.5f, 0.0f);
+    this->fpsCounter->setOffset(this->toWorld(Math::Vec3(45.0f, 15.0f, 0.0f)));
+    this->fpsCounter->scale(0.25f);
     this->entites.push_back(this->fpsCounter);
 
     //-----------------
@@ -292,26 +290,29 @@ void Game::initTestScene() {
     this->player->positionChanged.connect(
             std::bind(static_cast<void(Camera::*)(const Math::Vec3&)>(&Camera::setPosition),
             &this->camera, std::placeholders::_1));
-    this->player->positionChanged.connect(
+    this->player->positionChanged.connect(std::bind(&Game::updateMousePosition, this));
+    this->camera.positionChanged.connect(
             std::bind(static_cast<void(Entity::*)(const Math::Vec3&)>(&Entity::setPosition),
             this->fpsCounter, std::placeholders::_1));
-    this->player->positionChanged.connect(std::bind(&Game::updateMousePosition, this));
 }
 
 void Game::updateWorld() {
     for (auto& entity: this->entites) {
-        if (entity->getType() != Entity::TYPE_DYNAMIC || !entity->isCollidable()) {
+        Entity::EntityType type = entity->getType();
+        if (type == Entity::EntityType::TYPE_PASSABLE ||
+                type == Entity::EntityType::TYPE_CLIP ||
+                type == Entity::EntityType::TYPE_SOLID) {
             continue;
         }
 
-        float scaleFactor = (this->frameTime > this->frameTime) ? this->frameTime : this->frameStep;
+        float scaleFactor = (this->frameStep > this->frameTime) ? this->frameTime : this->frameStep;
         float totalTime = scaleFactor;
 
         while (totalTime <= this->frameTime && scaleFactor > 0.0f) {
             entity->setSpeed(entity->getSpeed() + this->gravityAcceleration * scaleFactor);
 
             for (auto& another: this->entites) {
-                if (!another->isCollidable()) {
+                if (another->getType() == Entity::EntityType::TYPE_PASSABLE || another == entity) {
                     continue;
                 }
 
@@ -319,25 +320,25 @@ void Game::updateWorld() {
                 Math::Vec3 speed = entity->getSpeed();
 
                 switch (collide) {
-                    case Collider::SIDE_BOTTOM:
+                    case Collider::CollideSide::SIDE_BOTTOM:
                         if (speed.get(Math::Vec3::Y) < 0.0f) {
                             speed.set(Math::Vec3::Y, 0.0f);
                         }
                         break;
 
-                    case Collider::SIDE_TOP:
+                    case Collider::CollideSide::SIDE_TOP:
                         if (speed.get(Math::Vec3::Y) > 0.0f) {
                             speed.set(Math::Vec3::Y, 0.0f);
                         }
                         break;
 
-                    case Collider::SIDE_LEFT:
+                    case Collider::CollideSide::SIDE_LEFT:
                         if (speed.get(Math::Vec3::X) < 0.0f) {
                             speed.set(Math::Vec3::X, 0.0f);
                         }
                         break;
 
-                    case Collider::SIDE_RIGHT:
+                    case Collider::CollideSide::SIDE_RIGHT:
                         if (speed.get(Math::Vec3::X) > 0.0f) {
                             speed.set(Math::Vec3::X, 0.0f);
                         }
@@ -389,9 +390,9 @@ void Game::renderWorld() {
                    this->camera.getTranslationMatrix());
 
     for (auto& entity: this->entites) {
-        if (entity->isRenderable()) {
+        if (entity->getType() != Entity::EntityType::TYPE_CLIP) {
             entity->getSprite()->getEffect()->setMVP(mvp);
-            entity->getSprite()->render();
+            entity->render();
         }
     }
 
