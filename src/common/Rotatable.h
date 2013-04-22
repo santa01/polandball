@@ -20,44 +20,36 @@
  * SOFTWARE.
  */
 
-#ifndef REPLICABLE_H
-#define REPLICABLE_H
+#ifndef ROTATABLE_H
+#define ROTATABLE_H
+
+#include "Vec3.h"
 
 namespace PolandBall {
 
-class ITransformable {
+class Rotatable {
 public:
-    virtual ~ITransformable() {}
+    virtual ~Rotatable() {}
 
-    virtual void replicateX(float factor) = 0;
-    virtual void replicateY(float factor) = 0;
-    virtual void replicateZ(float factor) = 0;
-
-    virtual float getXReplicaFactor() const = 0;
-    virtual float getYReplicaFactor() const = 0;
-    virtual float getZReplicaFactor() const = 0;
-
-    void replicate(float factor) {
-        this->replicateX(factor);
-        this->replicateY(factor);
-        this->replicateZ(factor);
+    void roll(float angle) {
+        this->rotate(Math::Vec3(0.0f, 0.0f, 1.0f), angle);
     }
 
-    virtual void shearX(int slice, int totalSlices) = 0;
-    virtual void shearY(int slice, int totalSlices) = 0;
-    virtual void shearZ(int slice, int totalSlices) = 0;
-
-    virtual void getXShearFactor(int& slice, int& totalSlices) const = 0;
-    virtual void getYShearFactor(int& slice, int& totalSlices) const = 0;
-    virtual void getZShearFactor(int& slice, int& totalSlices) const = 0;
-
-    void shear(int slice, int totalSlices) {
-        this->shearX(slice, totalSlices);
-        this->shearY(slice, totalSlices);
-        this->shearZ(slice, totalSlices);
+    void yaw(float angle) {
+        this->rotate(Math::Vec3(0.0f, 1.0f, 0.0f), angle);
     }
+
+    void pitch(float angle) {
+        this->rotate(Math::Vec3(1.0f, 0.0f, 0.0f), angle);
+    }
+
+    virtual float getXAngle() const = 0;
+    virtual float getYAngle() const = 0;
+    virtual float getZAngle() const = 0;
+
+    virtual void rotate(const Math::Vec3& vector, float angle) = 0;
 };
 
 }  // namespace PolandBall
 
-#endif  // REPLICABLE_H
+#endif  // ROTATABLE_H

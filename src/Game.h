@@ -27,7 +27,7 @@
 #include "Player.h"
 #include "Camera.h"
 #include "Vec3.h"
-#include "INonCopyable.h"
+#include "NonCopyable.h"
 
 #include <memory>
 #include <vector>
@@ -36,7 +36,7 @@
 
 namespace PolandBall {
 
-class Game: public INonCopyable {
+class Game: public NonCopyable {
 public:
     enum {
         ERROR_OK = 0,

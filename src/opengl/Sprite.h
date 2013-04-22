@@ -26,11 +26,11 @@
 #include "Vec3.h"
 #include "Mat4.h"
 #include "Quaternion.h"
-#include "IMovable.h"
-#include "IScalable.h"
-#include "ITransformable.h"
-#include "IRotatable.h"
-#include "INonCopyable.h"
+#include "Movable.h"
+#include "Scalable.h"
+#include "Transformable.h"
+#include "Rotatable.h"
+#include "NonCopyable.h"
 #include "Texture.h"
 #include "RenderEffect.h"
 
@@ -42,7 +42,7 @@
 namespace PolandBall {
 
 // NOTE: IRotateble only for animation purposes
-class Sprite: public IMovable, public IRotatable, public IScalable, public ITransformable, public INonCopyable {
+class Sprite: public Movable, public Rotatable, public Scalable, public Transformable, public NonCopyable {
 public:
     Sprite() {
         this->initialize();
@@ -63,7 +63,7 @@ public:
         glDeleteBuffers(2, this->buffers);
     }
 
-    using IMovable::setPosition;
+    using Movable::setPosition;
 
     void setPosition(const Math::Vec3& position) {
         this->translation.set(0, 3, position.get(Math::Vec3::X));

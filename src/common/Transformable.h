@@ -20,25 +20,44 @@
  * SOFTWARE.
  */
 
-#ifndef MOVABLE_H
-#define MOVABLE_H
-
-#include "Vec3.h"
+#ifndef TRANSFORMABLE_H
+#define TRANSFORMABLE_H
 
 namespace PolandBall {
 
-class IMovable {
+class Transformable {
 public:
-    virtual ~IMovable() {}
+    virtual ~Transformable() {}
 
-    void setPosition(float x, float y, float z) {
-        this->setPosition(Math::Vec3(x, y, z));
+    virtual void replicateX(float factor) = 0;
+    virtual void replicateY(float factor) = 0;
+    virtual void replicateZ(float factor) = 0;
+
+    virtual float getXReplicaFactor() const = 0;
+    virtual float getYReplicaFactor() const = 0;
+    virtual float getZReplicaFactor() const = 0;
+
+    void replicate(float factor) {
+        this->replicateX(factor);
+        this->replicateY(factor);
+        this->replicateZ(factor);
     }
 
-    virtual void setPosition(const Math::Vec3& position) = 0;
-    virtual Math::Vec3 getPosition() const = 0;
+    virtual void shearX(int slice, int totalSlices) = 0;
+    virtual void shearY(int slice, int totalSlices) = 0;
+    virtual void shearZ(int slice, int totalSlices) = 0;
+
+    virtual void getXShearFactor(int& slice, int& totalSlices) const = 0;
+    virtual void getYShearFactor(int& slice, int& totalSlices) const = 0;
+    virtual void getZShearFactor(int& slice, int& totalSlices) const = 0;
+
+    void shear(int slice, int totalSlices) {
+        this->shearX(slice, totalSlices);
+        this->shearY(slice, totalSlices);
+        this->shearZ(slice, totalSlices);
+    }
 };
 
 }  // namespace PolandBall
 
-#endif  // MOVABLE_H
+#endif  // TRANSFORMABLE_H

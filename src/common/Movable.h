@@ -20,18 +20,25 @@
  * SOFTWARE.
  */
 
-#ifndef INONCOPYABLE_H
-#define INONCOPYABLE_H
+#ifndef MOVABLE_H
+#define MOVABLE_H
+
+#include "Vec3.h"
 
 namespace PolandBall {
 
-class INonCopyable {
+class Movable {
 public:
-    INonCopyable() = default;
-    INonCopyable(const INonCopyable&) = delete;
-    INonCopyable& operator =(const INonCopyable&) = delete;
+    virtual ~Movable() {}
+
+    void setPosition(float x, float y, float z) {
+        this->setPosition(Math::Vec3(x, y, z));
+    }
+
+    virtual void setPosition(const Math::Vec3& position) = 0;
+    virtual Math::Vec3 getPosition() const = 0;
 };
 
 }  // namespace PolandBall
 
-#endif  // INONCOPYABLE_H
+#endif  // MOVABLE_H

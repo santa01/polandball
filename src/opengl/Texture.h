@@ -23,7 +23,7 @@
 #ifndef TEXTURE_H
 #define TEXTURE_H
 
-#include "INonCopyable.h"
+#include "NonCopyable.h"
 
 #define GL_GLEXT_PROTOTYPES
 #include <SDL2/SDL_opengl.h>
@@ -32,7 +32,7 @@
 
 namespace PolandBall {
 
-class Texture: public INonCopyable {
+class Texture: public NonCopyable {
 public:
     Texture() {
         glGenTextures(1, &this->texture);

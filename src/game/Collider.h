@@ -26,8 +26,8 @@
 #include "Vec3.h"
 #include "Vec4.h"
 #include "Mat4.h"
-#include "IScalable.h"
-#include "IMovable.h"
+#include "Scalable.h"
+#include "Movable.h"
 #include "Sprite.h"
 
 #include <array>
@@ -35,7 +35,7 @@
 namespace PolandBall {
 
 // NOTE: Not IRotateble!
-class Collider: public IMovable, public IScalable {
+class Collider: public Movable, public Scalable {
 public:
     enum CollideSide {
         SIDE_NONE = 0,
@@ -53,7 +53,7 @@ public:
         this->collideBox[3] = Math::Vec3( 1.0f, -1.0f,  0.0f);  // 3  2-->3
     }
 
-    using IMovable::setPosition;
+    using Movable::setPosition;
 
     void setPosition(const Math::Vec3& position) {
         this->translation.set(0, 3, position.get(Math::Vec3::X));

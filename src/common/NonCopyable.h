@@ -20,30 +20,18 @@
  * SOFTWARE.
  */
 
-#ifndef SCALABLE_H
-#define SCALABLE_H
+#ifndef NONCOPYABLE_H
+#define NONCOPYABLE_H
 
 namespace PolandBall {
 
-class IScalable {
+class NonCopyable {
 public:
-    virtual ~IScalable() {}
-
-    virtual void scaleX(float factor) = 0;
-    virtual void scaleY(float factor) = 0;
-    virtual void scaleZ(float factor) = 0;
-
-    virtual float getXFactor() const = 0;
-    virtual float getYFactor() const = 0;
-    virtual float getZFactor() const = 0;
-
-    void scale(float factor) {
-        this->scaleX(factor);
-        this->scaleY(factor);
-        this->scaleZ(factor);
-    }
+    NonCopyable() = default;
+    NonCopyable(const NonCopyable&) = delete;
+    NonCopyable& operator =(const NonCopyable&) = delete;
 };
 
 }  // namespace PolandBall
 
-#endif  // SCALABLE_H
+#endif  // NONCOPYABLE_H

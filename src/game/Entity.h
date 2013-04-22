@@ -26,9 +26,9 @@
 #include "Collider.h"
 #include "Sprite.h"
 #include "Vec3.h"
-#include "IMovable.h"
-#include "IScalable.h"
-#include "ITransformable.h"
+#include "Movable.h"
+#include "Scalable.h"
+#include "Transformable.h"
 #include "ResourceManager.h"
 #include "Signals.h"
 
@@ -38,7 +38,7 @@
 namespace PolandBall {
 
 // NOTE: IRotateble only for animation purposes
-class Entity: public IMovable, public IRotatable, public IScalable, public ITransformable {
+class Entity: public Movable, public Rotatable, public Scalable, public Transformable {
 public:
     enum EntityType {
         // Fixed
@@ -64,7 +64,7 @@ public:
 
     virtual ~Entity() {}
 
-    using IMovable::setPosition;
+    using Movable::setPosition;
 
     void setPosition(const Math::Vec3& position) {
         Math::Vec3 newPosition(position + this->offset);

@@ -25,7 +25,7 @@
 
 #include "Texture.h"
 #include "RenderEffect.h"
-#include "INonCopyable.h"
+#include "NonCopyable.h"
 
 #include <SDL2/SDL_image.h>
 #include <unordered_map>
@@ -36,7 +36,7 @@ namespace PolandBall {
 
 namespace Utils {
 
-class ResourceManager: public INonCopyable {
+class ResourceManager: public NonCopyable {
 public:
     static ResourceManager& getInstance() {
         static ResourceManager instance;

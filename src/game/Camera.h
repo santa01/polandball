@@ -26,12 +26,12 @@
 #include "Mat4.h"
 #include "Vec3.h"
 #include "Signals.h"
-#include "IMovable.h"
-#include "IRotatable.h"
+#include "Movable.h"
+#include "Rotatable.h"
 
 namespace PolandBall {
 
-class Camera: public IMovable, public IRotatable {
+class Camera: public Movable, public Rotatable {
 public:
     Camera() {
         this->initialize();
@@ -47,7 +47,7 @@ public:
         this->initialize();
     }
 
-    using IMovable::setPosition;
+    using Movable::setPosition;
 
     void setPosition(const Math::Vec3& position) {
         this->translation.set(0, 3, -position.get(Math::Vec3::X));

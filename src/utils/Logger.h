@@ -23,13 +23,13 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
-#include "INonCopyable.h"
+#include "NonCopyable.h"
 
 namespace PolandBall {
 
 namespace Utils {
 
-class Logger: public INonCopyable {
+class Logger: public NonCopyable {
 public:
     enum {
         LOG_ERROR = 0,

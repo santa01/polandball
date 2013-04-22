@@ -25,7 +25,7 @@
 
 #include "Mat4.h"
 #include "Vec3.h"
-#include "INonCopyable.h"
+#include "NonCopyable.h"
 #include "ShaderLoader.h"
 
 #define GL_GLEXT_PROTOTYPES
@@ -35,7 +35,7 @@
 
 namespace PolandBall {
 
-class RenderEffect: public INonCopyable {
+class RenderEffect: public NonCopyable {
 public:
     enum ShaderType {
         TYPE_VERTEX = GL_VERTEX_SHADER,

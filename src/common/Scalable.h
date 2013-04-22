@@ -20,36 +20,30 @@
  * SOFTWARE.
  */
 
-#ifndef ROTATABLE_H
-#define ROTATABLE_H
-
-#include "Vec3.h"
+#ifndef SCALABLE_H
+#define SCALABLE_H
 
 namespace PolandBall {
 
-class IRotatable {
+class Scalable {
 public:
-    virtual ~IRotatable() {}
+    virtual ~Scalable() {}
 
-    void roll(float angle) {
-        this->rotate(Math::Vec3(0.0f, 0.0f, 1.0f), angle);
+    virtual void scaleX(float factor) = 0;
+    virtual void scaleY(float factor) = 0;
+    virtual void scaleZ(float factor) = 0;
+
+    virtual float getXFactor() const = 0;
+    virtual float getYFactor() const = 0;
+    virtual float getZFactor() const = 0;
+
+    void scale(float factor) {
+        this->scaleX(factor);
+        this->scaleY(factor);
+        this->scaleZ(factor);
     }
-
-    void yaw(float angle) {
-        this->rotate(Math::Vec3(0.0f, 1.0f, 0.0f), angle);
-    }
-
-    void pitch(float angle) {
-        this->rotate(Math::Vec3(1.0f, 0.0f, 0.0f), angle);
-    }
-
-    virtual float getXAngle() const = 0;
-    virtual float getYAngle() const = 0;
-    virtual float getZAngle() const = 0;
-
-    virtual void rotate(const Math::Vec3& vector, float angle) = 0;
 };
 
 }  // namespace PolandBall
 
-#endif  // ROTATABLE_H
+#endif  // SCALABLE_H
