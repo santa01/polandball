@@ -21,7 +21,7 @@
  */
 
 #ifndef CAMERA_H
-#define	CAMERA_H
+#define CAMERA_H
 
 #include "Mat4.h"
 #include "Vec3.h"

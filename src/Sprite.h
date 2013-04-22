@@ -21,7 +21,7 @@
  */
 
 #ifndef MESH_H
-#define	MESH_H
+#define MESH_H
 
 #include "Vec3.h"
 #include "Mat4.h"

@@ -21,45 +21,22 @@
  */
 
 #ifndef PLAYER_H
-#define	PLAYER_H
+#define PLAYER_H
 
 #include "Entity.h"
 #include "Collider.h"
 #include "Vec3.h"
+#include "Weapon.h"
 
 #include <cmath>
 #include <memory>
+#include <array>
 
 namespace PolandBall {
 
 class Player: public Entity {
 public:
-    Player():
-            target(Math::Vec3::UNIT_X) {
-        this->maxMoveSpeed = 8.0f;
-        this->maxJumpSpeed = 15.0f;
-        this->maxJumpTime = 0.15f;
-
-        this->jumpTime = 0.0f;
-        this->jumpWasReleased = true;
-
-        this->type = Entity::EntityType::TYPE_PLAYER;
-    }
-
-    void collideWith(const std::shared_ptr<Entity>& another, Collider::CollideSide side) {
-        switch (side) {
-            case Collider::CollideSide::SIDE_TOP:
-                this->jumpTime = 100.0f;  // Just god damn big value, bigger than the maximum jump time
-                break;
-
-            case Collider::CollideSide::SIDE_BOTTOM:
-                this->jumpTime = 0.0f;
-                break;
-
-            default:
-                break;
-        }
-    }
+    Player();
 
     const Math::Vec3& getTarget() const {
         return this->target;
@@ -89,6 +66,13 @@ public:
         this->maxJumpTime = maxJumpTime;
     }
 
+    std::shared_ptr<Weapon>& getWeapon(Weapon::WeaponSlot slot) {
+        return this->weapons[slot];
+    }
+
+    void pickWeapon(const std::shared_ptr<Weapon>& weapon);
+    void activateSlot(Weapon::WeaponSlot slot);
+
     void moveRight(float frameTime);
     void moveLeft(float frameTime);
     void slowDown(float frameTime);
@@ -99,8 +83,17 @@ public:
     }
 
     void aimAt(const Math::Vec3& target);
+    void shoot() {
+        if (this->activeSlot != -1) {
+            this->weapons[this->activeSlot]->shoot();
+        }
+    }
+
+    void dropWeapon();
+    void onCollision(const std::shared_ptr<Entity>& another, Collider::CollideSide side);
 
 private:
+    std::array<std::shared_ptr<Weapon>, 3> weapons;
     Math::Vec3 target;
 
     float maxMoveSpeed;
@@ -108,7 +101,11 @@ private:
     float maxJumpTime;
 
     float jumpTime;
+    float viewAngle;
     bool jumpWasReleased;
+
+    int activeSlot;
+    int weaponHandle;
 };
 
 }  // namespace PolandBall

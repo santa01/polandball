@@ -21,7 +21,7 @@
  */
 
 #ifndef MAT4_H
-#define	MAT4_H
+#define MAT4_H
 
 #include "Mat3.h"
 #include "Vec4.h"

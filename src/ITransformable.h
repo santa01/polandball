@@ -21,7 +21,7 @@
  */
 
 #ifndef REPLICABLE_H
-#define	REPLICABLE_H
+#define REPLICABLE_H
 
 namespace PolandBall {
 

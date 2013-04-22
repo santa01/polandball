@@ -21,7 +21,7 @@
  */
 
 #ifndef COLLIDER_H
-#define	COLLIDER_H
+#define COLLIDER_H
 
 #include "Vec3.h"
 #include "Vec4.h"
@@ -91,6 +91,9 @@ public:
         return this->scaling.get(2, 2);
     }
 
+    CollideSide collides(const std::unique_ptr<Collider>& another) const;
+
+private:
     std::array<Math::Vec3, 4> getCollideBox() const {
         std::array<Math::Vec3, 4> realBox;
         Math::Mat4 transformation = this->translation * this->scaling;
@@ -102,10 +105,17 @@ public:
         return realBox;
     }
 
-    CollideSide collides(const std::unique_ptr<Collider>& another) const;
-    bool vertexInsideBox(const Math::Vec3& vertex, const std::array<Math::Vec3, 4>& box) const;
+    bool vertexInsideBox(const Math::Vec3& vertex, const std::array<Math::Vec3, 4>& box) const {
+        if (vertex.get(Math::Vec3::X) <= box[0].get(Math::Vec3::X) &&
+                vertex.get(Math::Vec3::X) >= box[1].get(Math::Vec3::X) &&
+                vertex.get(Math::Vec3::Y) <= box[0].get(Math::Vec3::Y) &&
+                vertex.get(Math::Vec3::Y) >= box[3].get(Math::Vec3::Y)) {
+            return true;
+        }
 
-private:
+        return false;
+    }
+
     std::array<Math::Vec3, 4> collideBox;
 
     Math::Mat4 translation;

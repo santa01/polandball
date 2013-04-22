@@ -21,7 +21,7 @@
  */
 
 #ifndef VEC4_H
-#define	VEC4_H
+#define VEC4_H
 
 #include "Vec3.h"
 

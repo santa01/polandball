@@ -21,7 +21,7 @@
  */
 
 #ifndef RENDEREFFECT_H
-#define	RENDEREFFECT_H
+#define RENDEREFFECT_H
 
 #include "Mat4.h"
 #include "Vec3.h"

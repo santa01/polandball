@@ -20,36 +20,39 @@
  * SOFTWARE.
  */
 
-#ifndef ROTATABLE_H
-#define ROTATABLE_H
-
-#include "Vec3.h"
+#include "Weapon.h"
 
 namespace PolandBall {
 
-class IRotatable {
-public:
-    virtual ~IRotatable() {}
-
-    void roll(float angle) {
-        this->rotate(Math::Vec3(0.0f, 0.0f, 1.0f), angle);
+void Weapon::aimAt(const Math::Vec3& target) {
+    if (target == Math::Vec3::ZERO) {
+        return;
     }
 
-    void yaw(float angle) {
-        this->rotate(Math::Vec3(0.0f, 1.0f, 0.0f), angle);
+    Math::Vec3 newTarget(target);
+    newTarget.normalize();
+
+    if (newTarget == this->target) {
+        return;
     }
 
-    void pitch(float angle) {
-        this->rotate(Math::Vec3(1.0f, 0.0f, 0.0f), angle);
+    float deltaAngle = acosf(this->target.dot(newTarget)) * 180.0f / M_PI;
+    if (isnan(deltaAngle)) {
+        return;
     }
 
-    virtual float getXAngle() const = 0;
-    virtual float getYAngle() const = 0;
-    virtual float getZAngle() const = 0;
+    static float currentAngle = 0.0f;
+    Math::Vec3 normal = this->target.cross(newTarget);
+    float signCorrection = (normal.get(Math::Vec3::Z) < 0) ? -1.0f : 1.0f;
 
-    virtual void rotate(const Math::Vec3& vector, float angle) = 0;
-};
+    float newAngle = currentAngle + deltaAngle * signCorrection;
+    int shear = (cosf(newAngle * M_PI / 180.0f) < 0.0f) ? 1 : 0;
+    currentAngle = newAngle;
+
+    this->roll(newAngle);
+    this->shearX(shear, 2);
+
+    this->target = newTarget;
+}
 
 }  // namespace PolandBall
-
-#endif  // ROTATABLE_H

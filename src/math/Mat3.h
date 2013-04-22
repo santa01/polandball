@@ -21,7 +21,7 @@
  */
 
 #ifndef MAT3_H
-#define	MAT3_H
+#define MAT3_H
 
 #include "Vec3.h"
 

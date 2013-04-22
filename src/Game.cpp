@@ -55,6 +55,8 @@ int Game::exec() {
     }
 
     SDL_Event event;
+    Math::Vec3 cursorPosition;
+
     while (this->running) {
         unsigned int beginFrame = SDL_GetTicks();
 
@@ -65,9 +67,15 @@ int Game::exec() {
                     break;
 
                 case SDL_MOUSEMOTION:
-                    Math::Vec3 cursorPosition(this->toWorld(Math::Vec3(event.motion.x, event.motion.y, 0.0f)));
+                    cursorPosition = this->toWorld(Math::Vec3(event.motion.x, event.motion.y, 0.0f));
                     this->cursor->setPosition(cursorPosition + this->player->getPosition());
                     this->player->aimAt(cursorPosition);
+                    break;
+
+                case SDL_MOUSEBUTTONDOWN:
+                    if (event.button.button == 0 && event.button.state == SDL_PRESSED) {
+                        this->player->shoot();
+                    }
                     break;
             }
         }
@@ -75,6 +83,7 @@ int Game::exec() {
         this->updatePlayer();
         this->updateWorld();
         this->updateFPS();
+
         this->renderWorld();
 
         this->frameTime = (SDL_GetTicks() - beginFrame) / 1000.0f;
@@ -160,13 +169,13 @@ bool Game::initOpenGL() {
     Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Initializing %d x %d viewport", this->width, this->height);
     this->window = SDL_CreateWindow("Polandball The Gaem", 0, 0, this->width, this->height,
             SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
-    if (!this->window) {
+    if (this->window == nullptr) {
         Utils::Logger::getInstance().log(Utils::Logger::LOG_ERROR, "SDL_CreateWindow() failed: %s", SDL_GetError());
         return false;
     }
 
     this->context = SDL_GL_CreateContext(this->window);
-    if (!this->context) {
+    if (this->context == nullptr) {
         Utils::Logger::getInstance().log(Utils::Logger::LOG_ERROR, "SDL_GL_CreateContext() failed: %s", SDL_GetError());
         return false;
     }
@@ -195,7 +204,7 @@ bool Game::initFontConfig() {
     Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Fontconfig version: %d.%d.%d",
             fcMajor, fcMinor, fcRevision);
 
-    FcPattern* pattern = FcNameParse((const FcChar8*)"monospace");
+    FcPattern* pattern = FcNameParse((const FcChar8*)"sans");
     FcConfigSubstitute(nullptr, pattern, FcMatchPattern);
     FcDefaultSubstitute(pattern);
 
@@ -203,7 +212,7 @@ bool Game::initFontConfig() {
     FcPattern* match = FcFontMatch(nullptr, pattern, &result);
     FcPatternDestroy(pattern);
 
-    if (!match) {
+    if (match == nullptr) {
         Utils::Logger::getInstance().log(Utils::Logger::LOG_ERROR, "FcFontMatch() failed: no `sans-serif' font found");
         return false;
     }
@@ -211,8 +220,8 @@ bool Game::initFontConfig() {
     FcChar8* fontPath = FcPatternFormat(match, (const FcChar8*)"%{file}");
     FcChar8* fontName = FcPatternFormat(match, (const FcChar8*)"%{family}");
 
-    this->defaultFont = TTF_OpenFont((const char*)fontPath, 12);
-    if (!this->defaultFont) {
+    this->defaultFont = TTF_OpenFont((const char*)fontPath, 14);
+    if (this->defaultFont == nullptr) {
         Utils::Logger::getInstance().log(Utils::Logger::LOG_ERROR, "TTF_OpenFont failed: %s", TTF_GetError());
         return false;
     }
@@ -268,6 +277,16 @@ void Game::initTestScene() {
     this->entites.push_back(this->player);
 
     //-----------------
+    auto m4a1Sprite = std::shared_ptr<Sprite>(new Sprite());
+    m4a1Sprite->setTexture(Utils::ResourceManager::getInstance().makeTexture("textures/m4a1.png"));
+
+    auto m4a1 = std::shared_ptr<Weapon>(new Weapon(Weapon::WeaponSlot::SLOT_PRIMARY));
+    m4a1->setSprite(m4a1Sprite);
+    m4a1->setPosition(-4.0f, 0.0f, 0.0f);
+    m4a1->shearX(0, 2);
+    this->entites.push_back(m4a1);
+
+    //-----------------
     auto cursorSprite = std::shared_ptr<Sprite>(new Sprite());
     cursorSprite->setTexture(Utils::ResourceManager::getInstance().makeTexture("textures/cursor.png"));
 
@@ -280,7 +299,7 @@ void Game::initTestScene() {
     this->fpsCounter = std::shared_ptr<Entity>(new Entity(Entity::EntityType::TYPE_PASSABLE));
     this->fpsCounter->setPosition(-12.0f, 9.5f, 0.0f);
     this->fpsCounter->setOffset(this->toWorld(Math::Vec3(45.0f, 15.0f, 0.0f)));
-    this->fpsCounter->scale(0.25f);
+    this->fpsCounter->scale(0.3f);
     this->entites.push_back(this->fpsCounter);
 
     //-----------------
@@ -307,19 +326,31 @@ void Game::updateWorld() {
 
         float scaleFactor = (this->frameStep > this->frameTime) ? this->frameTime : this->frameStep;
         float totalTime = scaleFactor;
+        bool collisionDetected = false;
 
-        while (totalTime <= this->frameTime && scaleFactor > 0.0f) {
+        while (totalTime <= this->frameTime && scaleFactor > 0.0f && !collisionDetected) {
             entity->setSpeed(entity->getSpeed() + this->gravityAcceleration * scaleFactor);
 
             for (auto& another: this->entites) {
-                if (another->getType() == Entity::EntityType::TYPE_PASSABLE || another == entity) {
+                Entity::EntityType anotherType = another->getType();
+                if (anotherType == Entity::EntityType::TYPE_PASSABLE) {
                     continue;
                 }
 
-                Collider::CollideSide collide = entity->getCollider()->collides(another->getCollider());
-                Math::Vec3 speed = entity->getSpeed();
+                Collider::CollideSide side = entity->collides(another);
+                if (side != Collider::CollideSide::SIDE_NONE) {
+                    entity->onCollision(another, side);
+                    collisionDetected = true;
+                }
 
-                switch (collide) {
+                if ((type == Entity::EntityType::TYPE_WEAPON &&
+                        anotherType == Entity::EntityType::TYPE_PLAYER) ||
+                        anotherType == Entity::EntityType::TYPE_WEAPON) {
+                    continue;
+                }
+
+                Math::Vec3 speed = entity->getSpeed();
+                switch (side) {
                     case Collider::CollideSide::SIDE_BOTTOM:
                         if (speed.get(Math::Vec3::Y) < 0.0f) {
                             speed.set(Math::Vec3::Y, 0.0f);
@@ -347,9 +378,7 @@ void Game::updateWorld() {
                     default:
                         break;
                 }
-
                 entity->setSpeed(speed);
-                entity->collideWith(another, collide);
             }
 
             entity->setPosition(entity->getPosition() + entity->getSpeed() * scaleFactor);
@@ -362,23 +391,41 @@ void Game::updateWorld() {
 
 void Game::updatePlayer() {
     Uint8 *keyStates = SDL_GetKeyboardState(nullptr);
-    if (keyStates[SDL_SCANCODE_ESCAPE]) {
+    if (keyStates[SDL_SCANCODE_ESCAPE] > 0) {
         this->running = false;
     }
 
     // Both pressed or released
     if (keyStates[SDL_SCANCODE_LEFT] == keyStates[SDL_SCANCODE_RIGHT]) {
         this->player->slowDown(this->frameTime);
-    } else if (keyStates[SDL_SCANCODE_RIGHT]) {
+    } else if (keyStates[SDL_SCANCODE_RIGHT] > 0) {
         this->player->moveRight(this->frameTime);
-    } else if (keyStates[SDL_SCANCODE_LEFT]) {
+    } else if (keyStates[SDL_SCANCODE_LEFT] > 0) {
         this->player->moveLeft(this->frameTime);
     }
 
-    if (keyStates[SDL_SCANCODE_UP]) {
+    if (keyStates[SDL_SCANCODE_UP] > 0) {
         this->player->jump(this->frameTime);
     } else {
         this->player->breakJump();
+    }
+
+    static bool dropKeyReleased = true;
+    if (keyStates[SDL_SCANCODE_RETURN] > 0 && dropKeyReleased) {
+        this->player->dropWeapon();
+        dropKeyReleased = false;
+    } else {
+        dropKeyReleased = true;
+    }
+
+    if (keyStates[SDL_SCANCODE_1] + keyStates[SDL_SCANCODE_2] + keyStates[SDL_SCANCODE_3] == 1) {
+        if (keyStates[SDL_SCANCODE_1] > 0) {
+            this->player->activateSlot(Weapon::WeaponSlot::SLOT_MEELE);
+        } else if (keyStates[SDL_SCANCODE_2] > 0) {
+            this->player->activateSlot(Weapon::WeaponSlot::SLOT_SECONDARY);
+        } else if (keyStates[SDL_SCANCODE_3] > 0) {
+            this->player->activateSlot(Weapon::WeaponSlot::SLOT_PRIMARY);
+        }
     }
 }
 

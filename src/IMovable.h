@@ -21,7 +21,7 @@
  */
 
 #ifndef MOVABLE_H
-#define	MOVABLE_H
+#define MOVABLE_H
 
 #include "Vec3.h"
 

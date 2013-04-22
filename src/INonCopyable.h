@@ -21,7 +21,7 @@
  */
 
 #ifndef INONCOPYABLE_H
-#define	INONCOPYABLE_H
+#define INONCOPYABLE_H
 
 namespace PolandBall {
 

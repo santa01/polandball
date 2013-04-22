@@ -21,7 +21,7 @@
  */
 
 #ifndef POLANDBALL_H
-#define	POLANDBALL_H
+#define POLANDBALL_H
 
 #include "Entity.h"
 #include "Player.h"

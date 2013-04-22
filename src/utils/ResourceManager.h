@@ -21,7 +21,7 @@
  */
 
 #ifndef RESOURCEMANAGER_H
-#define	RESOURCEMANAGER_H
+#define RESOURCEMANAGER_H
 
 #include "Texture.h"
 #include "RenderEffect.h"
@@ -47,16 +47,7 @@ public:
     std::shared_ptr<RenderEffect>& makeEffect(const std::string& name);
 
 private:
-    ResourceManager() {
-        // Keep data 2x2, 1x1 doesn't seem to work on a cleared color buffer
-        Uint32 data[] = { 0xFF00FF00, 0xFF00FF00, 0xFF00FF00, 0xFF00FF00 };
-        SDL_Surface* image = SDL_CreateRGBSurfaceFrom(&data, 2, 2, 32, 4,
-                0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
-        this->insertTexture("default", image);
-        SDL_FreeSurface(image);
-
-        this->insertEffect("default", ResourceManager::defaultShader);
-    }
+    ResourceManager();
 
     void insertTexture(const std::string& name, SDL_Surface* image) {
         std::shared_ptr<Texture> texture(new Texture());

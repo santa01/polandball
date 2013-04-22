@@ -21,7 +21,7 @@
  */
 
 #ifndef ENTITY_H
-#define	ENTITY_H
+#define ENTITY_H
 
 #include "Collider.h"
 #include "Sprite.h"
@@ -41,12 +41,13 @@ namespace PolandBall {
 class Entity: public IMovable, public IRotatable, public IScalable, public ITransformable {
 public:
     enum EntityType {
-        // Non-movable
+        // Fixed
         TYPE_SOLID = 0,     // Visible, collidable
         TYPE_CLIP = 1,      // Invisible, collidable
         TYPE_PASSABLE = 3,  // Visible, non-collidable
-        // Movable
-        TYPE_PLAYER = 4    // Player entity
+        // Non-fixed
+        TYPE_PLAYER = 4,    // Player entity
+        TYPE_WEAPON = 5     // Weapon entity
     };
 
     Entity():
@@ -213,7 +214,11 @@ public:
         this->currentSpeed += acceleration;
     }
 
-    virtual void collideWith(const std::shared_ptr<Entity>& another, Collider::CollideSide side) {}
+    Collider::CollideSide collides(const std::shared_ptr<Entity>& another) {
+        return this->collider->collides(another->getCollider());
+    }
+
+    virtual void onCollision(const std::shared_ptr<Entity>& another, Collider::CollideSide side) {}
     virtual void animate(float frameTime) {}
 
     virtual void render() {

@@ -21,7 +21,7 @@
  */
 
 #ifndef SCALABLE_H
-#define	SCALABLE_H
+#define SCALABLE_H
 
 namespace PolandBall {
 

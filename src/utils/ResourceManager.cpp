@@ -63,12 +63,30 @@ const std::string ResourceManager::defaultShader = "                  \n\
         }                                                             \n\
     #endif                                                            \n";
 
+ResourceManager::ResourceManager() {
+        // Keep data 2x2, 1x1 doesn't seem to work on a cleared color buffer
+        Uint32 green[] = { 0xFF00FF00, 0xFF00FF00, 0xFF00FF00, 0xFF00FF00 };
+        SDL_Surface* image = SDL_CreateRGBSurfaceFrom(&green, 2, 2, 32, 4,
+                0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
+        this->insertTexture("default", image);
+        SDL_FreeSurface(image);
+
+        // Handy for "empty" entites
+        Uint32 transparent[] = { 0xFF000000, 0xFF000000, 0xFF000000, 0xFF000000 };
+        image = SDL_CreateRGBSurfaceFrom(&transparent, 2, 2, 32, 4,
+                0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
+        this->insertTexture("transparent", image);
+        SDL_FreeSurface(image);
+
+        this->insertEffect("default", ResourceManager::defaultShader);
+    }
+
 std::shared_ptr<Texture>& ResourceManager::makeTexture(const std::string& name) {
     if (this->textureCache.find(name) == this->textureCache.end()) {
         Logger::getInstance().log(Logger::LOG_INFO, "Loading image `%s'", name.c_str());
 
         SDL_Surface* image = IMG_Load(name.c_str());
-        if (!image) {
+        if (image == nullptr) {
             Logger::getInstance().log(Logger::LOG_ERROR, "IMG_Load(%s) failed: %s", name.c_str(), IMG_GetError());
             return this->textureCache.at("default");
         }
