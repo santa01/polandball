@@ -8,10 +8,8 @@ if (CMAKE_COMPILER_IS_GNUCC)
 
     if (GCC_VERSION VERSION_GREATER 4.7.0)
         set (CMAKE_CXX_FLAGS "-Wall -pedantic -std=c++11 -g")
-    elseif (GCC_VERSION VERSION_GREATER 4.6.0)
-        set (CMAKE_CXX_FLAGS "-Wall -pedantic -std=c++0x -g")
     else ()
-        message(FATAL_ERROR "GCC 4.6.0 or higher is required!")
+        message(FATAL_ERROR "GCC 4.7.0 or higher is required!")
     endif ()
 endif ()
 
