@@ -25,6 +25,8 @@
 
 namespace PolandBall {
 
+namespace Common {
+
 class Transformable {
 public:
     virtual ~Transformable() {}
@@ -57,6 +59,8 @@ public:
         this->shearZ(slice, totalSlices);
     }
 };
+
+}  // namespace Common
 
 }  // namespace PolandBall
 

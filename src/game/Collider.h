@@ -34,8 +34,10 @@
 
 namespace PolandBall {
 
+namespace Game {
+
 // NOTE: Not IRotateble!
-class Collider: public Movable, public Scalable {
+class Collider: public Common::Movable, public Common::Scalable {
 public:
     enum CollideSide {
         SIDE_NONE = 0,
@@ -121,6 +123,8 @@ private:
     Math::Mat4 translation;
     Math::Mat4 scaling;
 };
+
+}  // namespace Game
 
 }  // namespace PolandBall
 

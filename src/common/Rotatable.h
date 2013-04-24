@@ -27,6 +27,8 @@
 
 namespace PolandBall {
 
+namespace Common {
+
 class Rotatable {
 public:
     virtual ~Rotatable() {}
@@ -49,6 +51,8 @@ public:
 
     virtual void rotate(const Math::Vec3& vector, float angle) = 0;
 };
+
+}  // namespace Common
 
 }  // namespace PolandBall
 

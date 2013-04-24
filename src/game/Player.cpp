@@ -26,6 +26,8 @@
 
 namespace PolandBall {
 
+namespace Game {
+
 Player::Player():
         target(Math::Vec3::UNIT_X) {
     this->maxMoveSpeed = 8.0f;
@@ -224,5 +226,7 @@ void Player::onCollision(const std::shared_ptr<Entity>& another, Collider::Colli
             break;
     }
 }
+
+}  // namespace Game
 
 }  // namespace PolandBall

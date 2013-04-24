@@ -35,7 +35,9 @@
 
 namespace PolandBall {
 
-class RenderEffect: public NonCopyable {
+namespace Opengl {
+
+class RenderEffect: public Common::NonCopyable {
 public:
     enum ShaderType {
         TYPE_VERTEX = GL_VERTEX_SHADER,
@@ -95,6 +97,8 @@ private:
     GLint transform;  // vertex shader
 };
 
-} // namespace PolandBall
+}  // namespace Opengl
+
+}  // namespace PolandBall
 
 #endif  // RENDEREFFECT_H

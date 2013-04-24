@@ -20,9 +20,9 @@
  * SOFTWARE.
  */
 
-#include "Game.h"
+#include "PolandBall.h"
 
 int main(int argc, char** argv) {
-    PolandBall::Game game;
+    PolandBall::PolandBall game;
     return game.exec();
 }

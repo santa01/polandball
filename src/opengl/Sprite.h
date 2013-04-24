@@ -20,8 +20,8 @@
  * SOFTWARE.
  */
 
-#ifndef MESH_H
-#define MESH_H
+#ifndef SPRITE_H
+#define SPRITE_H
 
 #include "Vec3.h"
 #include "Mat4.h"
@@ -41,8 +41,11 @@
 
 namespace PolandBall {
 
-// NOTE: IRotateble only for animation purposes
-class Sprite: public Movable, public Rotatable, public Scalable, public Transformable, public NonCopyable {
+namespace Opengl {
+
+// NOTE: Common::Rotateble only for animation purposes
+class Sprite: public Common::Movable, public Common::Rotatable, public Common::Scalable, public Common::Transformable,
+        public Common::NonCopyable {
 public:
     Sprite() {
         this->initialize();
@@ -222,6 +225,8 @@ private:
     void initialize();
 };
 
+}  // namespace Opengl
+
 }  // namespace PolandBall
 
-#endif  // MESH_H
+#endif  // SPRITE_H

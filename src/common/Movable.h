@@ -27,6 +27,8 @@
 
 namespace PolandBall {
 
+namespace Common {
+
 class Movable {
 public:
     virtual ~Movable() {}
@@ -38,6 +40,8 @@ public:
     virtual void setPosition(const Math::Vec3& position) = 0;
     virtual Math::Vec3 getPosition() const = 0;
 };
+
+}  // namespace Common
 
 }  // namespace PolandBall
 

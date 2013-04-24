@@ -24,6 +24,8 @@
 
 namespace PolandBall {
 
+namespace Opengl {
+
 void Texture::load(SDL_Surface* image) {
     if (image == nullptr) {
         return;
@@ -72,5 +74,7 @@ SDL_Surface* Texture::convertToRGBA(SDL_Surface* image) {
 
     return newSource;
 }
+
+}  // namespace Opengl
 
 }  // namespace PolandBall

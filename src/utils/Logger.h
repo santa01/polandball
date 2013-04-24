@@ -29,7 +29,7 @@ namespace PolandBall {
 
 namespace Utils {
 
-class Logger: public NonCopyable {
+class Logger: public Common::NonCopyable {
 public:
     enum {
         LOG_ERROR = 0,

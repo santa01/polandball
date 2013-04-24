@@ -81,7 +81,7 @@ ResourceManager::ResourceManager() {
         this->insertEffect("default", ResourceManager::defaultShader);
     }
 
-std::shared_ptr<Texture>& ResourceManager::makeTexture(const std::string& name) {
+std::shared_ptr<Opengl::Texture>& ResourceManager::makeTexture(const std::string& name) {
     if (this->textureCache.find(name) == this->textureCache.end()) {
         Logger::getInstance().log(Logger::LOG_INFO, "Loading image `%s'", name.c_str());
 
@@ -91,7 +91,7 @@ std::shared_ptr<Texture>& ResourceManager::makeTexture(const std::string& name) 
             return this->textureCache.at("default");
         }
 
-        std::shared_ptr<Texture> texture(new Texture());
+        std::shared_ptr<Opengl::Texture> texture(new Opengl::Texture());
         texture->load(image);
         this->textureCache.insert(std::make_pair(name, texture));
 
@@ -101,7 +101,7 @@ std::shared_ptr<Texture>& ResourceManager::makeTexture(const std::string& name) 
     return this->textureCache.at(name);
 }
 
-std::shared_ptr<RenderEffect>& ResourceManager::makeEffect(const std::string& name) {
+std::shared_ptr<Opengl::RenderEffect>& ResourceManager::makeEffect(const std::string& name) {
     if (this->effectCache.find(name) == this->effectCache.end()) {
         Logger::getInstance().log(Logger::LOG_INFO, "Loading shader `%s'", name.c_str());
 
@@ -128,17 +128,17 @@ std::shared_ptr<RenderEffect>& ResourceManager::makeEffect(const std::string& na
 }
 
 void ResourceManager::insertEffect(const std::string& name, const std::string& source) {
-    std::shared_ptr<RenderEffect> effect(new RenderEffect());
+    std::shared_ptr<Opengl::RenderEffect> effect(new Opengl::RenderEffect());
 
     std::stringstream modifiedSource;
     modifiedSource << "#define TYPE_VERTEX\n";
     modifiedSource << source;
-    effect->attachShader(modifiedSource.str(), RenderEffect::ShaderType::TYPE_VERTEX);
+    effect->attachShader(modifiedSource.str(), Opengl::RenderEffect::ShaderType::TYPE_VERTEX);
 
     modifiedSource.str("");
     modifiedSource << "#define TYPE_FRAGMENT\n";
     modifiedSource << source;
-    effect->attachShader(modifiedSource.str(), RenderEffect::ShaderType::TYPE_FRAGMENT);
+    effect->attachShader(modifiedSource.str(), Opengl::RenderEffect::ShaderType::TYPE_FRAGMENT);
 
     effect->enable();  // Compile
     this->effectCache.insert(std::make_pair(name, effect));

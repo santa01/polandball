@@ -25,6 +25,8 @@
 
 namespace PolandBall {
 
+namespace Opengl {
+
 const float Sprite::vertices[] = {
     // coords
      1.0f,  1.0f,  0.0f,  // 0  2<--1
@@ -104,5 +106,7 @@ void Sprite::initialize() {
     this->yAngle = 0.0f;
     this->zAngle = 0.0f;
 }
+
+}  // namespace Opengl
 
 }  // namespace PolandBall

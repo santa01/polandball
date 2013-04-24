@@ -31,7 +31,9 @@
 
 namespace PolandBall {
 
-class Camera: public Movable, public Rotatable {
+namespace Game {
+
+class Camera: public Common::Movable, public Common::Rotatable {
 public:
     Camera() {
         this->initialize();
@@ -168,6 +170,8 @@ private:
     float yAngle;
     float zAngle;
 };
+
+}  // namespace Game
 
 }  // namespace PolandBall
 

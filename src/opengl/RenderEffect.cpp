@@ -24,6 +24,8 @@
 
 namespace PolandBall {
 
+namespace Opengl {
+
 void RenderEffect::enable() {
     if (this->program == 0) {
         this->program = Utils::ShaderLoader::createProgram(this->shaderList);
@@ -41,5 +43,7 @@ void RenderEffect::enable() {
         glUseProgram(this->program);
     }
 }
+
+}  // namespace Opengl
 
 }  // namespace PolandBall

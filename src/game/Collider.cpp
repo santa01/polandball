@@ -26,6 +26,8 @@
 
 namespace PolandBall {
 
+namespace Game {
+
 Collider::CollideSide Collider::collides(const std::unique_ptr<Collider>& another) const {
     if (this == another.get()) {
         return SIDE_NONE;
@@ -137,5 +139,7 @@ Collider::CollideSide Collider::collides(const std::unique_ptr<Collider>& anothe
 
     return SIDE_NONE;
 }
+
+}  // namespace Game
 
 }  // namespace PolandBall

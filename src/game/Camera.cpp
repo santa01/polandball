@@ -28,6 +28,8 @@
 
 namespace PolandBall {
 
+namespace Game {
+
 void Camera::rotate(const Math::Vec3& vector, float angle) {
     if (vector == Math::Vec3::ZERO) {
         return;
@@ -90,5 +92,7 @@ void Camera::lookAt(const Math::Vec3& vector) {
     
     this->updateRotation(right, up, target);
 }
+
+}  // namespace Game
 
 }  // namespace PolandBall

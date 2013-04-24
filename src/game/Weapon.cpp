@@ -24,6 +24,8 @@
 
 namespace PolandBall {
 
+namespace Game {
+
 void Weapon::aimAt(const Math::Vec3& target) {
     if (target == Math::Vec3::ZERO) {
         return;
@@ -54,5 +56,7 @@ void Weapon::aimAt(const Math::Vec3& target) {
 
     this->target = newTarget;
 }
+
+}  // namespace Game
 
 }  // namespace PolandBall

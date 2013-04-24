@@ -37,8 +37,10 @@
 
 namespace PolandBall {
 
+namespace Game {
+
 // NOTE: IRotateble only for animation purposes
-class Entity: public Movable, public Rotatable, public Scalable, public Transformable {
+class Entity: public Common::Movable, public Common::Rotatable, public Common::Scalable, public Common::Transformable {
 public:
     enum EntityType {
         // Fixed
@@ -52,13 +54,13 @@ public:
 
     Entity():
             collider(new Collider()),
-            sprite(new Sprite()) {
+            sprite(new Opengl::Sprite()) {
         this->type = TYPE_SOLID;
     }
 
     Entity(EntityType type):
             collider(new Collider()),
-            sprite(new Sprite()) {
+            sprite(new Opengl::Sprite()) {
         this->type = type;
     }
 
@@ -180,11 +182,11 @@ public:
         }
     }
 
-    std::shared_ptr<Sprite>& getSprite() {
+    std::shared_ptr<Opengl::Sprite>& getSprite() {
         return this->sprite;
     }
 
-    void setSprite(const std::shared_ptr<Sprite>& sprite) {
+    void setSprite(const std::shared_ptr<Opengl::Sprite>& sprite) {
         if (sprite != nullptr) {
             this->sprite = sprite;
         }
@@ -229,12 +231,14 @@ public:
 
 protected:
     std::unique_ptr<Collider> collider;
-    std::shared_ptr<Sprite> sprite;
+    std::shared_ptr<Opengl::Sprite> sprite;
 
     Math::Vec3 currentSpeed;
     Math::Vec3 offset;
     EntityType type;
 };
+
+}  // namespace Game
 
 }  // namespace PolandBall
 

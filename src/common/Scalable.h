@@ -25,6 +25,8 @@
 
 namespace PolandBall {
 
+namespace Common {
+
 class Scalable {
 public:
     virtual ~Scalable() {}
@@ -43,6 +45,8 @@ public:
         this->scaleZ(factor);
     }
 };
+
+}  // namespace Common
 
 }  // namespace PolandBall
 

@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-#include "Game.h"
+#include "PolandBall.h"
 #include "Logger.h"
 #include "Vec3.h"
 #include "ResourceManager.h"
@@ -33,7 +33,7 @@
 
 namespace PolandBall {
 
-Game::Game() {
+PolandBall::PolandBall() {
     this->window = nullptr;
     this->context = nullptr;
     this->defaultFont = nullptr;
@@ -48,7 +48,7 @@ Game::Game() {
     this->camera.setAspectRatio(this->width / (this->height / 1.0f));
 }
 
-int Game::exec() {
+int PolandBall::exec() {
     if (!this->setUp()) {
         this->tearDown();
         return ERROR_SETUP;
@@ -93,7 +93,7 @@ int Game::exec() {
     return ERROR_OK;
 }
 
-bool Game::setUp() {
+bool PolandBall::setUp() {
     Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Setting up...");
 
     if (!this->initSDL() || !this->initOpenGL() || !this->initFontConfig()) {
@@ -104,7 +104,7 @@ bool Game::setUp() {
     return true;
 }
 
-void Game::tearDown() {
+void PolandBall::tearDown() {
     Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Tearing down...");
 
     if (this->defaultFont) {
@@ -125,7 +125,7 @@ void Game::tearDown() {
     SDL_Quit();
 }
 
-bool Game::initSDL() {
+bool PolandBall::initSDL() {
     if (SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE)) {
         Utils::Logger::getInstance().log(Utils::Logger::LOG_ERROR, "SDL_Init() failed: %s", SDL_GetError());
         return false;
@@ -158,7 +158,7 @@ bool Game::initSDL() {
     return true;
 }
 
-bool Game::initOpenGL() {
+bool PolandBall::initOpenGL() {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
@@ -191,7 +191,7 @@ bool Game::initOpenGL() {
     return true;
 }
 
-bool Game::initFontConfig() {
+bool PolandBall::initFontConfig() {
     if (!FcInit()) {
         Utils::Logger::getInstance().log(Utils::Logger::LOG_ERROR, "FcInit() failed");
         return false;
@@ -235,22 +235,22 @@ bool Game::initFontConfig() {
     return true;
 }
 
-void Game::initTestScene() {
+void PolandBall::initTestScene() {
     // GL_DEPTH_TEST is OFF! Manually arrange sprites, farthest renders first!
-    auto backgroundSprite = std::shared_ptr<Sprite>(new Sprite());
+    auto backgroundSprite = std::shared_ptr<Opengl::Sprite>(new Opengl::Sprite());
     backgroundSprite->setTexture(Utils::ResourceManager::getInstance().makeTexture("textures/background_static_800_600.png"));
 
-    auto backgroundEntity = std::shared_ptr<Entity>(new Entity(Entity::EntityType::TYPE_PASSABLE));
+    auto backgroundEntity = std::shared_ptr<Game::Entity>(new Game::Entity(Game::Entity::EntityType::TYPE_PASSABLE));
     backgroundEntity->setSprite(backgroundSprite);
     backgroundEntity->scaleY(10.0f);
     backgroundEntity->scaleX(10.0f * this->camera.getAspectRatio());
     this->entites.push_back(backgroundEntity);
 
     //-----------------
-    auto bricksSprite = std::shared_ptr<Sprite>(new Sprite());
+    auto bricksSprite = std::shared_ptr<Opengl::Sprite>(new Opengl::Sprite());
     bricksSprite->setTexture(Utils::ResourceManager::getInstance().makeTexture("textures/entity_static_kz.png"));
 
-    auto bricksEntity = std::shared_ptr<Entity>(new Entity());
+    auto bricksEntity = std::shared_ptr<Game::Entity>(new Game::Entity());
     bricksEntity->setSprite(bricksSprite);
     bricksEntity->setPosition(0.0f, -4.0f, 0.0f);
     bricksEntity->scaleX(20.0f * 1.5f);  // Scale for aspect ratio
@@ -258,45 +258,45 @@ void Game::initTestScene() {
     this->entites.push_back(bricksEntity);
 
     //-----------------
-    bricksSprite = std::shared_ptr<Sprite>(new Sprite());
+    bricksSprite = std::shared_ptr<Opengl::Sprite>(new Opengl::Sprite());
     bricksSprite->setTexture(Utils::ResourceManager::getInstance().makeTexture("textures/entity_static_kz.png"));
 
-    bricksEntity = std::shared_ptr<Entity>(new Entity());
+    bricksEntity = std::shared_ptr<Game::Entity>(new Game::Entity());
     bricksEntity->setSprite(bricksSprite);
     bricksEntity->setPosition(4.0f, 1.0f, 0.0f);
     bricksEntity->scaleX(1.5f);  // Scale for aspect ratio
     this->entites.push_back(bricksEntity);
 
     //-----------------
-    auto playerSprite = std::shared_ptr<Sprite>(new Sprite());
+    auto playerSprite = std::shared_ptr<Opengl::Sprite>(new Opengl::Sprite());
     playerSprite->setTexture(Utils::ResourceManager::getInstance().makeTexture("textures/player_tk.png"));
 
-    this->player = std::shared_ptr<Player>(new Player());
+    this->player = std::shared_ptr<Game::Player>(new Game::Player());
     this->player->setSprite(playerSprite);
     this->player->shearX(0, 2);
     this->entites.push_back(this->player);
 
     //-----------------
-    auto m4a1Sprite = std::shared_ptr<Sprite>(new Sprite());
+    auto m4a1Sprite = std::shared_ptr<Opengl::Sprite>(new Opengl::Sprite());
     m4a1Sprite->setTexture(Utils::ResourceManager::getInstance().makeTexture("textures/m4a1.png"));
 
-    auto m4a1 = std::shared_ptr<Weapon>(new Weapon(Weapon::WeaponSlot::SLOT_PRIMARY));
+    auto m4a1 = std::shared_ptr<Game::Weapon>(new Game::Weapon(Game::Weapon::WeaponSlot::SLOT_PRIMARY));
     m4a1->setSprite(m4a1Sprite);
     m4a1->setPosition(-4.0f, 0.0f, 0.0f);
     m4a1->shearX(0, 2);
     this->entites.push_back(m4a1);
 
     //-----------------
-    auto cursorSprite = std::shared_ptr<Sprite>(new Sprite());
+    auto cursorSprite = std::shared_ptr<Opengl::Sprite>(new Opengl::Sprite());
     cursorSprite->setTexture(Utils::ResourceManager::getInstance().makeTexture("textures/cursor.png"));
 
-    this->cursor = std::shared_ptr<Entity>(new Entity(Entity::EntityType::TYPE_PASSABLE));
+    this->cursor = std::shared_ptr<Game::Entity>(new Game::Entity(Game::Entity::EntityType::TYPE_PASSABLE));
     this->cursor->setSprite(cursorSprite);
     this->cursor->scale(0.5f);
     this->entites.push_back(this->cursor);
 
     //-----------------
-    this->fpsCounter = std::shared_ptr<Entity>(new Entity(Entity::EntityType::TYPE_PASSABLE));
+    this->fpsCounter = std::shared_ptr<Game::Entity>(new Game::Entity(Game::Entity::EntityType::TYPE_PASSABLE));
     this->fpsCounter->setPosition(-12.0f, 9.5f, 0.0f);
     this->fpsCounter->setOffset(this->toWorld(Math::Vec3(45.0f, 15.0f, 0.0f)));
     this->fpsCounter->scale(0.3f);
@@ -304,23 +304,23 @@ void Game::initTestScene() {
 
     //-----------------
     this->player->positionChanged.connect(
-            std::bind(static_cast<void(Entity::*)(const Math::Vec3&)>(&Entity::setPosition),
+            std::bind(static_cast<void(Game::Entity::*)(const Math::Vec3&)>(&Game::Entity::setPosition),
             backgroundEntity, std::placeholders::_1));
     this->player->positionChanged.connect(
-            std::bind(static_cast<void(Camera::*)(const Math::Vec3&)>(&Camera::setPosition),
+            std::bind(static_cast<void(Game::Camera::*)(const Math::Vec3&)>(&Game::Camera::setPosition),
             &this->camera, std::placeholders::_1));
-    this->player->positionChanged.connect(std::bind(&Game::updateMousePosition, this));
+    this->player->positionChanged.connect(std::bind(&PolandBall::updateMousePosition, this));
     this->camera.positionChanged.connect(
-            std::bind(static_cast<void(Entity::*)(const Math::Vec3&)>(&Entity::setPosition),
+            std::bind(static_cast<void(Game::Entity::*)(const Math::Vec3&)>(&Game::Entity::setPosition),
             this->fpsCounter, std::placeholders::_1));
 }
 
-void Game::updateWorld() {
+void PolandBall::updateWorld() {
     for (auto& entity: this->entites) {
-        Entity::EntityType type = entity->getType();
-        if (type == Entity::EntityType::TYPE_PASSABLE ||
-                type == Entity::EntityType::TYPE_CLIP ||
-                type == Entity::EntityType::TYPE_SOLID) {
+        Game::Entity::EntityType type = entity->getType();
+        if (type == Game::Entity::EntityType::TYPE_PASSABLE ||
+                type == Game::Entity::EntityType::TYPE_CLIP ||
+                type == Game::Entity::EntityType::TYPE_SOLID) {
             continue;
         }
 
@@ -332,44 +332,44 @@ void Game::updateWorld() {
             entity->setSpeed(entity->getSpeed() + this->gravityAcceleration * scaleFactor);
 
             for (auto& another: this->entites) {
-                Entity::EntityType anotherType = another->getType();
-                if (anotherType == Entity::EntityType::TYPE_PASSABLE) {
+                Game::Entity::EntityType anotherType = another->getType();
+                if (anotherType == Game::Entity::EntityType::TYPE_PASSABLE) {
                     continue;
                 }
 
-                Collider::CollideSide side = entity->collides(another);
-                if (side != Collider::CollideSide::SIDE_NONE) {
+                Game::Collider::CollideSide side = entity->collides(another);
+                if (side != Game::Collider::CollideSide::SIDE_NONE) {
                     entity->onCollision(another, side);
                     collisionDetected = true;
                 }
 
-                if ((type == Entity::EntityType::TYPE_WEAPON &&
-                        anotherType == Entity::EntityType::TYPE_PLAYER) ||
-                        anotherType == Entity::EntityType::TYPE_WEAPON) {
+                if ((type == Game::Entity::EntityType::TYPE_WEAPON &&
+                        anotherType == Game::Entity::EntityType::TYPE_PLAYER) ||
+                        anotherType == Game::Entity::EntityType::TYPE_WEAPON) {
                     continue;
                 }
 
                 Math::Vec3 speed = entity->getSpeed();
                 switch (side) {
-                    case Collider::CollideSide::SIDE_BOTTOM:
+                    case Game::Collider::CollideSide::SIDE_BOTTOM:
                         if (speed.get(Math::Vec3::Y) < 0.0f) {
                             speed.set(Math::Vec3::Y, 0.0f);
                         }
                         break;
 
-                    case Collider::CollideSide::SIDE_TOP:
+                    case Game::Collider::CollideSide::SIDE_TOP:
                         if (speed.get(Math::Vec3::Y) > 0.0f) {
                             speed.set(Math::Vec3::Y, 0.0f);
                         }
                         break;
 
-                    case Collider::CollideSide::SIDE_LEFT:
+                    case Game::Collider::CollideSide::SIDE_LEFT:
                         if (speed.get(Math::Vec3::X) < 0.0f) {
                             speed.set(Math::Vec3::X, 0.0f);
                         }
                         break;
 
-                    case Collider::CollideSide::SIDE_RIGHT:
+                    case Game::Collider::CollideSide::SIDE_RIGHT:
                         if (speed.get(Math::Vec3::X) > 0.0f) {
                             speed.set(Math::Vec3::X, 0.0f);
                         }
@@ -389,7 +389,7 @@ void Game::updateWorld() {
     }
 }
 
-void Game::updatePlayer() {
+void PolandBall::updatePlayer() {
     Uint8 *keyStates = SDL_GetKeyboardState(nullptr);
     if (keyStates[SDL_SCANCODE_ESCAPE] > 0) {
         this->running = false;
@@ -420,16 +420,16 @@ void Game::updatePlayer() {
 
     if (keyStates[SDL_SCANCODE_1] + keyStates[SDL_SCANCODE_2] + keyStates[SDL_SCANCODE_3] == 1) {
         if (keyStates[SDL_SCANCODE_1] > 0) {
-            this->player->activateSlot(Weapon::WeaponSlot::SLOT_MEELE);
+            this->player->activateSlot(Game::Weapon::WeaponSlot::SLOT_MEELE);
         } else if (keyStates[SDL_SCANCODE_2] > 0) {
-            this->player->activateSlot(Weapon::WeaponSlot::SLOT_SECONDARY);
+            this->player->activateSlot(Game::Weapon::WeaponSlot::SLOT_SECONDARY);
         } else if (keyStates[SDL_SCANCODE_3] > 0) {
-            this->player->activateSlot(Weapon::WeaponSlot::SLOT_PRIMARY);
+            this->player->activateSlot(Game::Weapon::WeaponSlot::SLOT_PRIMARY);
         }
     }
 }
 
-void Game::renderWorld() {
+void PolandBall::renderWorld() {
     glClear(GL_COLOR_BUFFER_BIT);
 
     Math::Mat4 mvp(this->camera.getProjectionMatrix() *
@@ -437,7 +437,7 @@ void Game::renderWorld() {
                    this->camera.getTranslationMatrix());
 
     for (auto& entity: this->entites) {
-        if (entity->getType() != Entity::EntityType::TYPE_CLIP) {
+        if (entity->getType() != Game::Entity::EntityType::TYPE_CLIP) {
             entity->getSprite()->getEffect()->setMVP(mvp);
             entity->render();
         }
@@ -446,7 +446,7 @@ void Game::renderWorld() {
     SDL_GL_SwapWindow(this->window);
 }
 
-void Game::updateFPS() {
+void PolandBall::updateFPS() {
     static float updateTime = 1.0f;
     static float frames = 0.0f;
     static float textAspectRatio = 1.0f;
@@ -474,7 +474,7 @@ void Game::updateFPS() {
     frames++;
 }
 
-Math::Vec3 Game::toWorld(const Math::Vec3 vector) const {
+Math::Vec3 PolandBall::toWorld(const Math::Vec3 vector) const {
     Math::Vec4 worldPosition(vector, 1.0f);
     Math::Mat4 translation;
 

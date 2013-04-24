@@ -36,29 +36,29 @@ namespace PolandBall {
 
 namespace Utils {
 
-class ResourceManager: public NonCopyable {
+class ResourceManager: public Common::NonCopyable {
 public:
     static ResourceManager& getInstance() {
         static ResourceManager instance;
         return instance;
     }
 
-    std::shared_ptr<Texture>& makeTexture(const std::string& name);
-    std::shared_ptr<RenderEffect>& makeEffect(const std::string& name);
+    std::shared_ptr<Opengl::Texture>& makeTexture(const std::string& name);
+    std::shared_ptr<Opengl::RenderEffect>& makeEffect(const std::string& name);
 
 private:
     ResourceManager();
 
     void insertTexture(const std::string& name, SDL_Surface* image) {
-        std::shared_ptr<Texture> texture(new Texture());
+        std::shared_ptr<Opengl::Texture> texture(new Opengl::Texture());
         texture->load(image);
         this->textureCache.insert(std::make_pair(name, texture));
     }
 
     void insertEffect(const std::string& name, const std::string& source);
 
-    std::unordered_map<std::string, std::shared_ptr<Texture>> textureCache;
-    std::unordered_map<std::string, std::shared_ptr<RenderEffect>> effectCache;
+    std::unordered_map<std::string, std::shared_ptr<Opengl::Texture>> textureCache;
+    std::unordered_map<std::string, std::shared_ptr<Opengl::RenderEffect>> effectCache;
 
     static const std::string defaultShader;
 };

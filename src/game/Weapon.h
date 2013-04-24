@@ -28,6 +28,8 @@
 
 namespace PolandBall {
 
+namespace Game {
+
 class Weapon: public Entity {
 public:
     enum WeaponSlot {
@@ -96,6 +98,8 @@ private:
     WeaponSlot targetSlot;
     WeaponState state;
 };
+
+}  // namespace Game
 
 }  // namespace PolandBall
 

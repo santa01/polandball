@@ -34,6 +34,8 @@
 
 namespace PolandBall {
 
+namespace Game {
+
 class Player: public Entity {
 public:
     Player();
@@ -107,6 +109,8 @@ private:
     int activeSlot;
     int weaponHandle;
 };
+
+}  // namespace Game
 
 }  // namespace PolandBall
 

@@ -24,4 +24,8 @@
 
 namespace PolandBall {
 
+namespace Game {
+    
+}  // namespace Game
+
 }  // namespace PolandBall

@@ -36,14 +36,14 @@
 
 namespace PolandBall {
 
-class Game: public NonCopyable {
+class PolandBall: public Common::NonCopyable {
 public:
     enum {
         ERROR_OK = 0,
         ERROR_SETUP = 1
     };
 
-    Game();
+    PolandBall();
     int exec();
 
 private:
@@ -72,13 +72,13 @@ private:
     SDL_GLContext context;
     TTF_Font* defaultFont;
 
-    std::vector<std::shared_ptr<Entity>> entites;
-    std::shared_ptr<Player> player;
-    std::shared_ptr<Entity> cursor;
-    std::shared_ptr<Entity> fpsCounter;
+    std::vector<std::shared_ptr<Game::Entity>> entites;
+    std::shared_ptr<Game::Player> player;
+    std::shared_ptr<Game::Entity> cursor;
+    std::shared_ptr<Game::Entity> fpsCounter;
 
     Math::Vec3 gravityAcceleration;
-    Camera camera;
+    Game::Camera camera;
 
     bool running;
     int width, height;

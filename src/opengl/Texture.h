@@ -32,7 +32,9 @@
 
 namespace PolandBall {
 
-class Texture: public NonCopyable {
+namespace Opengl {
+
+class Texture: public Common::NonCopyable {
 public:
     Texture() {
         glGenTextures(1, &this->texture);
@@ -58,6 +60,8 @@ private:
 
     GLuint texture;
 };
+
+}  // namespace Opengl
 
 }  // namespace PolandBall
 

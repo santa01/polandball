@@ -77,6 +77,6 @@ private:
 
 }  // namespace Signals
 
-} // namespace PolandBall
+}  // namespace PolandBall
 
 #endif  // SIGNALS_H
