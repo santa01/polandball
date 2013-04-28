@@ -48,7 +48,7 @@ public:
         return this->texture;
     }
 
-    void load(SDL_Surface* image);
+    bool load(SDL_Surface* image);
 
     void bind() {
         glActiveTexture(GL_TEXTURE0);
