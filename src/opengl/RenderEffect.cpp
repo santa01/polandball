@@ -28,7 +28,7 @@ namespace Opengl {
 
 void RenderEffect::enable() {
     if (this->program == 0) {
-        this->program = Utils::ShaderLoader::createProgram(this->shaderList);
+        this->program = Opengl::ShaderLoader::createProgram(this->shaderList);
         glUseProgram(this->program);
 
         this->mvp = glGetUniformLocation(this->program, "mvp");

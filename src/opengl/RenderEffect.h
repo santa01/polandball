@@ -81,7 +81,7 @@ public:
 
     void attachShader(const std::string& source, ShaderType type) {
         if (this->program == 0) {
-            this->shaderList.push_back(Utils::ShaderLoader::createShader(source, type));
+            this->shaderList.push_back(Opengl::ShaderLoader::createShader(source, type));
         }
     }
 

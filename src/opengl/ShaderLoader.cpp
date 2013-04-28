@@ -28,7 +28,7 @@
 
 namespace PolandBall {
 
-namespace Utils {
+namespace Opengl {
 
 GLuint ShaderLoader::createProgram(const std::vector<GLuint>& shaders) {
     GLuint program = glCreateProgram();
@@ -50,7 +50,7 @@ GLuint ShaderLoader::createProgram(const std::vector<GLuint>& shaders) {
         std::unique_ptr<GLchar[]> infoLog(new GLchar[infoLogLength]);
         glGetProgramInfoLog(program, infoLogLength, nullptr, infoLog.get());
 
-        Logger::getInstance().log(Logger::LOG_ERROR, "%s", infoLog.get());
+        Utils::Logger::getInstance().log(Utils::Logger::LOG_ERROR, "%s", infoLog.get());
     }
 
     return program;
@@ -73,7 +73,7 @@ GLuint ShaderLoader::createShader(const std::string& source, GLenum type) {
         std::unique_ptr<GLchar[]> infoLog(new GLchar[infoLogLength]);
         glGetShaderInfoLog(shader, infoLogLength, nullptr, infoLog.get());
 
-        Logger::getInstance().log(Logger::LOG_ERROR, "%s", infoLog.get());
+        Utils::Logger::getInstance().log(Utils::Logger::LOG_ERROR, "%s", infoLog.get());
     }
 
     return shader;

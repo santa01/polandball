@@ -30,7 +30,7 @@
 
 namespace PolandBall {
 
-namespace Utils {
+namespace Opengl {
 
 class ShaderLoader {
     public:
