@@ -28,15 +28,15 @@
 #include "Mat4.h"
 #include "Scalable.h"
 #include "Movable.h"
-#include "Sprite.h"
 
 #include <array>
+#include <memory>
 
 namespace PolandBall {
 
 namespace Game {
 
-// NOTE: Not IRotateble!
+// NOTE: Not Rotateble!
 class Collider: public Common::Movable, public Common::Scalable {
 public:
     enum CollideSide {
