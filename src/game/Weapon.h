@@ -45,15 +45,14 @@ public:
     };
 
     Weapon():
-            target(Math::Vec3::UNIT_X) {
-        this->targetSlot = SLOT_MEELE;
-        this->initialize();
+            Weapon(SLOT_MEELE) {
     }
 
     Weapon(WeaponSlot slot):
             target(Math::Vec3::UNIT_X) {
         this->targetSlot = slot;
-        this->initialize();
+        this->type = Entity::EntityType::TYPE_WEAPON;
+        this->state = STATE_AVAILABLE;
     }
 
     void setTargetSlot(WeaponSlot slot) {
@@ -88,11 +87,6 @@ public:
     }
 
 private:
-    void initialize() {
-        this->type = Entity::EntityType::TYPE_WEAPON;
-        this->state = STATE_AVAILABLE;
-    }
-
     Math::Vec3 target;
 
     WeaponSlot targetSlot;

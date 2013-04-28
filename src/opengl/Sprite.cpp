@@ -45,6 +45,33 @@ const int Sprite::indices[] = {
     0, 2, 3,
 };
 
+Sprite::Sprite() {
+    glGenBuffers(2, this->buffers);
+    glGenVertexArrays(1, &this->vao);
+
+    glBindVertexArray(this->vao);
+
+    glBindBuffer(GL_ARRAY_BUFFER, this->buffers[Sprite::VERTEX_BUFFER]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(this->vertices), this->vertices, GL_STATIC_DRAW);
+
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)(12 * sizeof(float)));
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->buffers[Sprite::ELEMENT_BUFFER]);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(this->indices), this->indices, GL_STATIC_DRAW);
+
+    glBindVertexArray(0);
+
+    this->effect = Utils::ResourceManager::getInstance().makeEffect("default");
+    this->texture = Utils::ResourceManager::getInstance().makeTexture("default");
+
+    this->xAngle = 0.0f;
+    this->yAngle = 0.0f;
+    this->zAngle = 0.0f;
+}
+
 void Sprite::rotate(const Math::Vec3& vector, float angle) {
     if (vector == Math::Vec3::ZERO) {
         return;
@@ -78,33 +105,6 @@ void Sprite::render() {
     glBindVertexArray(this->vao);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (GLvoid*)0);
     glBindVertexArray(0);
-}
-
-void Sprite::initialize() {
-    glGenBuffers(2, this->buffers);
-    glGenVertexArrays(1, &this->vao);
-
-    glBindVertexArray(this->vao);
-
-    glBindBuffer(GL_ARRAY_BUFFER, this->buffers[Sprite::VERTEX_BUFFER]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(this->vertices), this->vertices, GL_STATIC_DRAW);
-
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)(12 * sizeof(float)));
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->buffers[Sprite::ELEMENT_BUFFER]);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(this->indices), this->indices, GL_STATIC_DRAW);
-
-    glBindVertexArray(0);
-
-    this->effect = Utils::ResourceManager::getInstance().makeEffect("default");
-    this->texture = Utils::ResourceManager::getInstance().makeTexture("default");
-
-    this->xAngle = 0.0f;
-    this->yAngle = 0.0f;
-    this->zAngle = 0.0f;
 }
 
 }  // namespace Opengl

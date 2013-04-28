@@ -47,17 +47,15 @@ namespace Opengl {
 class Sprite: public Common::Movable, public Common::Rotatable, public Common::Scalable, public Common::Transformable,
         public Common::NonCopyable {
 public:
-    Sprite() {
-        this->initialize();
-    }
+    Sprite();
 
-    Sprite(float x, float y, float z) {
-        this->initialize();
+    Sprite(float x, float y, float z):
+            Sprite() {
         this->setPosition(x, y, z);
     }
 
-    Sprite(const Math::Vec3& position) {
-        this->initialize();
+    Sprite(const Math::Vec3& position):
+            Sprite() {
         this->setPosition(position);
     }
 
@@ -221,8 +219,6 @@ private:
 
     static const float vertices[];
     static const int indices[];
-
-    void initialize();
 };
 
 }  // namespace Opengl
