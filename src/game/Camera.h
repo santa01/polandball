@@ -24,7 +24,6 @@
 #define CAMERA_H
 
 #include "Mat4.h"
-#include "Vec3.h"
 #include "Signals.h"
 #include "Movable.h"
 #include "Rotatable.h"
@@ -35,21 +34,33 @@ namespace Game {
 
 class Camera: public Common::Movable, public Common::Rotatable {
 public:
+    enum ProjectionType {
+        TYPE_PERSPECTIVE,
+        TYPE_ORTHODRAPHIC
+    };
+
     Camera() {
-        this->initialize();
+        this->aspectRatio = 1.3333f;
+        this->nearPlane = 0.1f;
+        this->farPlane = 20.0f;
+        this->fov = 90.0f;
+        this->projectionType = TYPE_PERSPECTIVE;
+
+        this->updateProjection();
+        this->lookAt(Math::Vec3::UNIT_Z);
     }
 
-    Camera(float x, float y, float z) {
+    Camera(float x, float y, float z):
+            Camera() {
         this->setPosition(x, y, z);
-        this->initialize();
     }
 
-    Camera(const Math::Vec3& position) {
+    Camera(const Math::Vec3& position):
+            Camera() {
         this->setPosition(position);
-        this->initialize();
     }
 
-    using Movable::setPosition;
+    using Common::Movable::setPosition;
 
     void setPosition(const Math::Vec3& position) {
         this->translation.set(0, 3, -position.get(Math::Vec3::X));
@@ -62,10 +73,6 @@ public:
         return Math::Vec3(-this->translation.get(0, 3),
                           -this->translation.get(1, 3),
                           -this->translation.get(2, 3));
-    }
-
-    const Math::Mat4& getTranslationMatrix() const {
-        return this->translation;
     }
 
     float getXAngle() const {
@@ -82,8 +89,61 @@ public:
 
     void rotate(const Math::Vec3& vector, float angle);
 
-    const Math::Mat4& getRotationMatrix() const {
+    const Math::Mat4& getTranslation() const {
+        return this->translation;
+    }
+
+    const Math::Mat4& getRotation() const {
         return this->rotation;
+    }
+
+    const Math::Mat4& getProjection() const {
+        return this->projection;
+    }
+
+    ProjectionType getProjectionType() const {
+        return this->projectionType;
+    }
+
+    void setProjectionType(ProjectionType type) {
+        this->projectionType = type;
+        this->updateProjection();
+    }
+
+    float getAspectRatio() const {
+        return this->aspectRatio;
+    }
+
+    void setAspectRatio(float aspectRatio) {
+        this->aspectRatio = aspectRatio;
+        this->updateProjection();
+    }
+
+    float getNearPlane() const {
+        return this->nearPlane;
+    }
+
+    void setNearPlane(float nearPlane) {
+        this->nearPlane = nearPlane;
+        this->updateProjection();
+    }
+
+    float getFarPlane() const {
+        return this->farPlane;
+    }
+
+    void setFarPlane(float farPlane) {
+        this->farPlane = farPlane;
+        this->updateProjection();
+    }
+
+    float getFov() const {
+        return this->fov;
+    }
+
+    void setFov(float fov) {
+        this->fov = fov;
+        this->updateProjection();
     }
 
     Math::Vec3 getUp() const {
@@ -98,7 +158,16 @@ public:
                            this->rotation.get(2, 2));
     }
 
-    Math::Vec3 getRight() const;
+    Math::Vec3 getRight() const {
+        Math::Vec3 up(this->rotation.get(1, 0),
+                      this->rotation.get(1, 1),
+                      this->rotation.get(1, 2));
+        Math::Vec3 target(this->rotation.get(2, 0),
+                          this->rotation.get(2, 1),
+                          this->rotation.get(2, 2));
+        Math::Vec3 right = target.cross(up);
+        return right.normalize();
+    }
 
     void lookAt(float x, float y, float z) {
         this->lookAt(Math::Vec3(x, y, z));
@@ -106,65 +175,22 @@ public:
 
     void lookAt(const Math::Vec3& target);
 
-    void setPlaneDistance(float planeDistance) {
-        this->planeDistance = planeDistance;
-        this->updateProjection();
-    }
-
-    float getPlaneDistance() const {
-        return this->planeDistance;
-    }
-
-    void setAspectRatio(float aspectRatio) {
-        this->aspectRatio = aspectRatio;
-        this->updateProjection();
-    }
-
-    float getAspectRatio() const {
-        return this->aspectRatio;
-    }
-
-    const Math::Mat4& getProjectionMatrix() const {
-        return this->projection;
-    }
-
     Signals::Signal<Math::Vec3> positionChanged;
 
 private:
-    void updateProjection() {
-        this->projection.set(0, 0, 1.0f / (this->planeDistance * this->aspectRatio));
-        this->projection.set(1, 1, 1.0f / this->planeDistance);
-        this->projection.set(2, 2, -1.0f / this->planeDistance);
-    }
+    void updateProjection();
+    void updateRotation(const Math::Vec3& right, const Math::Vec3& up, const Math::Vec3& target);
 
-    void updateRotation(const Math::Vec3& right, const Math::Vec3& up, const Math::Vec3& target) {
-        this->rotation.set(0, 0, right.get(Math::Vec3::X));
-        this->rotation.set(0, 1, right.get(Math::Vec3::Y));
-        this->rotation.set(0, 2, right.get(Math::Vec3::Z));
+    ProjectionType projectionType;
 
-        this->rotation.set(1, 0, up.get(Math::Vec3::X));
-        this->rotation.set(1, 1, up.get(Math::Vec3::Y));
-        this->rotation.set(1, 2, up.get(Math::Vec3::Z));
-
-        this->rotation.set(2, 0, target.get(Math::Vec3::X));
-        this->rotation.set(2, 1, target.get(Math::Vec3::Y));
-        this->rotation.set(2, 2, target.get(Math::Vec3::Z));
-    }
-
-    void initialize() {
-        this->aspectRatio = 1.3333f;
-        this->planeDistance = 10.0f;
-
-        this->updateProjection();
-        this->lookAt(Math::Vec3::UNIT_Z);
-    }
-
+    Math::Mat4 projection;
     Math::Mat4 translation;
     Math::Mat4 rotation;
-    Math::Mat4 projection;
 
     float aspectRatio;
-    float planeDistance;
+    float nearPlane;
+    float farPlane;
+    float fov;
 
     float xAngle;
     float yAngle;

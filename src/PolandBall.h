@@ -60,7 +60,8 @@ private:
     void updateFPS();
     void renderWorld();
 
-    Math::Vec3 toWorld(const Math::Vec3 vector) const;
+    // Orthographic projection only
+    Math::Vec3 screenToWorld(const Math::Vec3 vector) const;
 
     void updateMousePosition() const {
         SDL_Event event = { SDL_MOUSEMOTION };

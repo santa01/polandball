@@ -34,11 +34,11 @@ void Camera::rotate(const Math::Vec3& vector, float angle) {
     if (vector == Math::Vec3::ZERO) {
         return;
     }
-    
+
     Math::Vec3 axis(vector);
     Math::Quaternion q(axis.normalize(), angle * M_PI / 180.0f);
     q.normalize();
-    
+
     Math::Mat3 rotationMatrix = q.extractMat4().extractMat3();
     Math::Vec3 up(this->rotation.get(1, 0),
                   this->rotation.get(1, 1),
@@ -48,11 +48,9 @@ void Camera::rotate(const Math::Vec3& vector, float angle) {
                       this->rotation.get(2, 2));
     up = rotationMatrix * up;
     target = rotationMatrix * target;
-    
+
     Math::Vec3 right = target.cross(up);
     right.normalize();
-
-    this->updateRotation(right, up, target);
 
     float xAngleNew, yAngleNew, zAngleNew;
     q.extractEulerAgngles(xAngleNew, yAngleNew, zAngleNew);
@@ -60,37 +58,68 @@ void Camera::rotate(const Math::Vec3& vector, float angle) {
     this->xAngle = xAngleNew * 180.f / M_PI;
     this->yAngle = yAngleNew * 180.f / M_PI;
     this->zAngle = zAngleNew * 180.f / M_PI;
-}
 
-Math::Vec3 Camera::getRight() const {
-    Math::Vec3 up(this->rotation.get(1, 0),
-                  this->rotation.get(1, 1),
-                  this->rotation.get(1, 2));
-    Math::Vec3 target(this->rotation.get(2, 0),
-                      this->rotation.get(2, 1),
-                      this->rotation.get(2, 2));
-    Math::Vec3 right = target.cross(up);
-    return right.normalize();
+    this->updateRotation(right, up, target);
 }
 
 void Camera::lookAt(const Math::Vec3& vector) {
     if (vector == Math::Vec3::ZERO) {
         return;
     }
-    
+
     Math::Vec3 target(-vector);
     target.normalize();
 
     Math::Vec3 right = this->getRight();
     if (target != Math::Vec3::UNIT_Y && target != -Math::Vec3::UNIT_Y) {
         right = target.cross(Math::Vec3::UNIT_Y);
-        right.normalize();  
+        right.normalize();
     }
-    
+
     Math::Vec3 up = right.cross(target);
     up.normalize();
-    
+
     this->updateRotation(right, up, target);
+}
+
+void Camera::updateProjection() {
+    this->projection = Math::Mat4();
+
+    switch (this->projectionType) {
+        case TYPE_PERSPECTIVE:
+            this->projection.set(0, 0, 1.0f / (tanf(this->fov * M_PI / 180.0f / 2.0f) *
+                                       this->aspectRatio));
+            this->projection.set(1, 1, 1.0f / (tanf(this->fov * M_PI / 180.0f / 2.0f)));
+            this->projection.set(2, 2, (-this->farPlane - this->nearPlane) /
+                                       (this->farPlane - this->nearPlane));
+            this->projection.set(2, 3, (-2.0f * this->farPlane * this->nearPlane) /
+                                       (this->farPlane - this->nearPlane));
+            this->projection.set(3, 2, -1.0f);
+            this->projection.set(3, 3, 0.0f);
+            break;
+        case TYPE_ORTHODRAPHIC:
+            this->projection.set(0, 0, 1.0f / ((this->farPlane - this->nearPlane) *
+                                       this->aspectRatio));
+            this->projection.set(1, 1, 1.0f / (this->farPlane - this->nearPlane));
+            this->projection.set(2, 2, -2.0f / (this->farPlane - this->nearPlane));
+            this->projection.set(2, 3, (-this->farPlane - this->nearPlane) /
+                                       (this->farPlane - this->nearPlane));
+            break;
+    }
+}
+
+void Camera::updateRotation(const Math::Vec3& right, const Math::Vec3& up, const Math::Vec3& target) {
+    this->rotation.set(0, 0, right.get(Math::Vec3::X));
+    this->rotation.set(0, 1, right.get(Math::Vec3::Y));
+    this->rotation.set(0, 2, right.get(Math::Vec3::Z));
+
+    this->rotation.set(1, 0, up.get(Math::Vec3::X));
+    this->rotation.set(1, 1, up.get(Math::Vec3::Y));
+    this->rotation.set(1, 2, up.get(Math::Vec3::Z));
+
+    this->rotation.set(2, 0, target.get(Math::Vec3::X));
+    this->rotation.set(2, 1, target.get(Math::Vec3::Y));
+    this->rotation.set(2, 2, target.get(Math::Vec3::Z));
 }
 
 }  // namespace Game

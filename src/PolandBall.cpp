@@ -45,7 +45,10 @@ PolandBall::PolandBall() {
     this->frameStep = 0.001f;
 
     this->gravityAcceleration = Math::Vec3(0.0f, -35.0f, 0.0f);
+    this->camera.setProjectionType(Game::Camera::TYPE_ORTHODRAPHIC);
     this->camera.setAspectRatio(this->width / (this->height / 1.0f));
+    this->camera.setNearPlane(-5.0f);
+    this->camera.setFarPlane(5.0f);
 }
 
 int PolandBall::exec() {
@@ -67,7 +70,7 @@ int PolandBall::exec() {
                     break;
 
                 case SDL_MOUSEMOTION:
-                    cursorPosition = this->toWorld(Math::Vec3(event.motion.x, event.motion.y, 0.0f));
+                    cursorPosition = this->screenToWorld(Math::Vec3(event.motion.x, event.motion.y, 0.0f));
                     this->cursor->setPosition(cursorPosition + this->player->getPosition());
                     this->player->aimAt(cursorPosition);
                     break;
@@ -298,7 +301,7 @@ void PolandBall::initTestScene() {
     //-----------------
     this->fpsCounter = std::shared_ptr<Game::Entity>(new Game::Entity(Game::Entity::EntityType::TYPE_PASSABLE));
     this->fpsCounter->setPosition(-12.0f, 9.5f, 0.0f);
-    this->fpsCounter->setOffset(this->toWorld(Math::Vec3(45.0f, 15.0f, 0.0f)));
+    this->fpsCounter->setOffset(this->screenToWorld(Math::Vec3(45.0f, 15.0f, 0.0f)));
     this->fpsCounter->scale(0.3f);
     this->entites.push_back(this->fpsCounter);
 
@@ -432,9 +435,9 @@ void PolandBall::updatePlayer() {
 void PolandBall::renderWorld() {
     glClear(GL_COLOR_BUFFER_BIT);
 
-    Math::Mat4 mvp(this->camera.getProjectionMatrix() *
-                   this->camera.getRotationMatrix() *
-                   this->camera.getTranslationMatrix());
+    Math::Mat4 mvp(this->camera.getProjection() *
+                   this->camera.getRotation() *
+                   this->camera.getTranslation());
 
     for (auto& entity: this->entites) {
         if (entity->getType() != Game::Entity::EntityType::TYPE_CLIP) {
@@ -474,19 +477,18 @@ void PolandBall::updateFPS() {
     frames++;
 }
 
-Math::Vec3 PolandBall::toWorld(const Math::Vec3 vector) const {
-    Math::Vec4 worldPosition(vector, 1.0f);
+Math::Vec3 PolandBall::screenToWorld(const Math::Vec3 vector) const {
     Math::Mat4 translation;
+    translation.set(0, 0, (this->camera.getFarPlane() - this->camera.getNearPlane()) *
+                          this->camera.getAspectRatio() / (this->width / 2.0f));
+    translation.set(1, 1, (this->camera.getNearPlane() - this->camera.getFarPlane()) /
+                          (this->height / 2.0f));
+    translation.set(0, 3, (this->camera.getNearPlane() - this->camera.getFarPlane()) *
+                          this->camera.getAspectRatio());
+    translation.set(1, 3, (this->camera.getFarPlane() - this->camera.getNearPlane()));
 
-    translation.set(0, 0, this->camera.getPlaneDistance() * 2.0f / this->width);
-    translation.set(0, 3, -this->camera.getPlaneDistance());
-    translation.set(1, 1, -this->camera.getPlaneDistance() * 2.0f / this->height);
-    translation.set(1, 3, this->camera.getPlaneDistance());
-
-    worldPosition = translation * worldPosition;
-    return Math::Vec3(worldPosition.get(Math::Vec3::X) * this->camera.getAspectRatio(),
-                      worldPosition.get(Math::Vec3::Y),
-                      worldPosition.get(Math::Vec3::Z));
+    Math::Vec4 worldPosition = translation * Math::Vec4(vector, 1.0f);
+    return Math::Vec3(worldPosition.get(Math::Vec3::X), worldPosition.get(Math::Vec3::Y), 0.0f);
 }
 
 }  // namespace PolandBall
