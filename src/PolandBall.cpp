@@ -30,6 +30,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <fontconfig/fontconfig.h>
+#include <bits/shared_ptr_base.h>
 
 namespace PolandBall {
 
@@ -97,7 +98,7 @@ int PolandBall::exec() {
 }
 
 bool PolandBall::setUp() {
-    Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Setting up...");
+    Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Initializing...");
 
     if (!this->initSDL() || !this->initOpenGL() || !this->initFontConfig()) {
         return false;
@@ -108,7 +109,16 @@ bool PolandBall::setUp() {
 }
 
 void PolandBall::tearDown() {
-    Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Tearing down...");
+    this->camera.positionChanged.disconnectAll();
+    this->player->positionChanged.disconnectAll();
+
+    this->player.reset();
+    this->cursor.reset();
+    this->fpsCounter.reset();
+    this->entites.clear();
+
+    Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Cleaning caches...");
+    Utils::ResourceManager::getInstance().purgeCaches();
 
     if (this->defaultFont) {
         TTF_CloseFont(this->defaultFont);
@@ -126,6 +136,8 @@ void PolandBall::tearDown() {
     IMG_Quit();
     TTF_Quit();
     SDL_Quit();
+
+    Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Shutting down...");
 }
 
 bool PolandBall::initSDL() {

@@ -46,6 +46,8 @@ public:
     std::shared_ptr<Opengl::Texture>& makeTexture(const std::string& name);
     std::shared_ptr<Opengl::RenderEffect>& makeEffect(const std::string& name);
 
+    void purgeCaches();
+
 private:
     ResourceManager();
 

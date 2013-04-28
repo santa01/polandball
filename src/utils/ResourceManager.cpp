@@ -127,6 +127,25 @@ std::shared_ptr<Opengl::RenderEffect>& ResourceManager::makeEffect(const std::st
     return this->effectCache.at(name);
 }
 
+void ResourceManager::purgeCaches() {
+    for (auto& texture: this->textureCache) {
+        if (!texture.second.unique()) {
+            Logger::getInstance().log(Logger::LOG_WARNING, "Texture %p has %d references left!",
+                    texture.second.get(), texture.second.use_count() - 1);
+        }
+    }
+
+    for (auto& effect: this->effectCache) {
+        if (!effect.second.unique()) {
+            Logger::getInstance().log(Logger::LOG_WARNING, "RenderEffect %p has %d references left!",
+                    effect.second.get(), effect.second.use_count() - 1);
+        }
+    }
+
+    this->textureCache.clear();
+    this->effectCache.clear();
+}
+
 void ResourceManager::insertEffect(const std::string& name, const std::string& source) {
     std::shared_ptr<Opengl::RenderEffect> effect(new Opengl::RenderEffect());
 
