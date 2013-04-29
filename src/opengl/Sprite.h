@@ -140,38 +140,38 @@ public:
         return this->replication.get(2, 2);
     }
 
-    void shearX(int slice, int totalSlices) {
+    void shearX(float slice, int totalSlices) {
         if (slice < totalSlices) {
             this->shear.set(0, 0, 1.0f / totalSlices);
-            this->shear.set(0, 3, slice / 1.0f / totalSlices);
+            this->shear.set(0, 3, slice / totalSlices);
         }
     }
 
-    void shearY(int slice, int totalSlices) {
+    void shearY(float slice, int totalSlices) {
         if (slice < totalSlices) {
             this->shear.set(1, 1, 1.0f / totalSlices);
-            this->shear.set(1, 3, slice / 1.0f / totalSlices);
+            this->shear.set(1, 3, slice / totalSlices);
         }
     }
 
-    void shearZ(int slice, int totalSlices) {
+    void shearZ(float slice, int totalSlices) {
         if (slice < totalSlices) {
             this->shear.set(2, 2, 1.0f / totalSlices);
-            this->shear.set(2, 3, slice / 1.0f / totalSlices);
+            this->shear.set(2, 3, slice / totalSlices);
         }
     }
 
-    void getXShearFactor(int& slice, int& totalSlices) const {
+    void getXShearFactor(float& slice, int& totalSlices) const {
         totalSlices = 1.0f / this->shear.get(0, 0);
         slice = this->shear.get(0, 3) / this->shear.get(0, 0);
     }
 
-    void getYShearFactor(int& slice, int& totalSlices) const {
+    void getYShearFactor(float& slice, int& totalSlices) const {
         totalSlices = 1.0f / this->shear.get(1, 1);
         slice = this->shear.get(1, 3) / this->shear.get(1, 1);
     }
 
-    void getZShearFactor(int& slice, int& totalSlices) const {
+    void getZShearFactor(float& slice, int& totalSlices) const {
         totalSlices = 1.0f / this->shear.get(2, 2);
         slice = this->shear.get(2, 3) / this->shear.get(2, 2);
     }

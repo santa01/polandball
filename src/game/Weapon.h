@@ -26,6 +26,8 @@
 #include "Entity.h"
 #include "Vec3.h"
 
+#include <cmath>
+
 namespace PolandBall {
 
 namespace Game {
@@ -53,6 +55,8 @@ public:
         this->targetSlot = slot;
         this->type = Entity::EntityType::TYPE_WEAPON;
         this->state = STATE_AVAILABLE;
+        this->shearX(0.0f, 2);
+        this->shearY(0.0f, 2);
     }
 
     void setTargetSlot(WeaponSlot slot) {
@@ -83,6 +87,19 @@ public:
                 this->setSpeed(Math::Vec3::ZERO);
                 this->state = STATE_AVAILABLE;
             }
+        }
+    }
+
+    void animate(float frameTime) {
+        float viewAngle = acosf(this->target.dot(Math::Vec3::UNIT_X)) * 180.0f / M_PI;
+        float correction = (cosf(viewAngle * M_PI / 180.0f) < 0.0f) ? 0.95f : 0.05f;
+        static float bounce = asinf(-12.0f * (correction == 0.05f) ? correction : -0.05f);
+
+        if (this->state == STATE_AVAILABLE) {
+            this->shearY(sinf(bounce) / 12.0f + correction, 2);
+            bounce += frameTime * 6.0f;
+        } else {
+            bounce = asinf(-12.0f * (correction == 0.05f) ? correction : -0.05f);
         }
     }
 

@@ -147,27 +147,27 @@ public:
         return this->sprite->getZReplicaFactor();
     }
 
-    void shearX(int slice, int totalSlices) {
+    void shearX(float slice, int totalSlices) {
         this->sprite->shearX(slice, totalSlices);
     }
 
-    void shearY(int slice, int totalSlices) {
+    void shearY(float slice, int totalSlices) {
         this->sprite->shearY(slice, totalSlices);
     }
 
-    void shearZ(int slice, int totalSlices) {
+    void shearZ(float slice, int totalSlices) {
         this->sprite->shearZ(slice, totalSlices);
     }
 
-    void getXShearFactor(int& slice, int& totalSlices) const {
+    void getXShearFactor(float& slice, int& totalSlices) const {
         this->sprite->getXShearFactor(slice, totalSlices);
     }
 
-    void getYShearFactor(int& slice, int& totalSlices) const {
+    void getYShearFactor(float& slice, int& totalSlices) const {
         this->sprite->getYShearFactor(slice, totalSlices);
     }
 
-    void getZShearFactor(int& slice, int& totalSlices) const {
+    void getZShearFactor(float& slice, int& totalSlices) const {
         this->sprite->getZShearFactor(slice, totalSlices);
     }
 

@@ -249,8 +249,8 @@ void PolandBall::initTestScene() {
 
     auto backgroundEntity = std::shared_ptr<Game::Entity>(new Game::Entity(Game::Entity::EntityType::TYPE_PASSABLE));
     backgroundEntity->setTexture(Utils::ResourceManager::getInstance().makeTexture("textures/background_static_800_600.png"));
-    backgroundEntity->scaleY(10.0f);
-    backgroundEntity->scaleX(10.0f * this->camera.getAspectRatio());
+    backgroundEntity->scaleY(this->camera.getFarPlane() - this->camera.getNearPlane());
+    backgroundEntity->scaleX((this->camera.getFarPlane() - this->camera.getNearPlane()) * this->camera.getAspectRatio());
     this->entites.push_back(backgroundEntity);
 
     //-----------------
@@ -271,20 +271,17 @@ void PolandBall::initTestScene() {
     //-----------------
     this->player = std::shared_ptr<Game::Player>(new Game::Player());
     this->player->setTexture(Utils::ResourceManager::getInstance().makeTexture("textures/player_tk.png"));
-    this->player->shearX(0, 2);
     this->entites.push_back(this->player);
 
     //-----------------
     auto m4a1 = std::shared_ptr<Game::Weapon>(new Game::Weapon(Game::Weapon::WeaponSlot::SLOT_PRIMARY));
     m4a1->setTexture(Utils::ResourceManager::getInstance().makeTexture("textures/m4a1.png"));
     m4a1->setPosition(-4.0f, 0.0f, 0.0f);
-    m4a1->shearX(0, 2);
     this->entites.push_back(m4a1);
 
     //-----------------
     this->cursor = std::shared_ptr<Game::Entity>(new Game::Entity(Game::Entity::EntityType::TYPE_PASSABLE));
     this->cursor->setTexture(Utils::ResourceManager::getInstance().makeTexture("textures/cursor.png"));
-    this->cursor->scale(0.5f);
     this->entites.push_back(this->cursor);
 
     //-----------------
@@ -368,6 +365,10 @@ void PolandBall::updateScene() {
             scaleFactor = (this->frameTime - totalTime > this->frameStep) ? this->frameStep : this->frameTime - totalTime;
             totalTime += scaleFactor;
         }
+    }
+
+    for (auto& entity: this->entites) {
+        entity->animate(this->frameTime);
     }
 }
 

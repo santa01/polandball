@@ -45,13 +45,13 @@ public:
         this->replicateZ(factor);
     }
 
-    virtual void shearX(int slice, int totalSlices) = 0;
-    virtual void shearY(int slice, int totalSlices) = 0;
-    virtual void shearZ(int slice, int totalSlices) = 0;
+    virtual void shearX(float slice, int totalSlices) = 0;
+    virtual void shearY(float slice, int totalSlices) = 0;
+    virtual void shearZ(float slice, int totalSlices) = 0;
 
-    virtual void getXShearFactor(int& slice, int& totalSlices) const = 0;
-    virtual void getYShearFactor(int& slice, int& totalSlices) const = 0;
-    virtual void getZShearFactor(int& slice, int& totalSlices) const = 0;
+    virtual void getXShearFactor(float& slice, int& totalSlices) const = 0;
+    virtual void getYShearFactor(float& slice, int& totalSlices) const = 0;
+    virtual void getZShearFactor(float& slice, int& totalSlices) const = 0;
 
     void shear(int slice, int totalSlices) {
         this->shearX(slice, totalSlices);

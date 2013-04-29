@@ -42,6 +42,7 @@ Player::Player():
     this->weaponHandle = -1;
 
     this->type = Entity::EntityType::TYPE_PLAYER;
+    this->shearX(0.0f, 2);
 }
 
 void Player::pickWeapon(const std::shared_ptr<Weapon>& weapon) {
@@ -157,7 +158,7 @@ void Player::aimAt(const Math::Vec3& target) {
     float signCorrection = (normal.get(Math::Vec3::Z) < 0) ? -1.0f : 1.0f;
 
     float newAngle = this->viewAngle + deltaAngle * signCorrection;
-    int shear = (cosf(newAngle * M_PI / 180.0f) < 0.0f) ? 1 : 0;
+    float shear = (cosf(newAngle * M_PI / 180.0f) < 0.0f) ? 1.0f : 0.0f;
     this->viewAngle = newAngle;
 
     this->roll(newAngle);
@@ -200,7 +201,7 @@ void Player::dropWeapon() {
 
     float hotizontalSpeed = this->getSpeed().get(Math::Vec3::X);
     float verticalSpeed = this->getSpeed().get(Math::Vec3::Y);
-    weapon->setSpeed(Math::Vec3(hotizontalSpeed, (verticalSpeed > 0) ? verticalSpeed : 0.0f, 0.0f));
+    weapon->setSpeed(Math::Vec3(hotizontalSpeed, (verticalSpeed > 0.0f) ? verticalSpeed : 0.0f, 0.0f));
     weapon->accelerateBy(dropAcceleration);
 }
 
