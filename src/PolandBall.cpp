@@ -252,61 +252,44 @@ bool PolandBall::initFontConfig() {
 
 void PolandBall::initTestScene() {
     // GL_DEPTH_TEST is OFF! Manually arrange sprites, farthest renders first!
-    auto backgroundSprite = std::shared_ptr<Opengl::Sprite>(new Opengl::Sprite());
-    backgroundSprite->setTexture(Utils::ResourceManager::getInstance().makeTexture("textures/background_static_800_600.png"));
 
     auto backgroundEntity = std::shared_ptr<Game::Entity>(new Game::Entity(Game::Entity::EntityType::TYPE_PASSABLE));
-    backgroundEntity->setSprite(backgroundSprite);
+    backgroundEntity->setTexture(Utils::ResourceManager::getInstance().makeTexture("textures/background_static_800_600.png"));
     backgroundEntity->scaleY(10.0f);
     backgroundEntity->scaleX(10.0f * this->camera.getAspectRatio());
     this->entites.push_back(backgroundEntity);
 
     //-----------------
-    auto bricksSprite = std::shared_ptr<Opengl::Sprite>(new Opengl::Sprite());
-    bricksSprite->setTexture(Utils::ResourceManager::getInstance().makeTexture("textures/entity_static_kz.png"));
-
     auto bricksEntity = std::shared_ptr<Game::Entity>(new Game::Entity());
-    bricksEntity->setSprite(bricksSprite);
+    bricksEntity->setTexture(Utils::ResourceManager::getInstance().makeTexture("textures/entity_static_kz.png"));
     bricksEntity->setPosition(0.0f, -4.0f, 0.0f);
     bricksEntity->scaleX(20.0f * 1.5f);  // Scale for aspect ratio
     bricksEntity->replicateX(20.0f);
     this->entites.push_back(bricksEntity);
 
     //-----------------
-    bricksSprite = std::shared_ptr<Opengl::Sprite>(new Opengl::Sprite());
-    bricksSprite->setTexture(Utils::ResourceManager::getInstance().makeTexture("textures/entity_static_kz.png"));
-
     bricksEntity = std::shared_ptr<Game::Entity>(new Game::Entity());
-    bricksEntity->setSprite(bricksSprite);
+    bricksEntity->setTexture(Utils::ResourceManager::getInstance().makeTexture("textures/entity_static_kz.png"));
     bricksEntity->setPosition(4.0f, 1.0f, 0.0f);
     bricksEntity->scaleX(1.5f);  // Scale for aspect ratio
     this->entites.push_back(bricksEntity);
 
     //-----------------
-    auto playerSprite = std::shared_ptr<Opengl::Sprite>(new Opengl::Sprite());
-    playerSprite->setTexture(Utils::ResourceManager::getInstance().makeTexture("textures/player_tk.png"));
-
     this->player = std::shared_ptr<Game::Player>(new Game::Player());
-    this->player->setSprite(playerSprite);
+    this->player->setTexture(Utils::ResourceManager::getInstance().makeTexture("textures/player_tk.png"));
     this->player->shearX(0, 2);
     this->entites.push_back(this->player);
 
     //-----------------
-    auto m4a1Sprite = std::shared_ptr<Opengl::Sprite>(new Opengl::Sprite());
-    m4a1Sprite->setTexture(Utils::ResourceManager::getInstance().makeTexture("textures/m4a1.png"));
-
     auto m4a1 = std::shared_ptr<Game::Weapon>(new Game::Weapon(Game::Weapon::WeaponSlot::SLOT_PRIMARY));
-    m4a1->setSprite(m4a1Sprite);
+    m4a1->setTexture(Utils::ResourceManager::getInstance().makeTexture("textures/m4a1.png"));
     m4a1->setPosition(-4.0f, 0.0f, 0.0f);
     m4a1->shearX(0, 2);
     this->entites.push_back(m4a1);
 
     //-----------------
-    auto cursorSprite = std::shared_ptr<Opengl::Sprite>(new Opengl::Sprite());
-    cursorSprite->setTexture(Utils::ResourceManager::getInstance().makeTexture("textures/cursor.png"));
-
     this->cursor = std::shared_ptr<Game::Entity>(new Game::Entity(Game::Entity::EntityType::TYPE_PASSABLE));
-    this->cursor->setSprite(cursorSprite);
+    this->cursor->setTexture(Utils::ResourceManager::getInstance().makeTexture("textures/cursor.png"));
     this->cursor->scale(0.5f);
     this->entites.push_back(this->cursor);
 
@@ -453,8 +436,8 @@ void PolandBall::renderWorld() {
 
     for (auto& entity: this->entites) {
         if (entity->getType() != Game::Entity::EntityType::TYPE_CLIP) {
-            entity->getSprite()->getEffect()->enable();
-            entity->getSprite()->getEffect()->setUniform("mvp", mvp);
+            entity->getEffect()->enable();
+            entity->getEffect()->setUniform("mvp", mvp);
             entity->render();
         }
     }
@@ -479,7 +462,7 @@ void PolandBall::updateFPS() {
 
         SDL_Color color = {0, 0, 0, 0};
         SDL_Surface *textOverlay = TTF_RenderUTF8_Blended(this->defaultFont, fps.str().c_str(), color);
-        this->fpsCounter->getSprite()->getTexture()->load(textOverlay);
+        this->fpsCounter->getTexture()->load(textOverlay);
         SDL_FreeSurface(textOverlay);
 
         updateTime = 0.0f;

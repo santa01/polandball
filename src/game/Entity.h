@@ -25,6 +25,8 @@
 
 #include "Collider.h"
 #include "Sprite.h"
+#include "RenderEffect.h"
+#include "Texture.h"
 #include "Vec3.h"
 #include "Movable.h"
 #include "Scalable.h"
@@ -192,6 +194,30 @@ public:
         }
     }
 
+    std::shared_ptr<Opengl::RenderEffect>& getEffect() {
+        return this->sprite->getEffect();
+    }
+
+    void setEffect(std::shared_ptr<Opengl::RenderEffect>& effect) {
+        this->sprite->setEffect(effect);
+    }
+
+    std::shared_ptr<Opengl::Texture>& getTexture() {
+        return this->sprite->getTexture();
+    }
+
+    void setTexture(std::shared_ptr<Opengl::Texture>& texture) {
+        this->sprite->setTexture(texture);
+    }
+
+    void render() {
+        this->sprite->render();
+    }
+
+    Collider::CollideSide collides(const std::shared_ptr<Entity>& another) {
+        return this->collider->collides(another->getCollider());
+    }
+
     EntityType getType() const {
         return this->type;
     }
@@ -216,16 +242,8 @@ public:
         this->currentSpeed += acceleration;
     }
 
-    Collider::CollideSide collides(const std::shared_ptr<Entity>& another) {
-        return this->collider->collides(another->getCollider());
-    }
-
     virtual void onCollision(const std::shared_ptr<Entity>& another, Collider::CollideSide side) {}
     virtual void animate(float frameTime) {}
-
-    virtual void render() {
-        this->sprite->render();
-    }
 
     Signals::Signal<Math::Vec3> positionChanged;
 
