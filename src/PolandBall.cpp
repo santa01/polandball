@@ -453,7 +453,8 @@ void PolandBall::renderWorld() {
 
     for (auto& entity: this->entites) {
         if (entity->getType() != Game::Entity::EntityType::TYPE_CLIP) {
-            entity->getSprite()->getEffect()->setMVP(mvp);
+            entity->getSprite()->getEffect()->enable();
+            entity->getSprite()->getEffect()->setUniform("mvp", mvp);
             entity->render();
         }
     }

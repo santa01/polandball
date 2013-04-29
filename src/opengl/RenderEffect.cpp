@@ -26,24 +26,6 @@ namespace PolandBall {
 
 namespace Opengl {
 
-void RenderEffect::enable() {
-    if (this->program == 0) {
-        this->program = Opengl::ShaderLoader::createProgram(this->shaderList);
-        glUseProgram(this->program);
-
-        this->mvp = glGetUniformLocation(this->program, "mvp");
-        this->lw = glGetUniformLocation(this->program, "lw");
-        this->transform = glGetUniformLocation(this->program, "transform");
-
-        GLint samplerLocation = glGetUniformLocation(this->program, "textureSampler");
-        if (samplerLocation > -1) {
-            glUniform1i(samplerLocation, 0);
-        }
-    } else {
-        glUseProgram(this->program);
-    }
-}
-
 }  // namespace Opengl
 
 }  // namespace PolandBall

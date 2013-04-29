@@ -98,8 +98,8 @@ void Sprite::render() {
 
     if (this->effect != nullptr) {
         this->effect->enable();
-        this->effect->setLW(this->translation * this->rotation * this->scaling);
-        this->effect->setTransform(this->replication * this->shear);
+        this->effect->setUniform("lw", this->translation * this->rotation * this->scaling);
+        this->effect->setUniform("transform", this->replication * this->shear);
     }
 
     glBindVertexArray(this->vao);
