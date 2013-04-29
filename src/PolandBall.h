@@ -47,18 +47,17 @@ public:
     int exec();
 
 private:
-    bool setUp();
-    void tearDown();
+    bool initialize();
+    void shutdown();
 
     bool initSDL();
     bool initOpenGL();
     bool initFontConfig();
     void initTestScene();
 
-    void updateWorld();
+    void updateScene();
     void updatePlayer();
-    void updateFPS();
-    void renderWorld();
+    void render();
 
     // Orthographic projection only
     Math::Vec3 screenToWorld(const Math::Vec3 vector) const;
@@ -76,7 +75,6 @@ private:
     std::vector<std::shared_ptr<Game::Entity>> entites;
     std::shared_ptr<Game::Player> player;
     std::shared_ptr<Game::Entity> cursor;
-    std::shared_ptr<Game::Entity> fpsCounter;
 
     Math::Vec3 gravityAcceleration;
     Game::Camera camera;

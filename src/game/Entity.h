@@ -71,10 +71,9 @@ public:
     using Movable::setPosition;
 
     void setPosition(const Math::Vec3& position) {
-        Math::Vec3 newPosition(position + this->offset);
-        this->sprite->setPosition(newPosition);
-        this->collider->setPosition(newPosition);
-        this->positionChanged(newPosition);  // Emit signal
+        this->sprite->setPosition(position);
+        this->collider->setPosition(position);
+        this->positionChanged(position);  // Emit signal
     }
 
     Math::Vec3 getPosition() const {
@@ -230,14 +229,6 @@ public:
         this->currentSpeed = speed;
     }
 
-    const Math::Vec3& getOffset() const {
-        return this->offset;
-    }
-
-    void setOffset(const Math::Vec3& offset) {
-        this->offset = offset;
-    }
-
     void accelerateBy(const Math::Vec3& acceleration) {
         this->currentSpeed += acceleration;
     }
@@ -252,7 +243,6 @@ protected:
     std::shared_ptr<Opengl::Sprite> sprite;
 
     Math::Vec3 currentSpeed;
-    Math::Vec3 offset;
     EntityType type;
 };
 

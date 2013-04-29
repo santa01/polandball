@@ -25,12 +25,9 @@
 #include "Vec3.h"
 #include "ResourceManager.h"
 
-#include <sstream>
-#include <iomanip>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <fontconfig/fontconfig.h>
-#include <bits/shared_ptr_base.h>
 
 namespace PolandBall {
 
@@ -43,7 +40,7 @@ PolandBall::PolandBall() {
     this->width = 800;
     this->height = 600;
     this->frameTime = 0.0f;
-    this->frameStep = 0.001f;
+    this->frameStep = 0.05f;
 
     this->gravityAcceleration = Math::Vec3(0.0f, -35.0f, 0.0f);
     this->camera.setProjectionType(Game::Camera::TYPE_ORTHODRAPHIC);
@@ -53,8 +50,8 @@ PolandBall::PolandBall() {
 }
 
 int PolandBall::exec() {
-    if (!this->setUp()) {
-        this->tearDown();
+    if (!this->initialize()) {
+        this->shutdown();
         return ERROR_SETUP;
     }
 
@@ -85,19 +82,17 @@ int PolandBall::exec() {
         }
 
         this->updatePlayer();
-        this->updateWorld();
-        this->updateFPS();
-
-        this->renderWorld();
+        this->updateScene();
+        this->render();
 
         this->frameTime = (SDL_GetTicks() - beginFrame) / 1000.0f;
     }
 
-    this->tearDown();
+    this->shutdown();
     return ERROR_OK;
 }
 
-bool PolandBall::setUp() {
+bool PolandBall::initialize() {
     Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Initializing...");
 
     if (!this->initSDL() || !this->initOpenGL() || !this->initFontConfig()) {
@@ -108,13 +103,12 @@ bool PolandBall::setUp() {
     return true;
 }
 
-void PolandBall::tearDown() {
+void PolandBall::shutdown() {
     this->camera.positionChanged.disconnectAll();
     this->player->positionChanged.disconnectAll();
 
     this->player.reset();
     this->cursor.reset();
-    this->fpsCounter.reset();
     this->entites.clear();
 
     Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Cleaning caches...");
@@ -294,13 +288,6 @@ void PolandBall::initTestScene() {
     this->entites.push_back(this->cursor);
 
     //-----------------
-    this->fpsCounter = std::shared_ptr<Game::Entity>(new Game::Entity(Game::Entity::EntityType::TYPE_PASSABLE));
-    this->fpsCounter->setPosition(-12.0f, 9.5f, 0.0f);
-    this->fpsCounter->setOffset(this->screenToWorld(Math::Vec3(45.0f, 15.0f, 0.0f)));
-    this->fpsCounter->scale(0.3f);
-    this->entites.push_back(this->fpsCounter);
-
-    //-----------------
     this->player->positionChanged.connect(
             std::bind(static_cast<void(Game::Entity::*)(const Math::Vec3&)>(&Game::Entity::setPosition),
             backgroundEntity, std::placeholders::_1));
@@ -308,12 +295,9 @@ void PolandBall::initTestScene() {
             std::bind(static_cast<void(Game::Camera::*)(const Math::Vec3&)>(&Game::Camera::setPosition),
             &this->camera, std::placeholders::_1));
     this->player->positionChanged.connect(std::bind(&PolandBall::updateMousePosition, this));
-    this->camera.positionChanged.connect(
-            std::bind(static_cast<void(Game::Entity::*)(const Math::Vec3&)>(&Game::Entity::setPosition),
-            this->fpsCounter, std::placeholders::_1));
 }
 
-void PolandBall::updateWorld() {
+void PolandBall::updateScene() {
     for (auto& entity: this->entites) {
         Game::Entity::EntityType type = entity->getType();
         if (type == Game::Entity::EntityType::TYPE_PASSABLE ||
@@ -427,7 +411,7 @@ void PolandBall::updatePlayer() {
     }
 }
 
-void PolandBall::renderWorld() {
+void PolandBall::render() {
     glClear(GL_COLOR_BUFFER_BIT);
 
     Math::Mat4 mvp(this->camera.getProjection() *
@@ -443,34 +427,6 @@ void PolandBall::renderWorld() {
     }
 
     SDL_GL_SwapWindow(this->window);
-}
-
-void PolandBall::updateFPS() {
-    static float updateTime = 1.0f;
-    static float frames = 0.0f;
-    static float textAspectRatio = 1.0f;
-
-    if (updateTime >= 0.25f) {
-        std::stringstream fps;
-        fps << "fps: " << std::setw(5) << std::left << std::setprecision(0) << std::fixed << frames / updateTime;
-
-        int textWidth, textHeight;
-        TTF_SizeUTF8(this->defaultFont, fps.str().c_str(), &textWidth, &textHeight);
-        this->fpsCounter->scaleX(1.0f / textAspectRatio);
-        textAspectRatio = textWidth / (textHeight / 1.0f);
-        this->fpsCounter->scaleX(textAspectRatio);
-
-        SDL_Color color = {0, 0, 0, 0};
-        SDL_Surface *textOverlay = TTF_RenderUTF8_Blended(this->defaultFont, fps.str().c_str(), color);
-        this->fpsCounter->getTexture()->load(textOverlay);
-        SDL_FreeSurface(textOverlay);
-
-        updateTime = 0.0f;
-        frames = 0.0f;
-    }
-
-    updateTime += this->frameTime;
-    frames++;
 }
 
 Math::Vec3 PolandBall::screenToWorld(const Math::Vec3 vector) const {
