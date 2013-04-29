@@ -368,7 +368,9 @@ void PolandBall::updateScene() {
     }
 
     for (auto& entity: this->entites) {
-        entity->animate(this->frameTime);
+        if (entity->getType() != Game::Entity::EntityType::TYPE_CLIP) {
+            entity->animate(this->frameTime);
+        }
     }
 }
 
