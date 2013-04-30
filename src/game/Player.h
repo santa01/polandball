@@ -38,6 +38,13 @@ namespace Game {
 
 class Player: public Entity {
 public:
+    enum PlayerState {
+        STATE_IDLE = 0,
+        STATE_LEFT_STEP = 1,
+        STATE_RIGHT_STEP = 2,
+        STATE_JUMP = 4
+    };
+
     Player();
 
     const Math::Vec3& getTarget() const {
@@ -68,21 +75,21 @@ public:
         this->maxJumpTime = maxJumpTime;
     }
 
+    int getState() const {
+        return this->state;
+    }
+
+    void setState(PlayerState state) {
+        this->state |= state;
+    }
+
     std::shared_ptr<Weapon>& getWeapon(Weapon::WeaponSlot slot) {
         return this->weapons[slot];
     }
 
     void pickWeapon(const std::shared_ptr<Weapon>& weapon);
     void activateSlot(Weapon::WeaponSlot slot);
-
-    void moveRight(float frameTime);
-    void moveLeft(float frameTime);
-    void slowDown(float frameTime);
-
-    void jump(float frameTime);
-    void breakJump() {
-        this->jumpWasReleased = (this->jumpTime == 0.0f) ? true : false;
-    }
+    void dropWeapon();
 
     void aimAt(const Math::Vec3& target);
     void shoot() {
@@ -91,8 +98,8 @@ public:
         }
     }
 
-    void dropWeapon();
     void onCollision(const std::shared_ptr<Entity>& another, Collider::CollideSide side);
+    void animate(float frameTime);
 
 private:
     std::array<std::shared_ptr<Weapon>, 3> weapons;
@@ -104,10 +111,9 @@ private:
 
     float jumpTime;
     float viewAngle;
-    bool jumpWasReleased;
-
     int activeSlot;
     int weaponHandle;
+    int state;
 };
 
 }  // namespace Game

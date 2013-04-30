@@ -380,37 +380,26 @@ void PolandBall::updatePlayer() {
         this->running = false;
     }
 
-    // Both pressed or released
-    if (keyStates[SDL_SCANCODE_LEFT] == keyStates[SDL_SCANCODE_RIGHT]) {
-        this->player->slowDown(this->frameTime);
-    } else if (keyStates[SDL_SCANCODE_RIGHT] > 0) {
-        this->player->moveRight(this->frameTime);
-    } else if (keyStates[SDL_SCANCODE_LEFT] > 0) {
-        this->player->moveLeft(this->frameTime);
+    if (keyStates[SDL_SCANCODE_RIGHT] > 0) {
+        this->player->setState(Game::Player::PlayerState::STATE_RIGHT_STEP);
     }
-
+    if (keyStates[SDL_SCANCODE_LEFT] > 0) {
+        this->player->setState(Game::Player::PlayerState::STATE_LEFT_STEP);
+    }
     if (keyStates[SDL_SCANCODE_UP] > 0) {
-        this->player->jump(this->frameTime);
-    } else {
-        this->player->breakJump();
+        this->player->setState(Game::Player::PlayerState::STATE_JUMP);
     }
-
-    static bool dropKeyReleased = true;
-    if (keyStates[SDL_SCANCODE_RETURN] > 0 && dropKeyReleased) {
+    if (keyStates[SDL_SCANCODE_RETURN] > 0) {
         this->player->dropWeapon();
-        dropKeyReleased = false;
-    } else {
-        dropKeyReleased = true;
     }
-
-    if (keyStates[SDL_SCANCODE_1] + keyStates[SDL_SCANCODE_2] + keyStates[SDL_SCANCODE_3] == 1) {
-        if (keyStates[SDL_SCANCODE_1] > 0) {
-            this->player->activateSlot(Game::Weapon::WeaponSlot::SLOT_MEELE);
-        } else if (keyStates[SDL_SCANCODE_2] > 0) {
-            this->player->activateSlot(Game::Weapon::WeaponSlot::SLOT_SECONDARY);
-        } else if (keyStates[SDL_SCANCODE_3] > 0) {
-            this->player->activateSlot(Game::Weapon::WeaponSlot::SLOT_PRIMARY);
-        }
+    if (keyStates[SDL_SCANCODE_1] > 0) {
+        this->player->activateSlot(Game::Weapon::WeaponSlot::SLOT_PRIMARY);
+    }
+    if (keyStates[SDL_SCANCODE_2] > 0) {
+        this->player->activateSlot(Game::Weapon::WeaponSlot::SLOT_SECONDARY);
+    }
+    if (keyStates[SDL_SCANCODE_3] > 0) {
+        this->player->activateSlot(Game::Weapon::WeaponSlot::SLOT_MEELE);
     }
 }
 

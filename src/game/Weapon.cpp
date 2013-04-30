@@ -43,13 +43,12 @@ void Weapon::aimAt(const Math::Vec3& target) {
         return;
     }
 
-    static float currentAngle = 0.0f;
     Math::Vec3 normal = this->target.cross(newTarget);
     float signCorrection = (normal.get(Math::Vec3::Z) < 0.0f) ? -1.0f : 1.0f;
 
-    float newAngle = currentAngle + deltaAngle * signCorrection;
+    float newAngle = this->viewAngle + deltaAngle * signCorrection;
     float shear = (cosf(newAngle * M_PI / 180.0f) < 0.0f) ? 1.0f : 0.0f;
-    currentAngle = newAngle;
+    this->viewAngle = newAngle;
 
     this->roll(newAngle);
     this->shearX(shear, 2);

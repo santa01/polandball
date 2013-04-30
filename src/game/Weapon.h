@@ -53,6 +53,9 @@ public:
     Weapon(WeaponSlot slot):
             target(Math::Vec3::UNIT_X) {
         this->targetSlot = slot;
+        this->viewAngle = 0.0f;
+        this->bounce = asinf(-12.0f * 0.05f);  // See animate()
+
         this->type = Entity::EntityType::TYPE_WEAPON;
         this->state = STATE_AVAILABLE;
         this->shearX(0.0f, 2);
@@ -93,19 +96,20 @@ public:
     void animate(float frameTime) {
         float viewAngle = acosf(this->target.dot(Math::Vec3::UNIT_X)) * 180.0f / M_PI;
         float correction = (cosf(viewAngle * M_PI / 180.0f) < 0.0f) ? 0.95f : 0.05f;
-        static float bounce = asinf(-12.0f * (correction == 0.05f) ? correction : -0.05f);
 
         if (this->state == STATE_AVAILABLE) {
-            this->shearY(sinf(bounce) / 12.0f + correction, 2);
-            bounce += frameTime * 6.0f;
+            this->shearY(sinf(this->bounce) / 12.0f + correction, 2);
+            this->bounce += frameTime * 6.0f;
         } else {
-            bounce = asinf(-12.0f * (correction == 0.05f) ? correction : -0.05f);
+            this->bounce = asinf(-12.0f * (correction == 0.05f) ? correction : -0.05f);
         }
     }
 
 private:
     Math::Vec3 target;
 
+    float viewAngle;
+    float bounce;
     WeaponSlot targetSlot;
     WeaponState state;
 };
