@@ -55,15 +55,14 @@ public:
     };
 
     Entity():
-            collider(new Collider()),
-            sprite(new Opengl::Sprite()) {
-        this->type = TYPE_SOLID;
+            Entity(TYPE_SOLID) {
     }
 
     Entity(EntityType type):
             collider(new Collider()),
             sprite(new Opengl::Sprite()) {
         this->type = type;
+        this->destroyed = false;
     }
 
     virtual ~Entity() {}
@@ -233,6 +232,14 @@ public:
         this->currentSpeed += acceleration;
     }
 
+    bool isDestroyed() const {
+        return this->destroyed;
+    }
+
+    void destroy() {
+        this->destroyed = true;
+    }
+
     virtual void onCollision(const std::shared_ptr<Entity>& another, Collider::CollideSide side) {}
     virtual void animate(float frameTime) {}
 
@@ -244,6 +251,7 @@ protected:
 
     Math::Vec3 currentSpeed;
     EntityType type;
+    bool destroyed;
 };
 
 }  // namespace Game

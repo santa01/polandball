@@ -28,6 +28,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <fontconfig/fontconfig.h>
+#include <algorithm>
 
 namespace PolandBall {
 
@@ -295,6 +296,13 @@ void PolandBall::initTestScene() {
 }
 
 void PolandBall::updateScene() {
+    this->entites.erase(
+            std::remove_if(this->entites.begin(), this->entites.end(),
+                [](const std::shared_ptr<Game::Entity>& entity) -> bool {
+                    return entity->isDestroyed();
+                }),
+            this->entites.end());
+
     for (auto& entity: this->entites) {
         Game::Entity::EntityType type = entity->getType();
         if (type == Game::Entity::EntityType::TYPE_PASSABLE ||
