@@ -345,7 +345,6 @@ void PolandBall::updatePlayer() {
 void PolandBall::updateScene() {
     for (auto& entity: this->entites) {
         Game::Entity::EntityType type = entity->getType();
-
         if (type == Game::Entity::EntityType::TYPE_PASSABLE ||
                 type == Game::Entity::EntityType::TYPE_CLIP ||
                 type == Game::Entity::EntityType::TYPE_SOLID) {
@@ -364,7 +363,6 @@ void PolandBall::updateScene() {
 
             for (auto& another: this->entites) {
                 Game::Entity::EntityType anotherType = another->getType();
-
                 if (anotherType == Game::Entity::EntityType::TYPE_PASSABLE) {
                     continue;
                 }
@@ -383,7 +381,8 @@ void PolandBall::updateScene() {
 
                 if ((type == Game::Entity::EntityType::TYPE_WEAPON &&
                         anotherType == Game::Entity::EntityType::TYPE_PLAYER) ||
-                        anotherType == Game::Entity::EntityType::TYPE_WEAPON) {
+                        (type == Game::Entity::EntityType::TYPE_PLAYER &&
+                        anotherType == Game::Entity::EntityType::TYPE_WEAPON)) {
                     continue;
                 }
 
