@@ -28,7 +28,6 @@
 #include "Vec3.h"
 #include "Weapon.h"
 
-#include <cmath>
 #include <memory>
 #include <array>
 

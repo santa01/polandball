@@ -41,7 +41,7 @@ PolandBall::PolandBall() {
     this->width = 800;
     this->height = 600;
     this->frameTime = 0.0f;
-    this->frameStep = 0.05f;
+    this->frameStep = 0.001f;
 
     this->gravityAcceleration = Math::Vec3(0.0f, -35.0f, 0.0f);
     this->camera.setProjectionType(Game::Camera::TYPE_ORTHODRAPHIC);
@@ -70,7 +70,7 @@ int PolandBall::exec() {
 
                 case SDL_MOUSEMOTION:
                     cursorPosition = this->screenToWorld(Math::Vec3(event.motion.x, event.motion.y, 0.0f));
-                    this->cursor->setPosition(cursorPosition + this->player->getPosition());
+                    this->cursor->setOrigin(cursorPosition);
                     this->player->aimAt(cursorPosition);
                     break;
 
@@ -82,11 +82,18 @@ int PolandBall::exec() {
             }
         }
 
+        this->purgeDestroyed();
         this->updatePlayer();
         this->updateScene();
+
+        this->animate();
         this->render();
 
         this->frameTime = (SDL_GetTicks() - beginFrame) / 1000.0f;
+        if (this->frameTime < 0.01f) {
+            SDL_Delay((0.01f - this->frameTime) * 1000);
+            this->frameTime = 0.01f;
+        }
     }
 
     this->shutdown();
@@ -290,44 +297,88 @@ void PolandBall::initTestScene() {
             std::bind(static_cast<void(Game::Entity::*)(const Math::Vec3&)>(&Game::Entity::setPosition),
             backgroundEntity, std::placeholders::_1));
     this->player->positionChanged.connect(
+            std::bind(static_cast<void(Game::Entity::*)(const Math::Vec3&)>(&Game::Entity::setPosition),
+            this->cursor, std::placeholders::_1));
+    this->player->positionChanged.connect(
             std::bind(static_cast<void(Game::Camera::*)(const Math::Vec3&)>(&Game::Camera::setPosition),
             &this->camera, std::placeholders::_1));
-    this->player->positionChanged.connect(std::bind(&PolandBall::updateMousePosition, this));
 }
 
-void PolandBall::updateScene() {
+void PolandBall::purgeDestroyed() {
     this->entites.erase(
             std::remove_if(this->entites.begin(), this->entites.end(),
                 [](const std::shared_ptr<Game::Entity>& entity) -> bool {
                     return entity->isDestroyed();
                 }),
             this->entites.end());
+}
 
+void PolandBall::updatePlayer() {
+    Uint8 *keyStates = SDL_GetKeyboardState(nullptr);
+
+    if (keyStates[SDL_SCANCODE_ESCAPE] > 0) {
+        this->running = false;
+    }
+    if (keyStates[SDL_SCANCODE_RIGHT] > 0) {
+        this->player->setState(Game::Player::PlayerState::STATE_RIGHT_STEP);
+    }
+    if (keyStates[SDL_SCANCODE_LEFT] > 0) {
+        this->player->setState(Game::Player::PlayerState::STATE_LEFT_STEP);
+    }
+    if (keyStates[SDL_SCANCODE_UP] > 0) {
+        this->player->setState(Game::Player::PlayerState::STATE_JUMP);
+    }
+    if (keyStates[SDL_SCANCODE_RETURN] > 0) {
+        this->player->dropWeapon();
+    }
+    if (keyStates[SDL_SCANCODE_1] > 0) {
+        this->player->activateSlot(Game::Weapon::WeaponSlot::SLOT_PRIMARY);
+    }
+    if (keyStates[SDL_SCANCODE_2] > 0) {
+        this->player->activateSlot(Game::Weapon::WeaponSlot::SLOT_SECONDARY);
+    }
+    if (keyStates[SDL_SCANCODE_3] > 0) {
+        this->player->activateSlot(Game::Weapon::WeaponSlot::SLOT_MEELE);
+    }
+}
+
+void PolandBall::updateScene() {
     for (auto& entity: this->entites) {
         Game::Entity::EntityType type = entity->getType();
+
         if (type == Game::Entity::EntityType::TYPE_PASSABLE ||
                 type == Game::Entity::EntityType::TYPE_CLIP ||
                 type == Game::Entity::EntityType::TYPE_SOLID) {
             continue;
         }
 
-        float scaleFactor = (this->frameStep > this->frameTime) ? this->frameTime : this->frameStep;
-        float totalTime = scaleFactor;
-        bool collisionDetected = false;
+        if (type == Game::Entity::EntityType::TYPE_WEAPON) {
+            std::shared_ptr<Game::Weapon> weapon = std::dynamic_pointer_cast<Game::Weapon>(entity);
+            if (weapon->getState() == Game::Weapon::WeaponState::STATE_PICKED) {
+                continue;
+            }
+        }
 
-        while (totalTime <= this->frameTime && scaleFactor > 0.0f && !collisionDetected) {
-            entity->setSpeed(entity->getSpeed() + this->gravityAcceleration * scaleFactor);
+        for (float step = this->frameStep, totalTime = step; totalTime < this->frameTime; totalTime += step) {
+            entity->setSpeed(entity->getSpeed() + this->gravityAcceleration * step);
 
             for (auto& another: this->entites) {
                 Game::Entity::EntityType anotherType = another->getType();
+
                 if (anotherType == Game::Entity::EntityType::TYPE_PASSABLE) {
                     continue;
+                }
+
+                if (anotherType == Game::Entity::EntityType::TYPE_WEAPON) {
+                    std::shared_ptr<Game::Weapon> weapon = std::dynamic_pointer_cast<Game::Weapon>(another);
+                    if (weapon->getState() == Game::Weapon::WeaponState::STATE_PICKED) {
+                        continue;
+                    }
                 }
 
                 Game::Collider::CollideSide side = entity->collides(another);
                 if (side != Game::Collider::CollideSide::SIDE_NONE) {
                     entity->onCollision(another, side);
-                    collisionDetected = true;
                 }
 
                 if ((type == Game::Entity::EntityType::TYPE_WEAPON &&
@@ -368,46 +419,17 @@ void PolandBall::updateScene() {
                 entity->setSpeed(speed);
             }
 
-            entity->setPosition(entity->getPosition() + entity->getSpeed() * scaleFactor);
-
-            scaleFactor = (this->frameTime - totalTime > this->frameStep) ? this->frameStep : this->frameTime - totalTime;
-            totalTime += scaleFactor;
-        }
-    }
-
-    for (auto& entity: this->entites) {
-        if (entity->getType() != Game::Entity::EntityType::TYPE_CLIP) {
-            entity->animate(this->frameTime);
+            entity->setPosition(entity->getPosition() + entity->getSpeed() * step);
+            step = (this->frameTime - totalTime > this->frameStep) ? this->frameStep : this->frameTime - totalTime;
         }
     }
 }
 
-void PolandBall::updatePlayer() {
-    Uint8 *keyStates = SDL_GetKeyboardState(nullptr);
-    if (keyStates[SDL_SCANCODE_ESCAPE] > 0) {
-        this->running = false;
-    }
-
-    if (keyStates[SDL_SCANCODE_RIGHT] > 0) {
-        this->player->setState(Game::Player::PlayerState::STATE_RIGHT_STEP);
-    }
-    if (keyStates[SDL_SCANCODE_LEFT] > 0) {
-        this->player->setState(Game::Player::PlayerState::STATE_LEFT_STEP);
-    }
-    if (keyStates[SDL_SCANCODE_UP] > 0) {
-        this->player->setState(Game::Player::PlayerState::STATE_JUMP);
-    }
-    if (keyStates[SDL_SCANCODE_RETURN] > 0) {
-        this->player->dropWeapon();
-    }
-    if (keyStates[SDL_SCANCODE_1] > 0) {
-        this->player->activateSlot(Game::Weapon::WeaponSlot::SLOT_PRIMARY);
-    }
-    if (keyStates[SDL_SCANCODE_2] > 0) {
-        this->player->activateSlot(Game::Weapon::WeaponSlot::SLOT_SECONDARY);
-    }
-    if (keyStates[SDL_SCANCODE_3] > 0) {
-        this->player->activateSlot(Game::Weapon::WeaponSlot::SLOT_MEELE);
+void PolandBall::animate() {
+    for (auto& entity: this->entites) {
+        if (entity->getType() != Game::Entity::EntityType::TYPE_CLIP) {
+            entity->animate(this->frameTime);
+        }
     }
 }
 

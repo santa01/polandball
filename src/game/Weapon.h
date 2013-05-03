@@ -85,8 +85,9 @@ public:
 
     void onCollision(const std::shared_ptr<Entity>& another, Collider::CollideSide side) {
         if (this->state == STATE_THROWN) {
-            if (another->getType() == Entity::EntityType::TYPE_SOLID &&
-                    side == Collider::CollideSide::SIDE_BOTTOM) {
+            if (side == Collider::CollideSide::SIDE_BOTTOM &&
+                    (another->getType() == Entity::EntityType::TYPE_SOLID ||
+                     another->getType() == Entity::EntityType::TYPE_CLIP)) {
                 this->setSpeed(Math::Vec3::ZERO);
                 this->state = STATE_AVAILABLE;
             }
@@ -108,10 +109,10 @@ public:
 private:
     Math::Vec3 target;
 
-    float viewAngle;
-    float bounce;
     WeaponSlot targetSlot;
     WeaponState state;
+    float viewAngle;
+    float bounce;
 };
 
 }  // namespace Game

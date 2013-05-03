@@ -50,6 +50,8 @@ void Player::pickWeapon(const std::shared_ptr<Weapon>& weapon) {
     if (this->getWeapon(targetSlot) == nullptr) {
         this->weapons[targetSlot] = weapon;
         this->weapons[targetSlot]->setState(Weapon::WeaponState::STATE_PICKED);
+        this->weapons[targetSlot]->shearX(0.0f, 2);
+        this->weapons[targetSlot]->shearY(0.0f, 2);
 
         if (targetSlot > this->activeSlot || this->activeSlot == -1) {
             this->activateSlot(targetSlot);
@@ -146,8 +148,8 @@ void Player::onCollision(const std::shared_ptr<Entity>& another, Collider::Colli
         std::shared_ptr<Weapon> weapon = std::dynamic_pointer_cast<Weapon>(another);
         if (weapon->getState() == Weapon::WeaponState::STATE_AVAILABLE) {
             this->pickWeapon(weapon);
+            return;  // Don't break the jump
         }
-        return;  // Don't break the jump
     }
 
     switch (side) {
@@ -165,61 +167,46 @@ void Player::onCollision(const std::shared_ptr<Entity>& another, Collider::Colli
 }
 
 void Player::animate(float frameTime) {
-    if (this->state & STATE_JUMP) {
-        float playerUpSpeed = this->currentSpeed.get(Math::Vec3::Y);
+    float playerMoveSpeed = this->currentSpeed.get(Math::Vec3::X);
+    float playerJumpSpeed = this->currentSpeed.get(Math::Vec3::Y);
 
-        if (this->jumpTime < this->maxJumpTime && playerUpSpeed >= 0.0f) {
-            if (playerUpSpeed < this->maxJumpSpeed) {
-                this->accelerateBy(Math::Vec3::UNIT_Y * (this->maxJumpSpeed - playerUpSpeed));
+    if (this->state & STATE_JUMP) {
+        if (this->jumpTime < this->maxJumpTime && playerJumpSpeed >= 0.0f) {
+            if (playerJumpSpeed < this->maxJumpSpeed) {
+                this->accelerateBy(Math::Vec3::UNIT_Y * (this->maxJumpSpeed - playerJumpSpeed));
             }
             this->jumpTime += frameTime;
         }
-
-        this->state &= ~STATE_JUMP;
     } else {
         this->jumpTime = FLT_MAX;
     }
 
-    float playerMoveSpeed = this->currentSpeed.get(Math::Vec3::X);
     float moveSpeedDelta = this->maxMoveSpeed * frameTime * 10.0f;
-    Math::Vec3 moveAcceleration;
+    Math::Vec3 moveAcceleration = Math::Vec3::UNIT_X * moveSpeedDelta;
+    float signCorrection = 0.0f;
 
     if (this->state & STATE_LEFT_STEP && !(this->state & STATE_RIGHT_STEP)) {
-        // We press LEFT and we already moving LEFT
-        if (playerMoveSpeed < 0.0f && fabs(playerMoveSpeed) + moveSpeedDelta > this->maxMoveSpeed) {
-            moveAcceleration = -Math::Vec3::UNIT_X * (this->maxMoveSpeed - fabs(playerMoveSpeed));
-        } else {
-            moveAcceleration = -Math::Vec3::UNIT_X * moveSpeedDelta;
+        if (playerMoveSpeed < 0.0f && moveSpeedDelta - playerMoveSpeed > this->maxMoveSpeed) {
+            moveAcceleration = Math::Vec3::UNIT_X * (this->maxMoveSpeed + playerMoveSpeed);
         }
-
-        this->accelerateBy(moveAcceleration);
-        this->state &= ~STATE_LEFT_STEP;
+        signCorrection = -1.0f;
     } else if (this->state & STATE_RIGHT_STEP && !(this->state & STATE_LEFT_STEP)) {
-        // We press RIGHT and we already moving RIGHT
-        if (playerMoveSpeed > 0.0f && fabs(playerMoveSpeed) + moveSpeedDelta > this->maxMoveSpeed) {
-            moveAcceleration = Math::Vec3::UNIT_X * (this->maxMoveSpeed - fabs(playerMoveSpeed));
+        if (playerMoveSpeed > 0.0f && moveSpeedDelta + playerMoveSpeed > this->maxMoveSpeed) {
+            moveAcceleration = Math::Vec3::UNIT_X * (this->maxMoveSpeed - playerMoveSpeed);
+        }
+        signCorrection = 1.0f;
+    } else if (playerJumpSpeed == 0.0f && playerMoveSpeed != 0.0f) {
+        if ((playerMoveSpeed > 0.0f && playerMoveSpeed - (moveSpeedDelta * 0.5f) < 0.0f) ||
+                (playerMoveSpeed < 0.0f && playerMoveSpeed + (moveSpeedDelta * 0.5f) > 0.0f)) {
+            moveAcceleration = Math::Vec3::UNIT_X * fabs(playerMoveSpeed);
         } else {
-            moveAcceleration = Math::Vec3::UNIT_X * moveSpeedDelta;
+            moveAcceleration = moveAcceleration * 0.5f;
         }
-
-        this->accelerateBy(moveAcceleration);
-        this->state &= ~STATE_RIGHT_STEP;
-    } else {
-        if (this->currentSpeed.get(Math::Vec3::Y) == 0.0f) {
-            moveSpeedDelta /= 2.0f;  // Slow down twice slower than accelerate, looks good
-            if ((playerMoveSpeed > 0.0f && playerMoveSpeed - moveSpeedDelta < 0.0f) ||
-                    (playerMoveSpeed < 0.0f && playerMoveSpeed + moveSpeedDelta > 0.0f)) {
-                moveAcceleration = Math::Vec3::UNIT_X * fabs(playerMoveSpeed);
-            } else {
-                moveAcceleration = Math::Vec3::UNIT_X * moveSpeedDelta;
-            }
-
-            float signCorrection = (playerMoveSpeed < 0.0f) ? 1.0f : -1.0f;
-            this->accelerateBy(moveAcceleration * signCorrection);
-        }
-
-        this->state &= ~(STATE_RIGHT_STEP | STATE_LEFT_STEP);
+        signCorrection = (playerMoveSpeed < 0.0f) ? 1.0f : -1.0f;
     }
+
+    this->accelerateBy(moveAcceleration * signCorrection);
+    this->state = STATE_IDLE;
 }
 
 }  // namespace Game

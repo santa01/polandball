@@ -55,18 +55,15 @@ private:
     bool initFontConfig();
     void initTestScene();
 
-    void updateScene();
+    void purgeDestroyed();
     void updatePlayer();
+    void updateScene();
+
+    void animate();
     void render();
 
     // Orthographic projection only
     Math::Vec3 screenToWorld(const Math::Vec3 vector) const;
-
-    void updateMousePosition() const {
-        SDL_Event event = { SDL_MOUSEMOTION };
-        SDL_GetMouseState(&event.motion.x, &event.motion.y);
-        SDL_PushEvent(&event);
-    }
 
     SDL_Window* window;
     SDL_GLContext context;
