@@ -113,6 +113,7 @@ private:
     int activeSlot;
     int weaponHandle;
     int state;
+    int previousState;
 };
 
 }  // namespace Game

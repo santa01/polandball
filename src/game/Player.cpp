@@ -32,13 +32,14 @@ Player::Player():
         target(Math::Vec3::UNIT_X) {
     this->maxMoveSpeed = 8.0f;
     this->maxJumpSpeed = 10.0f;
-    this->maxJumpTime = 0.4f;
+    this->maxJumpTime = 0.5f;
 
     this->jumpTime = 0.0f;
     this->viewAngle = 0.0f;
     this->activeSlot = -1;
     this->weaponHandle = -1;
     this->state = STATE_IDLE;
+    this->previousState = STATE_IDLE;
 
     this->type = Entity::EntityType::TYPE_PLAYER;
     this->shearX(0.0f, 2);
@@ -154,11 +155,13 @@ void Player::onCollision(const std::shared_ptr<Entity>& another, Collider::Colli
 
     switch (side) {
         case Collider::CollideSide::SIDE_TOP:
-            this->jumpTime = FLT_MAX;  // Just god damn big value, bigger than the maximum jump time
+            this->jumpTime = FLT_MAX;
             break;
 
         case Collider::CollideSide::SIDE_BOTTOM:
-            this->jumpTime = 0.0f;
+            if (this->currentSpeed.get(Math::Vec3::Y) < 0.0f) {
+                this->jumpTime = 0.0f;
+            }
             break;
 
         default:
@@ -170,7 +173,7 @@ void Player::animate(float frameTime) {
     float playerMoveSpeed = this->currentSpeed.get(Math::Vec3::X);
     float playerJumpSpeed = this->currentSpeed.get(Math::Vec3::Y);
 
-    if (this->state & STATE_JUMP) {
+    if ((this->state & STATE_JUMP) && !(this->jumpTime == 0.0f && (this->previousState & STATE_JUMP))) {
         if (this->jumpTime < this->maxJumpTime && playerJumpSpeed >= 0.0f) {
             if (playerJumpSpeed < this->maxJumpSpeed) {
                 this->accelerateBy(Math::Vec3::UNIT_Y * (this->maxJumpSpeed - playerJumpSpeed));
@@ -206,6 +209,7 @@ void Player::animate(float frameTime) {
     }
 
     this->accelerateBy(moveAcceleration * signCorrection);
+    this->previousState = this->state;
     this->state = STATE_IDLE;
 }
 
