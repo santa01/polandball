@@ -34,8 +34,7 @@
 #include "Texture.h"
 #include "RenderEffect.h"
 
-#define GL_GLEXT_PROTOTYPES
-#include <SDL2/SDL_opengl.h>
+#include <GL/glew.h>
 #include <string>
 #include <memory>
 

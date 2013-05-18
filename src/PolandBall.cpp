@@ -25,6 +25,7 @@
 #include "Vec3.h"
 #include "ResourceManager.h"
 
+#include <GL/glew.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <algorithm>
@@ -192,6 +193,15 @@ bool PolandBall::initOpenGL() {
 
     Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "OpenGL vendor: %s", glGetString(GL_VENDOR));
     Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "OpenGL version: %s", glGetString(GL_VERSION));
+
+    GLenum glewError = glewInit();
+    if (glewError != GLEW_OK) {
+        Utils::Logger::getInstance().log(Utils::Logger::LOG_ERROR, "glewInit() failed: %s",
+                glewGetErrorString(glewError));
+        return false;
+    }
+
+    Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "GLEW version: %s", glewGetString(GLEW_VERSION));
 
     glEnable(GL_CULL_FACE);
 
