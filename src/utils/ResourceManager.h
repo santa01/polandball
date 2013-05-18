@@ -24,10 +24,15 @@
 #define RESOURCEMANAGER_H
 
 #include "Texture.h"
+#include "Entity.h"
 #include "RenderEffect.h"
 #include "NonCopyable.h"
+#include "Pack.h"
+#include "Player.h"
+#include "Weapon.h"
 
 #include <SDL2/SDL_image.h>
+#include <json-c/json.h>
 #include <unordered_map>
 #include <string>
 #include <memory>
@@ -45,6 +50,7 @@ public:
 
     std::shared_ptr<Opengl::Texture>& makeTexture(const std::string& name);
     std::shared_ptr<Opengl::RenderEffect>& makeEffect(const std::string& name);
+    std::shared_ptr<Game::Entity> makeEntity(const std::string& name);
 
     void purgeCaches();
 
@@ -59,8 +65,14 @@ private:
 
     void insertEffect(const std::string& name, const std::string& source);
 
+    std::unique_ptr<char[]> loadSource(const std::string& name) const;
+    std::shared_ptr<Game::Pack> loadPack(const std::shared_ptr<json_object>& object) const;
+    std::shared_ptr<Game::Player> loadPlayer(const std::shared_ptr<json_object>& object) const;
+    std::shared_ptr<Game::Weapon> loadWeapon(const std::shared_ptr<json_object>& object) const;
+
     std::unordered_map<std::string, std::shared_ptr<Opengl::Texture>> textureCache;
     std::unordered_map<std::string, std::shared_ptr<Opengl::RenderEffect>> effectCache;
+    std::unordered_map<std::string, std::shared_ptr<json_object>> entityCache;
 
     static const std::string defaultShader;
 };

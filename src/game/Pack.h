@@ -20,61 +20,57 @@
  * SOFTWARE.
  */
 
-#include "Weapon.h"
+#ifndef PACK_H
+#define	PACK_H
+
+#include "Entity.h"
 
 namespace PolandBall {
 
 namespace Game {
 
-Weapon::Weapon(WeaponSlot slot):
-        target(Math::Vec3::UNIT_X) {
-    this->targetSlot = slot;
-    this->state = STATE_AVAILABLE;
+class Pack: public Entity {
+public:
+    enum PayloadType {
+        TYPE_HEALTH,
+        TYPE_ARMOR,
+        TYPE_PRIMARY_AMMO,
+        TYPE_SECONDARY_AMMO
+    };
 
-    this->maxAmmo = 100;
-
-    this->viewAngle = 0.0f;
-    this->bounce = 0.0f;
-    this->groupingAngle = 1.0f;
-    this->firingSpeed = 3.0f;
-    this->ammo = this->maxAmmo;
-
-    this->type = Entity::EntityType::TYPE_WEAPON;
-    this->shearX(0.0f, 2);
-    this->shearY(0.0f, 2);
-}
-
-void Weapon::aimAt(const Math::Vec3& target) {
-    if (target == Math::Vec3::ZERO) {
-        return;
+    Pack():
+            Pack(TYPE_HEALTH) {
     }
 
-    Math::Vec3 newTarget(target);
-    newTarget.normalize();
-
-    if (newTarget == this->target) {
-        return;
+    Pack(PayloadType payload) {
+        this->payload = payload;
+        this->value = 10;
+        this->type = TYPE_PACK;
     }
 
-    float deltaAngle = acosf(this->target.dot(newTarget)) * 180.0f / M_PI;
-    if (isnan(deltaAngle)) {
-        return;
+    PayloadType getPayloadType() const {
+        return this->payload;
     }
 
-    Math::Vec3 normal = this->target.cross(newTarget);
-    float signCorrection = (normal.get(Math::Vec3::Z) < 0.0f) ? -1.0f : 1.0f;
+    void setPayloadType(PayloadType payload) {
+        this->payload = payload;
+    }
 
-    float newAngle = this->viewAngle + deltaAngle * signCorrection;
-    float shear = (cosf(newAngle * M_PI / 180.0f) < 0.0f) ? 1.0f : 0.0f;
-    this->viewAngle = newAngle;
+    int getValue() const {
+        return this->value;
+    }
 
-    this->roll(newAngle);
-    this->shearX(shear, 2);
-    this->shearY(shear, 2);
+    void setValue(int value) {
+        this->value = value;
+    }
 
-    this->target = newTarget;
-}
+private:
+    PayloadType payload;
+    int value;
+};
 
 }  // namespace Game
 
 }  // namespace PolandBall
+
+#endif  // PACK_H

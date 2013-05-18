@@ -29,6 +29,7 @@
 #include <SDL2/SDL_image.h>
 #include <fontconfig/fontconfig.h>
 #include <algorithm>
+#include <bits/shared_ptr_base.h>
 
 namespace PolandBall {
 
@@ -255,41 +256,36 @@ bool PolandBall::initFontConfig() {
 void PolandBall::initTestScene() {
     // GL_DEPTH_TEST is OFF! Manually arrange sprites, farthest renders first!
 
-    auto backgroundEntity = std::shared_ptr<Game::Entity>(new Game::Entity(Game::Entity::EntityType::TYPE_PASSABLE));
-    backgroundEntity->setTexture(Utils::ResourceManager::getInstance().makeTexture("textures/background_static_800_600.png"));
+    auto backgroundEntity = Utils::ResourceManager::getInstance().makeEntity("assets/backgrounds/sunny.asset");
     backgroundEntity->scaleY(this->camera.getFarPlane() - this->camera.getNearPlane());
     backgroundEntity->scaleX((this->camera.getFarPlane() - this->camera.getNearPlane()) * this->camera.getAspectRatio());
     this->entites.push_back(backgroundEntity);
 
     //-----------------
-    auto bricksEntity = std::shared_ptr<Game::Entity>(new Game::Entity());
-    bricksEntity->setTexture(Utils::ResourceManager::getInstance().makeTexture("textures/entity_static_kz.png"));
+    auto bricksEntity = Utils::ResourceManager::getInstance().makeEntity("assets/blocks/kazakhstan.asset");
     bricksEntity->setPosition(0.0f, -4.0f, 0.0f);
     bricksEntity->scaleX(20.0f * 1.5f);  // Scale for aspect ratio
     bricksEntity->replicateX(20.0f);
     this->entites.push_back(bricksEntity);
 
     //-----------------
-    bricksEntity = std::shared_ptr<Game::Entity>(new Game::Entity());
-    bricksEntity->setTexture(Utils::ResourceManager::getInstance().makeTexture("textures/entity_static_kz.png"));
+    bricksEntity = Utils::ResourceManager::getInstance().makeEntity("assets/blocks/kazakhstan.asset");
     bricksEntity->setPosition(4.0f, 1.0f, 0.0f);
     bricksEntity->scaleX(1.5f);  // Scale for aspect ratio
     this->entites.push_back(bricksEntity);
 
     //-----------------
-    this->player = std::shared_ptr<Game::Player>(new Game::Player());
-    this->player->setTexture(Utils::ResourceManager::getInstance().makeTexture("textures/player_tk.png"));
+    this->player = std::dynamic_pointer_cast<Game::Player>(
+            Utils::ResourceManager::getInstance().makeEntity("assets/players/turkey.asset"));
     this->entites.push_back(this->player);
 
     //-----------------
-    auto m4a1 = std::shared_ptr<Game::Weapon>(new Game::Weapon(Game::Weapon::WeaponSlot::SLOT_PRIMARY));
-    m4a1->setTexture(Utils::ResourceManager::getInstance().makeTexture("textures/m4a1.png"));
+    auto m4a1 = Utils::ResourceManager::getInstance().makeEntity("assets/weapons/m4a1.asset");
     m4a1->setPosition(-4.0f, 0.0f, 0.0f);
     this->entites.push_back(m4a1);
 
     //-----------------
-    this->cursor = std::shared_ptr<Game::Entity>(new Game::Entity(Game::Entity::EntityType::TYPE_PASSABLE));
-    this->cursor->setTexture(Utils::ResourceManager::getInstance().makeTexture("textures/cursor.png"));
+    this->cursor = Utils::ResourceManager::getInstance().makeEntity("assets/cursors/aim.asset");
     this->entites.push_back(this->cursor);
 
     //-----------------
@@ -440,8 +436,7 @@ void PolandBall::render() {
                    this->camera.getTranslation());
 
     for (auto& entity: this->entites) {
-        if (entity->getType() != Game::Entity::EntityType::TYPE_CLIP) {
-            entity->getEffect()->enable();
+        if (entity->getType() != Game::Entity::EntityType::TYPE_CLIP && entity->getEffect() != nullptr) {
             entity->getEffect()->setUniform("mvp", mvp);
             entity->render();
         }

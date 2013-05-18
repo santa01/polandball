@@ -74,12 +74,44 @@ public:
         this->maxJumpTime = maxJumpTime;
     }
 
+    int getMaxHealth() const {
+        return this->maxHealth;
+    }
+
+    void setMaxHealth(int maxHealth) {
+        this->maxHealth = maxHealth;
+    }
+
+    int getMaxArmor() const {
+        return this->maxArmor;
+    }
+
+    void setMaxArmor(int maxArmor) {
+        this->maxArmor = maxArmor;
+    }
+
     int getState() const {
         return this->state;
     }
 
     void setState(PlayerState state) {
         this->state |= state;
+    }
+
+    int getHealth() const {
+        return this->health;
+    }
+
+    void setHealth(int health) {
+        this->health = health;
+    }
+
+    int getArmor() const {
+        return this->armor;
+    }
+
+    void setArmor(int armor) {
+        this->armor = armor;
     }
 
     std::shared_ptr<Weapon>& getWeapon(Weapon::WeaponSlot slot) {
@@ -107,9 +139,14 @@ private:
     float maxMoveSpeed;
     float maxJumpSpeed;
     float maxJumpTime;
+    int maxHealth;
+    int maxArmor;
 
     float jumpTime;
     float viewAngle;
+    int health;
+    int armor;
+
     int activeSlot;
     int weaponHandle;
     int state;

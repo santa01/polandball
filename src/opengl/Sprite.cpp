@@ -64,9 +64,6 @@ Sprite::Sprite() {
 
     glBindVertexArray(0);
 
-    this->effect = Utils::ResourceManager::getInstance().makeEffect("default");
-    this->texture = Utils::ResourceManager::getInstance().makeTexture("default");
-
     this->xAngle = 0.0f;
     this->yAngle = 0.0f;
     this->zAngle = 0.0f;

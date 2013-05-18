@@ -21,6 +21,7 @@
  */
 
 #include "Player.h"
+#include "Pack.h"
 
 #include <cfloat>
 
@@ -33,13 +34,18 @@ Player::Player():
     this->maxMoveSpeed = 8.0f;
     this->maxJumpSpeed = 10.0f;
     this->maxJumpTime = 0.5f;
+    this->maxHealth = 100;
+    this->maxArmor = 100;
 
     this->jumpTime = 0.0f;
     this->viewAngle = 0.0f;
+    this->health = this->maxHealth;
+    this->armor = 0;
+
     this->activeSlot = -1;
     this->weaponHandle = -1;
     this->state = STATE_IDLE;
-    this->previousState = STATE_IDLE;
+    this->previousState = this->state;
 
     this->type = Entity::EntityType::TYPE_PLAYER;
     this->shearX(0.0f, 2);
@@ -149,8 +155,48 @@ void Player::onCollision(const std::shared_ptr<Entity>& another, Collider::Colli
         std::shared_ptr<Weapon> weapon = std::dynamic_pointer_cast<Weapon>(another);
         if (weapon->getState() == Weapon::WeaponState::STATE_AVAILABLE) {
             this->pickWeapon(weapon);
-            return;  // Don't break the jump
+            return;
         }
+    }
+
+    if (another->getType() == Entity::EntityType::TYPE_PACK) {
+        std::shared_ptr<Pack> pack = std::dynamic_pointer_cast<Pack>(another);
+        Weapon::WeaponSlot slot = Weapon::WeaponSlot::SLOT_MEELE;
+        int value = pack->getValue();
+        bool packStaysAlive;
+
+        switch (pack->getPayloadType()) {
+            case Pack::PayloadType::TYPE_ARMOR:
+                packStaysAlive = (this->armor == this->maxArmor);
+                this->armor = (this->armor + value > this->maxArmor) ? this->maxArmor : this->armor + value;
+                break;
+
+            case Pack::PayloadType::TYPE_HEALTH:
+                packStaysAlive = (this->health == this->maxHealth);
+                this->health = (this->health + value > this->maxHealth) ? this->maxHealth : this->health + value;
+                break;
+
+            case Pack::PayloadType::TYPE_PRIMARY_AMMO:
+                slot = Weapon::WeaponSlot::SLOT_PRIMARY;
+                break;
+
+            case Pack::PayloadType::TYPE_SECONDARY_AMMO:
+                slot = Weapon::WeaponSlot::SLOT_SECONDARY;
+                break;
+        }
+
+        if (slot != Weapon::WeaponSlot::SLOT_MEELE && this->weapons[slot] != nullptr) {
+            int maxAmmo = this->weapons[slot]->getMaxAmmo();
+            int ammo = this->weapons[slot]->getAmmo();
+
+            packStaysAlive = (ammo == maxAmmo);
+            this->weapons[slot]->setAmmo((ammo + value > maxAmmo) ? maxAmmo : ammo + value);
+        }
+
+        if (!packStaysAlive) {
+            pack->destroy();
+        }
+        return;
     }
 
     switch (side) {

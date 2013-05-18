@@ -50,16 +50,38 @@ public:
             Weapon(SLOT_MEELE) {
     }
 
-    Weapon(WeaponSlot slot):
-            target(Math::Vec3::UNIT_X) {
-        this->targetSlot = slot;
-        this->viewAngle = 0.0f;
-        this->bounce = asinf(-12.0f * 0.05f);  // See animate()
+    Weapon(WeaponSlot slot);
 
-        this->type = Entity::EntityType::TYPE_WEAPON;
-        this->state = STATE_AVAILABLE;
-        this->shearX(0.0f, 2);
-        this->shearY(0.0f, 2);
+    void setMaxAmmo(int maxAmmo) {
+        this->maxAmmo = maxAmmo;
+    }
+
+    int getMaxAmmo() const {
+        return this->maxAmmo;
+    }
+
+    void setGroupingAngle(float groupingAngle) {
+        this->groupingAngle = groupingAngle;
+    }
+
+    float getGroupingAngle() const {
+        return this->groupingAngle;
+    }
+
+    void setFiringSpeed(float firingSpeed) {
+        this->firingSpeed = firingSpeed;
+    }
+
+    float getFiringSpeed() const {
+        return this->firingSpeed;
+    }
+
+    void setAmmo(int ammo) {
+        this->ammo = ammo;
+    }
+
+    int getAmmo() const {
+        return this->ammo;
     }
 
     void setTargetSlot(WeaponSlot slot) {
@@ -79,7 +101,6 @@ public:
     }
 
     void aimAt(const Math::Vec3& target);
-
     void shoot() {
     }
 
@@ -108,6 +129,12 @@ public:
 
 private:
     Math::Vec3 target;
+
+    int maxAmmo;
+
+    float groupingAngle;
+    float firingSpeed;  // Shots per second
+    int ammo;
 
     WeaponSlot targetSlot;
     WeaponState state;

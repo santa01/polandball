@@ -31,7 +31,6 @@
 #include "Movable.h"
 #include "Scalable.h"
 #include "Transformable.h"
-#include "ResourceManager.h"
 #include "Signals.h"
 
 #include <memory>
@@ -51,7 +50,8 @@ public:
         TYPE_PASSABLE = 3,  // Visible, non-collidable
         // Non-fixed
         TYPE_PLAYER = 4,    // Player entity
-        TYPE_WEAPON = 5     // Weapon entity
+        TYPE_WEAPON = 5,    // Weapon entity
+        TYPE_PACK = 6       // Health/armor/ammo pack entity
     };
 
     Entity():
@@ -170,28 +170,6 @@ public:
         this->sprite->getZShearFactor(slice, totalSlices);
     }
 
-    std::unique_ptr<Collider>& getCollider() {
-        return this->collider;
-    }
-
-    // NOTE: As far as we use std::move, unique_ptr
-    // passed as parameter will be set to nullptr!
-    void setCollider(std::unique_ptr<Collider>& collider) {
-        if (collider != nullptr) {
-            this->collider = std::move(collider);
-        }
-    }
-
-    std::shared_ptr<Opengl::Sprite>& getSprite() {
-        return this->sprite;
-    }
-
-    void setSprite(const std::shared_ptr<Opengl::Sprite>& sprite) {
-        if (sprite != nullptr) {
-            this->sprite = sprite;
-        }
-    }
-
     std::shared_ptr<Opengl::RenderEffect>& getEffect() {
         return this->sprite->getEffect();
     }
@@ -213,7 +191,7 @@ public:
     }
 
     Collider::CollideSide collides(const std::shared_ptr<Entity>& another) {
-        return this->collider->collides(another->getCollider());
+        return this->collider->collides(another->collider);
     }
 
     EntityType getType() const {
