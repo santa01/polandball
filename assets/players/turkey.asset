@@ -1,0 +1,13 @@
+{
+    "type": "player",
+    "texture": "textures/player_tk.png",
+    "effect": "default",
+    "max_move_speed": 8.0,
+    "max_jump_speed": 10.0,
+    "max_jump_time": 0.5,
+    "max_health": 100,
+    "max_armor": 100,
+    "health": 50,
+    "armor": 0
+}
+
