@@ -88,7 +88,7 @@ std::shared_ptr<Opengl::Texture>& ResourceManager::makeTexture(const std::string
 
         SDL_Surface* image = IMG_Load(name.c_str());
         if (image == nullptr) {
-            Logger::getInstance().log(Logger::LOG_ERROR, "IMG_Load(%s) failed: %s", name.c_str(), IMG_GetError());
+            Logger::getInstance().log(Logger::LOG_ERROR, "IMG_Load() failed: %s", IMG_GetError());
             return this->textureCache.at("default");
         }
 
@@ -132,7 +132,8 @@ std::shared_ptr<Game::Entity> ResourceManager::makeEntity(const std::string& nam
         }
 
         json_tokener_error parseError;
-        object = std::shared_ptr<json_object>(json_tokener_parse_verbose(entitySource.get(), &parseError), json_object_put);
+        object = std::shared_ptr<json_object>(json_tokener_parse_verbose(entitySource.get(), &parseError),
+                json_object_put);
         if (object == nullptr) {
             Logger::getInstance().log(Logger::LOG_ERROR, "Cannot parse `%s': %s",
                     name.c_str(), json_tokener_error_desc(parseError));
@@ -190,6 +191,23 @@ std::shared_ptr<Game::Entity> ResourceManager::makeEntity(const std::string& nam
     return entity;
 }
 
+std::shared_ptr<TTF_Font>& ResourceManager::makeFont(const std::string& name) {
+    if (this->fontCache.find(name) == this->fontCache.end()) {
+        Logger::getInstance().log(Logger::LOG_INFO, "Loading font `%s'", name.c_str());
+
+        // Yep, its always 12pt sized
+        std::shared_ptr<TTF_Font> font(TTF_OpenFont(name.c_str(), 12), TTF_CloseFont);
+        if (font == nullptr) {
+            Logger::getInstance().log(Logger::LOG_ERROR, "TTF_OpenFont() failed: %s", TTF_GetError());
+            return this->fontCache["nullptr"];
+        }
+
+        this->fontCache.insert(std::make_pair(name, font));
+    }
+
+    return this->fontCache[name];
+}
+
 void ResourceManager::purgeCaches() {
     for (auto& texture: this->textureCache) {
         if (!texture.second.unique()) {
@@ -205,9 +223,17 @@ void ResourceManager::purgeCaches() {
         }
     }
 
+    for (auto& font: this->fontCache) {
+        if (!font.second.unique() && font.second != nullptr) {
+            Logger::getInstance().log(Logger::LOG_WARNING, "Font %p has %d references left!",
+                    font.second.get(), font.second.use_count() - 1);
+        }
+    }
+
     this->textureCache.clear();
     this->effectCache.clear();
     this->entityCache.clear();
+    this->fontCache.clear();
 }
 
 void ResourceManager::insertEffect(const std::string& name, const std::string& source) {

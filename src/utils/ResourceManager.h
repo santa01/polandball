@@ -32,6 +32,7 @@
 #include "Weapon.h"
 
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 #include <json-c/json.h>
 #include <unordered_map>
 #include <string>
@@ -51,6 +52,7 @@ public:
     std::shared_ptr<Opengl::Texture>& makeTexture(const std::string& name);
     std::shared_ptr<Opengl::RenderEffect>& makeEffect(const std::string& name);
     std::shared_ptr<Game::Entity> makeEntity(const std::string& name);
+    std::shared_ptr<TTF_Font>& makeFont(const std::string& name);
 
     void purgeCaches();
 
@@ -73,6 +75,7 @@ private:
     std::unordered_map<std::string, std::shared_ptr<Opengl::Texture>> textureCache;
     std::unordered_map<std::string, std::shared_ptr<Opengl::RenderEffect>> effectCache;
     std::unordered_map<std::string, std::shared_ptr<json_object>> entityCache;
+    std::unordered_map<std::string, std::shared_ptr<TTF_Font>> fontCache;
 
     static const std::string defaultShader;
 };

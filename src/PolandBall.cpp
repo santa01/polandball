@@ -27,16 +27,13 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include <fontconfig/fontconfig.h>
 #include <algorithm>
-#include <bits/shared_ptr_base.h>
 
 namespace PolandBall {
 
 PolandBall::PolandBall() {
     this->window = nullptr;
     this->context = nullptr;
-    this->defaultFont = nullptr;
 
     this->running = true;
     this->width = 800;
@@ -104,7 +101,7 @@ int PolandBall::exec() {
 bool PolandBall::initialize() {
     Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Initializing...");
 
-    if (!this->initSDL() || !this->initOpenGL() || !this->initFontConfig()) {
+    if (!this->initSDL() || !this->initOpenGL()) {
         return false;
     }
 
@@ -123,10 +120,6 @@ void PolandBall::shutdown() {
     Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Cleaning caches...");
     Utils::ResourceManager::getInstance().purgeCaches();
 
-    if (this->defaultFont) {
-        TTF_CloseFont(this->defaultFont);
-    }
-
     if (this->context) {
         SDL_GL_DeleteContext(this->context);
     }
@@ -135,7 +128,6 @@ void PolandBall::shutdown() {
         SDL_DestroyWindow(this->window);
     }
 
-    FcFini();
     IMG_Quit();
     TTF_Quit();
     SDL_Quit();
@@ -205,50 +197,6 @@ bool PolandBall::initOpenGL() {
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    return true;
-}
-
-bool PolandBall::initFontConfig() {
-    if (!FcInit()) {
-        Utils::Logger::getInstance().log(Utils::Logger::LOG_ERROR, "FcInit() failed");
-        return false;
-    }
-
-    int fcVersion = FcGetVersion();
-    int fcMajor = fcVersion / 10000;
-    int fcMinor = (fcVersion - fcMajor * 10000) / 100;
-    int fcRevision = fcVersion - fcMajor * 10000 - fcMinor * 100;
-    Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Fontconfig version: %d.%d.%d",
-            fcMajor, fcMinor, fcRevision);
-
-    FcPattern* pattern = FcNameParse((const FcChar8*)"sans");
-    FcConfigSubstitute(nullptr, pattern, FcMatchPattern);
-    FcDefaultSubstitute(pattern);
-
-    FcResult result;
-    FcPattern* match = FcFontMatch(nullptr, pattern, &result);
-    FcPatternDestroy(pattern);
-
-    if (match == nullptr) {
-        Utils::Logger::getInstance().log(Utils::Logger::LOG_ERROR, "FcFontMatch() failed: no `sans-serif' font found");
-        return false;
-    }
-
-    FcChar8* fontPath = FcPatternFormat(match, (const FcChar8*)"%{file}");
-    FcChar8* fontName = FcPatternFormat(match, (const FcChar8*)"%{family}");
-
-    this->defaultFont = TTF_OpenFont((const char*)fontPath, 14);
-    if (this->defaultFont == nullptr) {
-        Utils::Logger::getInstance().log(Utils::Logger::LOG_ERROR, "TTF_OpenFont failed: %s", TTF_GetError());
-        return false;
-    }
-
-    Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Using `%s' family font", fontName);
-
-    FcStrFree(fontName);
-    FcStrFree(fontPath);
-    FcPatternDestroy(match);
 
     return true;
 }

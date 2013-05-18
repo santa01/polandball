@@ -32,7 +32,6 @@
 #include <memory>
 #include <vector>
 #include <SDL2/SDL_video.h>
-#include <SDL2/SDL_ttf.h>
 
 namespace PolandBall {
 
@@ -52,7 +51,6 @@ private:
 
     bool initSDL();
     bool initOpenGL();
-    bool initFontConfig();
     void initTestScene();
 
     void purgeDestroyed();
@@ -67,7 +65,6 @@ private:
 
     SDL_Window* window;
     SDL_GLContext context;
-    TTF_Font* defaultFont;
 
     std::vector<std::shared_ptr<Game::Entity>> entites;
     std::shared_ptr<Game::Player> player;
