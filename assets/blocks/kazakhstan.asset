@@ -1,5 +1,5 @@
 {
     "type": "solid",
     "texture": "textures/entity_static_kz.png",
-    "effect": "default"
+    "effect": "shaders/default.shader"
 }

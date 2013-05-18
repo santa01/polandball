@@ -57,7 +57,7 @@ public:
     void purgeCaches();
 
 private:
-    ResourceManager();
+    ResourceManager() = default;
 
     void insertTexture(const std::string& name, SDL_Surface* image) {
         std::shared_ptr<Opengl::Texture> texture(new Opengl::Texture());
@@ -76,8 +76,6 @@ private:
     std::unordered_map<std::string, std::shared_ptr<Opengl::RenderEffect>> effectCache;
     std::unordered_map<std::string, std::shared_ptr<json_object>> entityCache;
     std::unordered_map<std::string, std::shared_ptr<TTF_Font>> fontCache;
-
-    static const std::string defaultShader;
 };
 
 }  // namespace Utils

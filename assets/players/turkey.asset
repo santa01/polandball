@@ -1,7 +1,7 @@
 {
     "type": "player",
     "texture": "textures/player_tk.png",
-    "effect": "default",
+    "effect": "shaders/default.shader",
     "max_move_speed": 8.0,
     "max_jump_speed": 10.0,
     "max_jump_time": 0.5,

@@ -33,55 +33,6 @@ namespace PolandBall {
 
 namespace Utils {
 
-const std::string ResourceManager::defaultShader = "                  \n\
-    #version 330                                                      \n\
-                                                                      \n\
-    #ifdef TYPE_VERTEX                                                \n\
-        uniform mat4 mvp;                                             \n\
-        uniform mat4 lw;                                              \n\
-        uniform mat4 transform;                                       \n\
-                                                                      \n\
-        layout(location = 0) in vec3 vertexPosition;                  \n\
-        layout(location = 1) in vec2 vertexUv;                        \n\
-                                                                      \n\
-        smooth out vec2 fragmentUv;                                   \n\
-                                                                      \n\
-        void main () {                                                \n\
-            fragmentUv = (transform * vec4(vertexUv, 0.0f, 1.0f)).st; \n\
-            gl_Position = mvp * lw * vec4(vertexPosition, 1.0f);      \n\
-        }                                                             \n\
-    #endif                                                            \n\
-                                                                      \n\
-    #ifdef TYPE_FRAGMENT                                              \n\
-        uniform sampler2D textureSampler;                             \n\
-                                                                      \n\
-        smooth in vec2 fragmentUv;                                    \n\
-                                                                      \n\
-        out vec4 fragmentColor;                                       \n\
-                                                                      \n\
-        void main() {                                                 \n\
-            fragmentColor = texture(textureSampler, fragmentUv);      \n\
-        }                                                             \n\
-    #endif                                                            \n";
-
-ResourceManager::ResourceManager() {
-        // Keep data 2x2, 1x1 doesn't seem to work on a cleared color buffer
-        Uint32 green[] = { 0xFF00FF00, 0xFF00FF00, 0xFF00FF00, 0xFF00FF00 };
-        SDL_Surface* image = SDL_CreateRGBSurfaceFrom(&green, 2, 2, 32, 4,
-                0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
-        this->insertTexture("default", image);
-        SDL_FreeSurface(image);
-
-        // Handy for "empty" entites
-        Uint32 transparent[] = { 0xFF000000, 0xFF000000, 0xFF000000, 0xFF000000 };
-        image = SDL_CreateRGBSurfaceFrom(&transparent, 2, 2, 32, 4,
-                0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
-        this->insertTexture("transparent", image);
-        SDL_FreeSurface(image);
-
-        this->insertEffect("default", ResourceManager::defaultShader);
-    }
-
 std::shared_ptr<Opengl::Texture>& ResourceManager::makeTexture(const std::string& name) {
     if (this->textureCache.find(name) == this->textureCache.end()) {
         Logger::getInstance().log(Logger::LOG_INFO, "Loading image `%s'", name.c_str());
@@ -89,7 +40,7 @@ std::shared_ptr<Opengl::Texture>& ResourceManager::makeTexture(const std::string
         SDL_Surface* image = IMG_Load(name.c_str());
         if (image == nullptr) {
             Logger::getInstance().log(Logger::LOG_ERROR, "IMG_Load() failed: %s", IMG_GetError());
-            return this->textureCache.at("default");
+            return this->textureCache["nullptr"];
         }
 
         std::shared_ptr<Opengl::Texture> texture(new Opengl::Texture());
@@ -109,7 +60,7 @@ std::shared_ptr<Opengl::RenderEffect>& ResourceManager::makeEffect(const std::st
         std::unique_ptr<char[]> shaderSource = this->loadSource(name);
         if (shaderSource == nullptr) {
             Logger::getInstance().log(Logger::LOG_ERROR, "Cannot open `%s'", name.c_str());
-            return this->effectCache.at("default");
+            return this->effectCache["nullptr"];
         }
 
         this->insertEffect(name, shaderSource.get());
@@ -128,7 +79,7 @@ std::shared_ptr<Game::Entity> ResourceManager::makeEntity(const std::string& nam
         std::unique_ptr<char[]> entitySource = this->loadSource(name);
         if (entitySource == nullptr) {
             Logger::getInstance().log(Logger::LOG_ERROR, "Cannot open `%s'", name.c_str());
-            return std::shared_ptr<Game::Entity>(new Game::Entity());
+            return nullptr;
         }
 
         json_tokener_error parseError;
@@ -137,13 +88,13 @@ std::shared_ptr<Game::Entity> ResourceManager::makeEntity(const std::string& nam
         if (object == nullptr) {
             Logger::getInstance().log(Logger::LOG_ERROR, "Cannot parse `%s': %s",
                     name.c_str(), json_tokener_error_desc(parseError));
-            return std::shared_ptr<Game::Entity>(new Game::Entity());
+            return nullptr;
         }
 
         object_type = json_object_object_get(object.get(), "type");
         if (object_type == nullptr || json_object_get_type(object_type) != json_type_string) {
             Logger::getInstance().log(Logger::LOG_ERROR, "Failed to read `type' parameter");
-            return std::shared_ptr<Game::Entity>(new Game::Entity());
+            return nullptr;
         }
 
         this->entityCache.insert(std::make_pair(name, object));
@@ -169,7 +120,7 @@ std::shared_ptr<Game::Entity> ResourceManager::makeEntity(const std::string& nam
         entity = std::shared_ptr<Game::Entity>(new Game::Entity(Game::Entity::EntityType::TYPE_PASSABLE));
     } else {
         Logger::getInstance().log(Logger::LOG_WARNING, "Got unknown `type' value `%s'", entityType.c_str());
-        entity = std::shared_ptr<Game::Entity>(new Game::Entity());
+        return nullptr;
     }
 
     if (entity->getType() != Game::Entity::EntityType::TYPE_CLIP) {
