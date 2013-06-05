@@ -25,13 +25,11 @@
 
 #include "Entity.h"
 #include "Player.h"
-#include "Camera.h"
-#include "Vec3.h"
+#include "Scene.h"
 #include "NonCopyable.h"
 
+#include <SDL2/SDL_events.h>
 #include <memory>
-#include <vector>
-#include <SDL2/SDL_video.h>
 
 namespace PolandBall {
 
@@ -51,14 +49,11 @@ private:
 
     bool initSDL();
     bool initOpenGL();
-    void initTestScene();
+    void initScene();
 
-    void purgeDestroyed();
-    void updatePlayer();
-    void updateScene();
-
-    void animate();
-    void render();
+    void onMouseMotion(SDL_MouseMotionEvent& event);
+    void onMouseButton(SDL_MouseButtonEvent& event);
+    void onIdle();
 
     // Orthographic projection only
     Math::Vec3 screenToWorld(const Math::Vec3 vector) const;
@@ -66,15 +61,15 @@ private:
     SDL_Window* window;
     SDL_GLContext context;
 
-    std::vector<std::shared_ptr<Game::Entity>> entites;
+    std::shared_ptr<Game::Scene> scene;
     std::shared_ptr<Game::Player> player;
     std::shared_ptr<Game::Entity> cursor;
 
-    Math::Vec3 gravityAcceleration;
-    Game::Camera camera;
-
     bool running;
-    int width, height;
+    int width;
+    int height;
+    float maxFps;
+
     float frameTime;
     float frameStep;
 };

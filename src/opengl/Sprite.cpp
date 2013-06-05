@@ -89,15 +89,14 @@ void Sprite::rotate(const Math::Vec3& vector, float angle) {
 }
 
 void Sprite::render() {
-    if (this->texture != nullptr) {
-        this->texture->bind();
+    if (this->texture == nullptr || this->effect == nullptr) {
+        return;
     }
 
-    if (this->effect != nullptr) {
-        this->effect->enable();
-        this->effect->setUniform("lw", this->translation * this->rotation * this->scaling);
-        this->effect->setUniform("transform", this->replication * this->shear);
-    }
+    this->texture->bind();
+    this->effect->enable();
+    this->effect->setUniform("lw", this->translation * this->rotation * this->scaling);
+    this->effect->setUniform("transform", this->replication * this->shear);
 
     glBindVertexArray(this->vao);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (GLvoid*)0);

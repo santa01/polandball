@@ -43,15 +43,14 @@ namespace Game {
 // NOTE: IRotateble only for animation purposes
 class Entity: public Common::Movable, public Common::Rotatable, public Common::Scalable, public Common::Transformable {
 public:
-    enum EntityType {
-        // Fixed
-        TYPE_SOLID = 0,     // Visible, collidable
-        TYPE_CLIP = 1,      // Invisible, collidable
-        TYPE_PASSABLE = 3,  // Visible, non-collidable
-        // Non-fixed
-        TYPE_PLAYER = 4,    // Player entity
-        TYPE_WEAPON = 5,    // Weapon entity
-        TYPE_PACK = 6       // Health/armor/ammo pack entity
+    enum EntityType {  // This also defines rendering order
+        TYPE_CLIP = 0,      // Invisible, collidable
+        TYPE_PASSABLE = 1,  // Visible, non-collidable
+        TYPE_SOLID = 2,     // Visible, collidable
+        TYPE_PLAYER = 3,    // Player entity
+        TYPE_WEAPON = 4,    // Weapon entity
+        TYPE_PACK = 5,      // Health/armor/ammo pack entity
+        TYPE_UI = 6         // Any UI element
     };
 
     Entity():

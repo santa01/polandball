@@ -27,7 +27,6 @@
 #include <utility>
 #include <fstream>
 #include <sstream>
-#include <bits/shared_ptr_base.h>
 
 namespace PolandBall {
 
@@ -118,6 +117,8 @@ std::shared_ptr<Game::Entity> ResourceManager::makeEntity(const std::string& nam
         entity = std::shared_ptr<Game::Entity>(new Game::Entity(Game::Entity::EntityType::TYPE_CLIP));
     } else if (entityType == "passable") {
         entity = std::shared_ptr<Game::Entity>(new Game::Entity(Game::Entity::EntityType::TYPE_PASSABLE));
+    } else if (entityType == "ui") {
+        entity = std::shared_ptr<Game::Entity>(new Game::Entity(Game::Entity::EntityType::TYPE_UI));
     } else {
         Logger::getInstance().log(Logger::LOG_WARNING, "Got unknown `type' value `%s'", entityType.c_str());
         return nullptr;

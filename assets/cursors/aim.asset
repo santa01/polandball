@@ -1,5 +1,5 @@
 {
-    "type": "passable",
+    "type": "ui",
     "texture": "textures/cursor.png",
     "effect": "shaders/default.shader"
 }
