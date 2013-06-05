@@ -38,10 +38,10 @@ namespace Game {
 class Player: public Entity {
 public:
     enum PlayerState {
-        STATE_IDLE = 0,
-        STATE_LEFT_STEP = 1,
-        STATE_RIGHT_STEP = 2,
-        STATE_JUMP = 4
+        STATE_IDLE = 1 << 0,
+        STATE_LEFT_STEP = 1 << 1,
+        STATE_RIGHT_STEP = 1 << 2,
+        STATE_JUMP = 1 << 3
     };
 
     Player();

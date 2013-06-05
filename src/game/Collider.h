@@ -40,11 +40,11 @@ namespace Game {
 class Collider: public Common::Movable, public Common::Scalable {
 public:
     enum CollideSide {
-        SIDE_NONE = 0,
-        SIDE_TOP = 1,
-        SIDE_LEFT = 2,
-        SIDE_BOTTOM = 3,
-        SIDE_RIGHT = 4
+        SIDE_NONE,
+        SIDE_TOP,
+        SIDE_LEFT,
+        SIDE_BOTTOM,
+        SIDE_RIGHT
     };
 
     Collider() {

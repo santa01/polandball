@@ -36,8 +36,8 @@ namespace PolandBall {
 class PolandBall: public Common::NonCopyable {
 public:
     enum {
-        ERROR_OK = 0,
-        ERROR_SETUP = 1
+        ERROR_OK,
+        ERROR_SETUP
     };
 
     PolandBall();

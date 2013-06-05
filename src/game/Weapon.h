@@ -35,15 +35,15 @@ namespace Game {
 class Weapon: public Entity {
 public:
     enum WeaponSlot {
-        SLOT_MEELE = 0,
-        SLOT_PRIMARY = 1,
-        SLOT_SECONDARY = 2
+        SLOT_MEELE,
+        SLOT_PRIMARY,
+        SLOT_SECONDARY
     };
 
     enum WeaponState {
-        STATE_PICKED = 0,
-        STATE_THROWN = 1,
-        STATE_AVAILABLE = 2
+        STATE_PICKED,
+        STATE_THROWN,
+        STATE_AVAILABLE
     };
 
     Weapon():

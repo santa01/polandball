@@ -32,9 +32,9 @@ namespace Utils {
 class Logger: public Common::NonCopyable {
 public:
     enum {
-        LOG_ERROR = 0,
-        LOG_WARNING = 1,
-        LOG_INFO = 2
+        LOG_ERROR,
+        LOG_WARNING,
+        LOG_INFO
     };
 
     static Logger& getInstance() {
