@@ -55,10 +55,8 @@ void Scene::update(float frameTime, float frameStep) {
         }
 
         Entity::EntityType type = entity->second->getType();
-        if (type == Entity::EntityType::TYPE_PASSABLE ||
-                type == Entity::EntityType::TYPE_CLIP ||
-                type == Entity::EntityType::TYPE_SOLID ||
-                type == Entity::EntityType::TYPE_UI) {
+        if (type == Entity::EntityType::TYPE_PASSABLE || type == Entity::EntityType::TYPE_UI ||
+                type == Entity::EntityType::TYPE_CLIP || type == Entity::EntityType::TYPE_SOLID) {
             entity->second->animate(frameTime);
             ++entity;
             continue;
@@ -78,8 +76,7 @@ void Scene::update(float frameTime, float frameStep) {
 
             for (auto another = this->entities.begin(); another != this->entities.end(); ++another) {
                 Entity::EntityType anotherType = another->second->getType();
-                if (anotherType == Entity::EntityType::TYPE_PASSABLE ||
-                        anotherType == Entity::EntityType::TYPE_UI) {
+                if (anotherType == Entity::EntityType::TYPE_PASSABLE || anotherType == Entity::EntityType::TYPE_UI) {
                     continue;
                 }
 
@@ -95,42 +92,21 @@ void Scene::update(float frameTime, float frameStep) {
                     entity->second->onCollision(another->second, side);
                 }
 
-                if ((type == Entity::EntityType::TYPE_WEAPON &&
-                        anotherType == Entity::EntityType::TYPE_PLAYER) ||
-                        (type == Entity::EntityType::TYPE_PLAYER &&
-                        anotherType == Entity::EntityType::TYPE_WEAPON)) {
+                if ((type == Entity::EntityType::TYPE_WEAPON && anotherType == Entity::EntityType::TYPE_PLAYER) ||
+                        (type == Entity::EntityType::TYPE_PLAYER && anotherType == Entity::EntityType::TYPE_WEAPON)) {
                     continue;
                 }
 
                 Math::Vec3 speed = entity->second->getSpeed();
 
-                switch (side) {
-                    case Collider::CollideSide::SIDE_BOTTOM:
-                        if (speed.get(Math::Vec3::Y) < 0.0f) {
-                            speed.set(Math::Vec3::Y, 0.0f);
-                        }
-                        break;
-
-                    case Collider::CollideSide::SIDE_TOP:
-                        if (speed.get(Math::Vec3::Y) > 0.0f) {
-                            speed.set(Math::Vec3::Y, 0.0f);
-                        }
-                        break;
-
-                    case Collider::CollideSide::SIDE_LEFT:
-                        if (speed.get(Math::Vec3::X) < 0.0f) {
-                            speed.set(Math::Vec3::X, 0.0f);
-                        }
-                        break;
-
-                    case Collider::CollideSide::SIDE_RIGHT:
-                        if (speed.get(Math::Vec3::X) > 0.0f) {
-                            speed.set(Math::Vec3::X, 0.0f);
-                        }
-                        break;
-
-                    default:
-                        break;
+                if (side == Collider::CollideSide::SIDE_BOTTOM && speed.get(Math::Vec3::Y) < 0.0f) {
+                    speed.set(Math::Vec3::Y, 0.0f);
+                } else if (side == Collider::CollideSide::SIDE_TOP && speed.get(Math::Vec3::Y) > 0.0f) {
+                    speed.set(Math::Vec3::Y, 0.0f);
+                } else if (side == Collider::CollideSide::SIDE_LEFT && speed.get(Math::Vec3::X) < 0.0f) {
+                    speed.set(Math::Vec3::X, 0.0f);
+                } else if (side == Collider::CollideSide::SIDE_RIGHT && speed.get(Math::Vec3::X) > 0.0f) {
+                    speed.set(Math::Vec3::X, 0.0f);
                 }
 
                 entity->second->setSpeed(speed);
