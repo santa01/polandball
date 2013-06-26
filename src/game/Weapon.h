@@ -116,14 +116,14 @@ public:
     }
 
     void animate(float frameTime) {
-        float viewAngle = acosf(this->target.dot(Math::Vec3::UNIT_X)) * 180.0f / M_PI;
-        float correction = (cosf(viewAngle * M_PI / 180.0f) < 0.0f) ? 0.95f : 0.05f;
+        float targetSignCorrection = (this->target.get(Math::Vec3::X) < 0.0f) ? -1.0f : 1.0f;
 
         if (this->state == STATE_AVAILABLE) {
-            this->shearY(sinf(this->bounce) / 12.0f + correction, 2);
+            this->shearY(sinf(this->bounce) / 13.33f - 0.075f * targetSignCorrection, 1);
             this->bounce += frameTime * 6.0f;
         } else {
-            this->bounce = asinf(-12.0f * (correction == 0.05f) ? correction : -0.05f);
+            this->shearY(-0.15f * targetSignCorrection, 1);
+            this->bounce = 0.0f;
         }
     }
 

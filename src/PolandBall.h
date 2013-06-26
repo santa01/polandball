@@ -24,12 +24,14 @@
 #define POLANDBALL_H
 
 #include "Entity.h"
+#include "TextLabel.h"
 #include "Player.h"
 #include "Scene.h"
 #include "NonCopyable.h"
 
 #include <SDL2/SDL_events.h>
 #include <memory>
+#include <utility>
 
 namespace PolandBall {
 
@@ -49,7 +51,8 @@ private:
 
     bool initSDL();
     bool initOpenGL();
-    void initScene();
+    bool initScene();
+    bool initUi();
 
     void onMouseMotion(SDL_MouseMotionEvent& event);
     void onMouseButton(SDL_MouseButtonEvent& event);
@@ -64,6 +67,12 @@ private:
     std::shared_ptr<Game::Scene> scene;
     std::shared_ptr<Game::Player> player;
     std::shared_ptr<Game::Entity> cursor;
+
+    // Requires sync if Weapon::WeaponSlot is updated
+    std::pair<std::shared_ptr<Game::Entity>, std::shared_ptr<Game::TextLabel>> weapons[3];
+    std::shared_ptr<Game::Entity> emptySlot;
+    std::shared_ptr<Game::TextLabel> health;
+    std::shared_ptr<Game::TextLabel> armor;
 
     bool running;
     int width;

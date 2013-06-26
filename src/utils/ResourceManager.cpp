@@ -148,7 +148,7 @@ std::shared_ptr<TTF_Font>& ResourceManager::makeFont(const std::string& name) {
         Logger::getInstance().log(Logger::LOG_INFO, "Loading font `%s'", name.c_str());
 
         // Yep, its always 12pt sized
-        std::shared_ptr<TTF_Font> font(TTF_OpenFont(name.c_str(), 12), TTF_CloseFont);
+        std::shared_ptr<TTF_Font> font(TTF_OpenFont(name.c_str(), 14), TTF_CloseFont);
         if (font == nullptr) {
             Logger::getInstance().log(Logger::LOG_ERROR, "TTF_OpenFont() failed: %s", TTF_GetError());
             return this->fontCache["nullptr"];
@@ -162,14 +162,14 @@ std::shared_ptr<TTF_Font>& ResourceManager::makeFont(const std::string& name) {
 
 void ResourceManager::purgeCaches() {
     for (auto& texture: this->textureCache) {
-        if (!texture.second.unique()) {
+        if (!texture.second.unique() && texture.second != nullptr) {
             Logger::getInstance().log(Logger::LOG_WARNING, "Texture %p has %d references left!",
                     texture.second.get(), texture.second.use_count() - 1);
         }
     }
 
     for (auto& effect: this->effectCache) {
-        if (!effect.second.unique()) {
+        if (!effect.second.unique() && effect.second != nullptr) {
             Logger::getInstance().log(Logger::LOG_WARNING, "RenderEffect %p has %d references left!",
                     effect.second.get(), effect.second.use_count() - 1);
         }

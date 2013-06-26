@@ -63,11 +63,13 @@ public:
     }
 
     void addEntity(const std::shared_ptr<Entity>& entity) {
-        this->entities.insert(std::make_pair(entity->getType(), entity));
+        if (entity != nullptr) {
+            this->entities.insert(std::make_pair(entity->getType(), entity));
 
-        auto effect = entity->getEffect();
-        if (effect != nullptr) {
-            this->effects.insert(effect);
+            auto effect = entity->getEffect();
+            if (effect != nullptr) {
+                this->effects.insert(effect);
+            }
         }
     }
 

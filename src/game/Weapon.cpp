@@ -41,7 +41,7 @@ Weapon::Weapon(WeaponSlot slot):
 
     this->type = Entity::EntityType::TYPE_WEAPON;
     this->shearX(0.0f, 2);
-    this->shearY(0.0f, 2);
+    this->shearY(-0.15f, 1);
 }
 
 void Weapon::aimAt(const Math::Vec3& target) {
@@ -63,6 +63,7 @@ void Weapon::aimAt(const Math::Vec3& target) {
 
     Math::Vec3 normal = this->target.cross(newTarget);
     float signCorrection = (normal.get(Math::Vec3::Z) < 0.0f) ? -1.0f : 1.0f;
+    float targetSignCorrection = (newTarget.get(Math::Vec3::X) < 0.0f) ? -1.0f : 1.0f;
 
     float newAngle = this->viewAngle + deltaAngle * signCorrection;
     float shear = (cosf(newAngle * M_PI / 180.0f) < 0.0f) ? 1.0f : 0.0f;
@@ -70,7 +71,7 @@ void Weapon::aimAt(const Math::Vec3& target) {
 
     this->roll(newAngle);
     this->shearX(shear, 2);
-    this->shearY(shear, 2);
+    this->shearY(-0.15f * targetSignCorrection, 1);
 
     this->target = newTarget;
 }

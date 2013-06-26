@@ -209,8 +209,13 @@ public:
         return this->origin;
     }
 
+    void setOrigin(float x, float y, float z) {
+        this->setOrigin(Math::Vec3(x, y, z));
+    }
+
     void setOrigin(const Math::Vec3& origin) {
         this->origin = origin;
+        this->setPosition(this->getPosition());
     }
 
     void accelerateBy(const Math::Vec3& acceleration) {

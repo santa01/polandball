@@ -58,7 +58,6 @@ void Player::pickWeapon(const std::shared_ptr<Weapon>& weapon) {
         this->weapons[targetSlot] = weapon;
         this->weapons[targetSlot]->setState(Weapon::WeaponState::STATE_PICKED);
         this->weapons[targetSlot]->shearX(0.0f, 2);
-        this->weapons[targetSlot]->shearY(0.0f, 2);
 
         if (targetSlot > this->activeSlot || this->activeSlot == -1) {
             this->activateSlot(targetSlot);
@@ -104,11 +103,10 @@ void Player::dropWeapon() {
         this->activeSlot = -1;
     }
 
-    float viewAngle = acosf(this->target.dot(Math::Vec3::UNIT_X)) * 180.0f / M_PI;
-    float signCorrection = (cosf(viewAngle * M_PI / 180.0f) < 0.0f) ? -1.0f : 1.0f;
-    Math::Vec3 dropAcceleration((Math::Vec3::UNIT_X * signCorrection + Math::Vec3::UNIT_Y) * 7.0f);
+    float targetSignCorrection = (this->target.get(Math::Vec3::X) < 0.0f) ? -1.0f : 1.0f;
+    Math::Vec3 dropAcceleration((Math::Vec3::UNIT_X * targetSignCorrection + Math::Vec3::UNIT_Y) * 7.0f);
 
-    weapon->aimAt(Math::Vec3::UNIT_X * signCorrection);
+    weapon->aimAt(Math::Vec3::UNIT_X * targetSignCorrection);
     weapon->setState(Weapon::WeaponState::STATE_THROWN);
     weapon->setPosition(weapon->getPosition() + Math::Vec3::UNIT_Y * 0.5f);  // Don't collide from bottom
 
