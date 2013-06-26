@@ -53,7 +53,7 @@ public:
     virtual void getYShearFactor(float& slice, int& totalSlices) const = 0;
     virtual void getZShearFactor(float& slice, int& totalSlices) const = 0;
 
-    void shear(int slice, int totalSlices) {
+    void shear(float slice, int totalSlices) {
         this->shearX(slice, totalSlices);
         this->shearY(slice, totalSlices);
         this->shearZ(slice, totalSlices);
