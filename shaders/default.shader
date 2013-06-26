@@ -7,7 +7,6 @@
 
     layout(location = 0) in vec3 vertexPosition;
     layout(location = 1) in vec2 vertexUv;
-
     smooth out vec2 fragmentUv;
 
     void main () {
@@ -20,7 +19,6 @@
     uniform sampler2D textureSampler;
 
     smooth in vec2 fragmentUv;
-
     out vec4 fragmentColor;
 
     void main() {
