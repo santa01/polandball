@@ -1,5 +1,5 @@
 {
     "type": "passable",
-    "texture": "textures/background_static_800_600.png",
+    "texture": "textures/backgrounds/sunny_800x600.png",
     "effect": "shaders/default.shader"
 }

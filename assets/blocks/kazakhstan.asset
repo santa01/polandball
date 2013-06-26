@@ -1,5 +1,5 @@
 {
     "type": "solid",
-    "texture": "textures/entity_static_kz.png",
+    "texture": "textures/blocks/kazakhstan.png",
     "effect": "shaders/default.shader"
 }

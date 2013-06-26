@@ -1,10 +1,10 @@
 {
     "type": "weapon",
     "target_slot": "primary",
-    "texture": "textures/m4a1.png",
+    "texture": "textures/weapons/m4a1.png",
     "effect": "shaders/default.shader",
     "max_ammo": 160,
-    "ammo": 10,
+    "ammo": 20,
     "grouping_angle": 1.0,
     "firing_speed": 3.0
 }

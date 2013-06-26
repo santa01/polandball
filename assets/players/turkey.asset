@@ -1,6 +1,6 @@
 {
     "type": "player",
-    "texture": "textures/player_tk.png",
+    "texture": "textures/players/turkey.png",
     "effect": "shaders/default.shader",
     "max_move_speed": 8.0,
     "max_jump_speed": 10.0,
