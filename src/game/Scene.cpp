@@ -49,9 +49,9 @@ void Scene::render() {
 
         /* Do not render any picked and non-active weapon */
         if (entity.first == Entity::EntityType::TYPE_WEAPON) {
-            std::shared_ptr<Weapon> weapon = std::dynamic_pointer_cast<Weapon>(entity.second);
+            auto weapon = std::dynamic_pointer_cast<Weapon>(entity.second);
             if (weapon->getState() == Weapon::WeaponState::STATE_PICKED) {
-                std::shared_ptr<Player> player = std::dynamic_pointer_cast<Player>(playerEntity->second);
+                auto player = std::dynamic_pointer_cast<Player>(playerEntity->second);
                 bool skipWeapon = false;
 
                 for (int slot = 0; slot < 3; slot++) {
@@ -88,7 +88,7 @@ void Scene::update(float frameTime, float frameStep) {
         }
 
         if (type == Entity::EntityType::TYPE_WEAPON) {
-            std::shared_ptr<Weapon> weapon = std::dynamic_pointer_cast<Weapon>(entity->second);
+            auto weapon = std::dynamic_pointer_cast<Weapon>(entity->second);
             if (weapon->getState() == Weapon::WeaponState::STATE_PICKED) {
                 entity->second->animate(frameTime);
                 ++entity;
@@ -106,7 +106,7 @@ void Scene::update(float frameTime, float frameStep) {
                 }
 
                 if (anotherType == Entity::EntityType::TYPE_WEAPON) {
-                    std::shared_ptr<Weapon> weapon = std::dynamic_pointer_cast<Weapon>(another->second);
+                    auto weapon = std::dynamic_pointer_cast<Weapon>(another->second);
                     if (weapon->getState() == Weapon::WeaponState::STATE_PICKED) {
                         continue;
                     }

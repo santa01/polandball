@@ -87,7 +87,7 @@ void Player::dropWeapon() {
         return;
     }
 
-    std::shared_ptr<Weapon> weapon = this->weapons[this->activeSlot];
+    auto weapon = this->weapons[this->activeSlot];
     this->weapons[this->activeSlot] = nullptr;
 
     for (this->activeSlot = this->weapons.size() - 1; this->activeSlot > -1; this->activeSlot--) {
@@ -150,7 +150,7 @@ void Player::aimAt(const Math::Vec3& target) {
 
 void Player::onCollision(const std::shared_ptr<Entity>& another, Collider::CollideSide side) {
     if (another->getType() == Entity::EntityType::TYPE_WEAPON) {
-        std::shared_ptr<Weapon> weapon = std::dynamic_pointer_cast<Weapon>(another);
+        auto weapon = std::dynamic_pointer_cast<Weapon>(another);
         if (weapon->getState() == Weapon::WeaponState::STATE_AVAILABLE) {
             this->pickWeapon(weapon);
             return;
@@ -158,7 +158,7 @@ void Player::onCollision(const std::shared_ptr<Entity>& another, Collider::Colli
     }
 
     if (another->getType() == Entity::EntityType::TYPE_PACK) {
-        std::shared_ptr<Pack> pack = std::dynamic_pointer_cast<Pack>(another);
+        auto pack = std::dynamic_pointer_cast<Pack>(another);
         Weapon::WeaponSlot slot = Weapon::WeaponSlot::SLOT_MEELE;
         int value = pack->getValue();
         bool packStaysAlive;

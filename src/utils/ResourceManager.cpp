@@ -56,7 +56,7 @@ std::shared_ptr<Opengl::RenderEffect>& ResourceManager::makeEffect(const std::st
     if (this->effectCache.find(name) == this->effectCache.end()) {
         Logger::getInstance().log(Logger::LOG_INFO, "Loading shader `%s'", name.c_str());
 
-        std::unique_ptr<char[]> shaderSource = this->loadSource(name);
+        auto shaderSource = this->loadSource(name);
         if (shaderSource == nullptr) {
             Logger::getInstance().log(Logger::LOG_ERROR, "Cannot open `%s'", name.c_str());
             return this->effectCache["nullptr"];
@@ -75,7 +75,7 @@ std::shared_ptr<Game::Entity> ResourceManager::makeEntity(const std::string& nam
     if (this->entityCache.find(name) == this->entityCache.end()) {
         Logger::getInstance().log(Logger::LOG_INFO, "Loading entity `%s'", name.c_str());
 
-        std::unique_ptr<char[]> entitySource = this->loadSource(name);
+        auto entitySource = this->loadSource(name);
         if (entitySource == nullptr) {
             Logger::getInstance().log(Logger::LOG_ERROR, "Cannot open `%s'", name.c_str());
             return nullptr;
