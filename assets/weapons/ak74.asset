@@ -1,0 +1,10 @@
+{
+    "type": "weapon",
+    "target_slot": "primary",
+    "texture": "textures/weapons/ak74.png",
+    "effect": "shaders/default.shader",
+    "max_ammo": 120,
+    "ammo": 30,
+    "grouping_angle": 1.2,
+    "firing_speed": 2.8
+}

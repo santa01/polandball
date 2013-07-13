@@ -269,8 +269,35 @@ bool PolandBall::initScene() {
         return false;
     }
 
-    m4a1->setPosition(-4.0f, 0.0f, 0.0f);
+    m4a1->setPosition(-6.0f, 0.0f, 0.0f);
     this->scene->addEntity(m4a1);
+
+    //-----------------
+    auto ak74 = Utils::ResourceManager::getInstance().makeEntity("assets/weapons/ak74.asset");
+    if (ak74 == nullptr) {
+        return false;
+    }
+
+    ak74->setPosition(-3.0f, 0.0f, 0.0f);
+    this->scene->addEntity(ak74);
+
+    //-----------------
+    auto m1911 = Utils::ResourceManager::getInstance().makeEntity("assets/weapons/m1911.asset");
+    if (m1911 == nullptr) {
+        return false;
+    }
+
+    m1911->setPosition(3.0f, 0.0f, 0.0f);
+    this->scene->addEntity(m1911);
+
+    //-----------------
+    auto beretta92 = Utils::ResourceManager::getInstance().makeEntity("assets/weapons/beretta92.asset");
+    if (beretta92 == nullptr) {
+        return false;
+    }
+
+    beretta92->setPosition(6.0f, 0.0f, 0.0f);
+    this->scene->addEntity(beretta92);
 
     //-----------------
     this->player->positionChanged.connect(

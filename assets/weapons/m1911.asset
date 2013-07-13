@@ -1,0 +1,10 @@
+{
+    "type": "weapon",
+    "target_slot": "secondary",
+    "texture": "textures/weapons/m1911.png",
+    "effect": "shaders/default.shader",
+    "max_ammo": 60,
+    "ammo": 12,
+    "grouping_angle": 2.0,
+    "firing_speed": 1.5
+}
