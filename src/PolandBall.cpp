@@ -511,10 +511,11 @@ void PolandBall::onIdle() {
     for (int slot = 0; slot < 3; slot++) {
         auto& weapon = this->player->getWeapon(static_cast<Game::Weapon::WeaponSlot>(slot));
         if (weapon != nullptr) {
+            text.str("");
             text << weapon->getAmmo();
+
             this->weapons[slot].first->setTexture(weapon->getTexture());
             this->weapons[slot].first->shearX(0.0f, 2);
-            //this->weapons[slot].first->shearY(0.0f, 1);
             this->weapons[slot].first->roll(45.0f);
             this->weapons[slot].second->setText(text.str());
         } else {
