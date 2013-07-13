@@ -105,6 +105,11 @@ void Scene::update(float frameTime, float frameStep) {
                     continue;
                 }
 
+                if ((anotherType == Entity::EntityType::TYPE_WEAPON || anotherType == Entity::EntityType::TYPE_PACK) &&
+                        (type == Entity::EntityType::TYPE_WEAPON || type == Entity::EntityType::TYPE_PACK)) {
+                    continue;
+                }
+
                 if (anotherType == Entity::EntityType::TYPE_WEAPON) {
                     auto weapon = std::dynamic_pointer_cast<Weapon>(another->second);
                     if (weapon->getState() == Weapon::WeaponState::STATE_PICKED) {
