@@ -147,6 +147,11 @@ private:
     int health;
     int armor;
 
+    /* NOTE: Weapon::activeSlot should be accessible by Scene. Still exposing
+     * Weapon::activeSlot through the Weapon inteface by any know method requires
+     * special attention to be payed for activeSlot value of -1. Scene is marked
+     * as friend for now. */
+    friend class Scene;
     int activeSlot;
     int weaponHandle;
     int state;

@@ -22,6 +22,7 @@
 
 #include "Scene.h"
 #include "Weapon.h"
+#include "Player.h"
 
 #include <GL/glew.h>
 
@@ -40,10 +41,34 @@ void Scene::render() {
         effect->setUniform("mvp", mvp);
     }
 
+    auto playerEntity = this->entities.find(Entity::EntityType::TYPE_PLAYER);
     for (auto& entity: this->entities) {
-        if (entity.first != Entity::EntityType::TYPE_CLIP) {
-            entity.second->render();
+        if (entity.first == Entity::EntityType::TYPE_CLIP) {
+            continue;
         }
+
+        /* Do not render any picked and non-active weapon */
+        if (entity.first == Entity::EntityType::TYPE_WEAPON) {
+            std::shared_ptr<Weapon> weapon = std::dynamic_pointer_cast<Weapon>(entity.second);
+            if (weapon->getState() == Weapon::WeaponState::STATE_PICKED) {
+                std::shared_ptr<Player> player = std::dynamic_pointer_cast<Player>(playerEntity->second);
+                bool skipWeapon = false;
+
+                for (int slot = 0; slot < 3; slot++) {
+                    auto& ownWeapon = player->getWeapon(static_cast<Game::Weapon::WeaponSlot>(slot));
+                    if (weapon == ownWeapon && slot != player->activeSlot) {
+                        skipWeapon = true;
+                        break;
+                    }
+                }
+
+                if (skipWeapon) {
+                    continue;
+                }
+            }
+        }
+
+        entity.second->render();
     }
 }
 
