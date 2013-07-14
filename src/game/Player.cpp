@@ -201,7 +201,7 @@ void Player::animate(float frameTime) {
         if (!(this->dropTime != 0.0f && (this->previousState & STATE_DROP_WEAPON))) {
             this->dropWeapon();
         }
-        
+
         this->dropTime += frameTime;
         if (this->dropTime >= this->minDropTime) {
             this->dropTime = 0.0f;

@@ -307,7 +307,7 @@ bool PolandBall::initScene() {
 
     wrench->setPosition(9.0f, 0.0f, 0.0f);
     this->scene->addEntity(wrench);
-    
+
     //-----------------
     auto knife = Utils::ResourceManager::getInstance().makeEntity("assets/weapons/knife.asset");
     if (knife == nullptr) {

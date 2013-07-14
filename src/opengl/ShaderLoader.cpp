@@ -32,12 +32,12 @@ namespace Opengl {
 
 GLuint ShaderLoader::createProgram(const std::vector<GLuint>& shaders) {
     GLuint program = glCreateProgram();
-    
+
     for (auto& shader: shaders) {
         glAttachShader(program, shader);
         glDeleteShader(shader);
     }
-    
+
     glLinkProgram(program);
 
     GLint linkStatus;
@@ -65,7 +65,7 @@ GLuint ShaderLoader::createShader(const std::string& source, GLenum type) {
 
     GLint compileStatus;
     glGetShaderiv(shader, GL_COMPILE_STATUS, &compileStatus);
-   
+
     if (compileStatus == GL_FALSE) {
         GLint infoLogLength;
         glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLogLength);
