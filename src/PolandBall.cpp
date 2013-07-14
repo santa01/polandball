@@ -495,7 +495,7 @@ void PolandBall::onIdle() {
         this->player->setState(Game::Player::PlayerState::STATE_JUMP);
     }
     if (keyStates[SDL_SCANCODE_RETURN] > 0) {
-        this->player->dropWeapon();
+        this->player->setState(Game::Player::PlayerState::STATE_DROP_WEAPON);
     }
     if (keyStates[SDL_SCANCODE_1] > 0) {
         this->player->activateSlot(Game::Weapon::WeaponSlot::SLOT_PRIMARY);

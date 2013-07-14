@@ -34,10 +34,12 @@ Player::Player():
     this->maxMoveSpeed = 8.0f;
     this->maxJumpSpeed = 10.0f;
     this->maxJumpTime = 0.5f;
+    this->minDropTime = 0.5f;
     this->maxHealth = 100;
     this->maxArmor = 100;
 
     this->jumpTime = 0.0f;
+    this->dropTime = 0.0f;
     this->viewAngle = 0.0f;
     this->health = this->maxHealth;
     this->armor = 0;
@@ -80,40 +82,7 @@ void Player::activateSlot(Weapon::WeaponSlot slot) {
     this->weaponHandle = this->positionChanged.connect(
             std::bind(static_cast<void(Weapon::*)(const Math::Vec3&)>(&Weapon::setPosition),
             this->weapons[slot], std::placeholders::_1));
-}
-
-void Player::dropWeapon() {
-    if (this->activeSlot == -1) {
-        return;
-    }
-
-    auto weapon = this->weapons[this->activeSlot];
-    this->weapons[this->activeSlot] = nullptr;
-
-    for (this->activeSlot = this->weapons.size() - 1; this->activeSlot > -1; this->activeSlot--) {
-        if (this->weapons[this->activeSlot] != nullptr) {
-            this->activateSlot(static_cast<Weapon::WeaponSlot>(this->activeSlot));  // TODO: Remove cast
-            break;
-        }
-    }
-
-    if (this->activeSlot < 0) {
-        this->positionChanged.disconnect(this->weaponHandle);
-        this->weaponHandle = -1;
-        this->activeSlot = -1;
-    }
-
-    float targetSignCorrection = (this->target.get(Math::Vec3::X) < 0.0f) ? -1.0f : 1.0f;
-    Math::Vec3 dropAcceleration((Math::Vec3::UNIT_X * targetSignCorrection + Math::Vec3::UNIT_Y) * 7.0f);
-
-    weapon->aimAt(Math::Vec3::UNIT_X * targetSignCorrection);
-    weapon->setState(Weapon::WeaponState::STATE_THROWN);
-    weapon->setPosition(weapon->getPosition() + Math::Vec3::UNIT_Y * 0.5f);  // Don't collide from bottom
-
-    float hotizontalSpeed = this->getSpeed().get(Math::Vec3::X);
-    float verticalSpeed = this->getSpeed().get(Math::Vec3::Y);
-    weapon->setSpeed(Math::Vec3(hotizontalSpeed, (verticalSpeed > 0.0f) ? verticalSpeed : 0.0f, 0.0f));
-    weapon->accelerateBy(dropAcceleration);
+    this->positionChanged(this->getPosition());
 }
 
 void Player::aimAt(const Math::Vec3& target) {
@@ -228,6 +197,19 @@ void Player::animate(float frameTime) {
         this->jumpTime = FLT_MAX;
     }
 
+    if ((this->state & STATE_DROP_WEAPON)) {
+        if (!(this->dropTime != 0.0f && (this->previousState & STATE_DROP_WEAPON))) {
+            this->dropWeapon();
+        }
+        
+        this->dropTime += frameTime;
+        if (this->dropTime >= this->minDropTime) {
+            this->dropTime = 0.0f;
+        }
+    } else {
+        this->dropTime = 0.0f;
+    }
+
     float moveSpeedDelta = this->maxMoveSpeed * frameTime * 10.0f;
     Math::Vec3 moveAcceleration = Math::Vec3::UNIT_X * moveSpeedDelta;
     float signCorrection = 0.0f;
@@ -255,6 +237,40 @@ void Player::animate(float frameTime) {
     this->accelerateBy(moveAcceleration * signCorrection);
     this->previousState = this->state;
     this->state = STATE_IDLE;
+}
+
+void Player::dropWeapon() {
+    if (this->activeSlot == -1) {
+        return;
+    }
+
+    auto weapon = this->weapons[this->activeSlot];
+    this->weapons[this->activeSlot] = nullptr;
+
+    for (this->activeSlot = this->weapons.size() - 1; this->activeSlot > -1; this->activeSlot--) {
+        if (this->weapons[this->activeSlot] != nullptr) {
+            this->activateSlot(static_cast<Weapon::WeaponSlot>(this->activeSlot));  // TODO: Remove cast
+            break;
+        }
+    }
+
+    if (this->activeSlot < 0) {
+        this->positionChanged.disconnect(this->weaponHandle);
+        this->weaponHandle = -1;
+        this->activeSlot = -1;
+    }
+
+    float targetSignCorrection = (this->target.get(Math::Vec3::X) < 0.0f) ? -1.0f : 1.0f;
+    Math::Vec3 dropAcceleration((Math::Vec3::UNIT_X * targetSignCorrection + Math::Vec3::UNIT_Y) * 7.0f);
+
+    weapon->aimAt(Math::Vec3::UNIT_X * targetSignCorrection);
+    weapon->setState(Weapon::WeaponState::STATE_THROWN);
+    weapon->setPosition(weapon->getPosition() + Math::Vec3::UNIT_Y * 0.5f);  // Don't collide from bottom
+
+    float hotizontalSpeed = this->getSpeed().get(Math::Vec3::X);
+    float verticalSpeed = this->getSpeed().get(Math::Vec3::Y);
+    weapon->setSpeed(Math::Vec3(hotizontalSpeed, (verticalSpeed > 0.0f) ? verticalSpeed : 0.0f, 0.0f));
+    weapon->accelerateBy(dropAcceleration);
 }
 
 }  // namespace Game

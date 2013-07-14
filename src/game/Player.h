@@ -41,7 +41,8 @@ public:
         STATE_IDLE = 1 << 0,
         STATE_LEFT_STEP = 1 << 1,
         STATE_RIGHT_STEP = 1 << 2,
-        STATE_JUMP = 1 << 3
+        STATE_JUMP = 1 << 3,
+        STATE_DROP_WEAPON = 1 << 4
     };
 
     Player();
@@ -120,7 +121,6 @@ public:
 
     void pickWeapon(const std::shared_ptr<Weapon>& weapon);
     void activateSlot(Weapon::WeaponSlot slot);
-    void dropWeapon();
 
     void aimAt(const Math::Vec3& target);
     void shoot() {
@@ -133,16 +133,20 @@ public:
     void animate(float frameTime);
 
 private:
+    void dropWeapon();
+
     std::array<std::shared_ptr<Weapon>, 3> weapons;
     Math::Vec3 target;
 
     float maxMoveSpeed;
     float maxJumpSpeed;
     float maxJumpTime;
+    float minDropTime;
     int maxHealth;
     int maxArmor;
 
     float jumpTime;
+    float dropTime;
     float viewAngle;
     int health;
     int armor;
