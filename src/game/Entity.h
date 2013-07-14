@@ -230,12 +230,14 @@ public:
         this->destroyed = true;
     }
 
-    virtual void onCollision(const std::shared_ptr<Entity>& another, Collider::CollideSide side) {}
-    virtual void animate(float frameTime) {}
-
     Signals::Signal<Math::Vec3> positionChanged;
 
 protected:
+    friend class Scene;
+
+    virtual void onCollision(const std::shared_ptr<Entity>& another, Collider::CollideSide side) {}
+    virtual void animate(float frameTime) {}
+
     std::unique_ptr<Collider> collider;
     std::shared_ptr<Opengl::Sprite> sprite;
 

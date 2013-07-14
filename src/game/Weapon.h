@@ -104,6 +104,7 @@ public:
     void shoot() {
     }
 
+private:
     void onCollision(const std::shared_ptr<Entity>& another, Collider::CollideSide side) {
         if (this->state == STATE_THROWN) {
             if (side == Collider::CollideSide::SIDE_BOTTOM &&
@@ -127,13 +128,11 @@ public:
         }
     }
 
-private:
     Math::Vec3 target;
-
-    int maxAmmo;
 
     float groupingAngle;
     float firingSpeed;  // Shots per second
+    int maxAmmo;
     int ammo;
 
     WeaponSlot targetSlot;
