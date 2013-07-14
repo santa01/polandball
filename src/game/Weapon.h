@@ -36,8 +36,8 @@ class Weapon: public Entity {
 public:
     enum WeaponSlot {
         SLOT_MEELE,
-        SLOT_PRIMARY,
-        SLOT_SECONDARY
+        SLOT_SECONDARY,
+        SLOT_PRIMARY
     };
 
     enum WeaponState {

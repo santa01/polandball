@@ -61,7 +61,7 @@ void Player::pickWeapon(const std::shared_ptr<Weapon>& weapon) {
         this->weapons[targetSlot]->setState(Weapon::WeaponState::STATE_PICKED);
         this->weapons[targetSlot]->shearX(0.0f, 2);
 
-        if (targetSlot < this->activeSlot || this->activeSlot == -1) {
+        if (targetSlot > this->activeSlot || this->activeSlot == -1) {
             this->activateSlot(targetSlot);
         }
     }
