@@ -1,0 +1,10 @@
+{
+    "type": "weapon",
+    "target_slot": "meele",
+    "texture": "textures/weapons/knife.png",
+    "effect": "shaders/default.shader",
+    "max_ammo": 999,
+    "ammo": 999,
+    "grouping_angle": 5.0,
+    "firing_speed": 1.0
+}

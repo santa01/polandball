@@ -300,6 +300,24 @@ bool PolandBall::initScene() {
     this->scene->addEntity(beretta92);
 
     //-----------------
+    auto wrench = Utils::ResourceManager::getInstance().makeEntity("assets/weapons/wrench.asset");
+    if (wrench == nullptr) {
+        return false;
+    }
+
+    wrench->setPosition(9.0f, 0.0f, 0.0f);
+    this->scene->addEntity(wrench);
+    
+    //-----------------
+    auto knife = Utils::ResourceManager::getInstance().makeEntity("assets/weapons/knife.asset");
+    if (knife == nullptr) {
+        return false;
+    }
+
+    knife->setPosition(12.0f, 0.0f, 0.0f);
+    this->scene->addEntity(knife);
+
+    //-----------------
     this->player->positionChanged.connect(
             std::bind(static_cast<void(Game::Entity::*)(const Math::Vec3&)>(&Game::Entity::setPosition),
             backgroundEntity, std::placeholders::_1));
@@ -508,11 +526,19 @@ void PolandBall::onIdle() {
     }
 
     std::stringstream text;
+    int weaponAmmo = 0;
+
     for (int slot = 0; slot < 3; slot++) {
         auto& weapon = this->player->getWeapon(static_cast<Game::Weapon::WeaponSlot>(slot));
         if (weapon != nullptr) {
+            weaponAmmo = weapon->getAmmo();
             text.str("");
-            text << weapon->getAmmo();
+
+            if (weaponAmmo >= 999) {
+                text << "--/--";  // Infinite
+            } else {
+                text << weaponAmmo;
+            }
 
             this->weapons[slot].first->setTexture(weapon->getTexture());
             this->weapons[slot].first->shearX(0.0f, 2);
