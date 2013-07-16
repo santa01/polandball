@@ -45,6 +45,7 @@ public:
     Pack(PayloadType payload) {
         this->payload = payload;
         this->value = 10;
+        this->bounce = 0.0f;
         this->type = TYPE_PACK;
     }
 
@@ -65,7 +66,13 @@ public:
     }
 
 private:
+    void animate(float frameTime) {
+        this->shearY(sinf(this->bounce) / 13.33f - 0.075f, 1);
+        this->bounce += frameTime * 6.0f;
+    }
+
     PayloadType payload;
+    float bounce;
     int value;
 };
 
