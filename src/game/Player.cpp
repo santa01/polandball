@@ -126,7 +126,7 @@ void Player::onCollision(const std::shared_ptr<Entity>& another, Collider::Colli
         }
     }
 
-    if (another->getType() == Entity::EntityType::TYPE_PACK) {
+    if (another->getType() == Entity::EntityType::TYPE_PACK && !another->isDestroyed()) {
         auto pack = std::dynamic_pointer_cast<Pack>(another);
         Weapon::WeaponSlot slot = Weapon::WeaponSlot::SLOT_MEELE;
         int value = pack->getValue();
