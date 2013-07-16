@@ -1,0 +1,7 @@
+{
+    "type": "pack",
+    "payload": "health",
+    "texture": "textures/items/pack_health.png",
+    "effect": "shaders/default.shader",
+    "value": 25
+}

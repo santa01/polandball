@@ -318,6 +318,24 @@ bool PolandBall::initScene() {
     this->scene->addEntity(knife);
 
     //-----------------
+    auto pack_health = Utils::ResourceManager::getInstance().makeEntity("assets/items/pack_health.asset");
+    if (pack_health == nullptr) {
+        return false;
+    }
+
+    pack_health->setPosition(15.0f, 0.0f, 0.0f);
+    this->scene->addEntity(pack_health);
+
+    //-----------------
+    auto pack_armor = Utils::ResourceManager::getInstance().makeEntity("assets/items/pack_armor.asset");
+    if (pack_armor == nullptr) {
+        return false;
+    }
+
+    pack_armor->setPosition(18.0f, 0.0f, 0.0f);
+    this->scene->addEntity(pack_armor);
+
+    //-----------------
     this->player->positionChanged.connect(
             std::bind(static_cast<void(Game::Entity::*)(const Math::Vec3&)>(&Game::Entity::setPosition),
             backgroundEntity, std::placeholders::_1));

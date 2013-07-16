@@ -1,0 +1,7 @@
+{
+    "type": "pack",
+    "payload": "armor",
+    "texture": "textures/items/pack_armor.png",
+    "effect": "shaders/default.shader",
+    "value": 25
+}
