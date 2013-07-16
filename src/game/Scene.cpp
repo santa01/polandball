@@ -122,8 +122,10 @@ void Scene::update(float frameTime, float frameStep) {
                     entity->second->onCollision(another->second, side);
                 }
 
-                if ((type == Entity::EntityType::TYPE_WEAPON && anotherType == Entity::EntityType::TYPE_PLAYER) ||
-                        (type == Entity::EntityType::TYPE_PLAYER && anotherType == Entity::EntityType::TYPE_WEAPON)) {
+                if (((anotherType == Entity::EntityType::TYPE_WEAPON || anotherType == Entity::EntityType::TYPE_PACK) &&
+                        type == Entity::EntityType::TYPE_PLAYER) ||
+                        ((type == Entity::EntityType::TYPE_WEAPON || type == Entity::EntityType::TYPE_PACK) &&
+                        anotherType == Entity::EntityType::TYPE_PLAYER)) {
                     continue;
                 }
 
