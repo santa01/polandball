@@ -207,9 +207,10 @@ bool PolandBall::initOpenGL() {
     Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "GLEW version: %s", glewGetString(GLEW_VERSION));
 
     glEnable(GL_CULL_FACE);
-
     glEnable(GL_BLEND);
+
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glViewport(0, 0, this->width, this->height);
 
     return true;
 }
