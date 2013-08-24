@@ -260,8 +260,8 @@ bool PolandBall::initScene() {
     Game::Camera& camera = this->scene->getCamera();
     camera.setProjectionType(Game::Camera::TYPE_ORTHOGRAPHIC);
     camera.setAspectRatio(this->width / (this->height / 1.0f));
-    camera.setNearPlane(-5.0f);
-    camera.setFarPlane(5.0f);
+    camera.setNearPlane(-2.5f);
+    camera.setFarPlane(2.5f);
 
     //-----------------
     auto backgroundEntity = Utils::ResourceManager::getInstance().makeEntity("assets/backgrounds/sunny.asset");
@@ -269,8 +269,8 @@ bool PolandBall::initScene() {
         return false;
     }
 
-    backgroundEntity->scaleY(camera.getFarPlane() - camera.getNearPlane());
-    backgroundEntity->scaleX((camera.getFarPlane() - camera.getNearPlane()) * camera.getAspectRatio());
+    backgroundEntity->scale(10.0f);
+    backgroundEntity->scaleX(camera.getAspectRatio());  // Scale for aspect ratio
     this->scene->addEntity(backgroundEntity);
 
     //-----------------
@@ -279,7 +279,7 @@ bool PolandBall::initScene() {
         return false;
     }
 
-    bricksEntity->setPosition(0.0f, -4.0f, 0.0f);
+    bricksEntity->setPosition(0.0f, -2.0f, 0.0f);
     bricksEntity->scaleX(20.0f * 1.5f);  // Scale for aspect ratio
     bricksEntity->replicateX(20.0f);
     this->scene->addEntity(bricksEntity);
@@ -309,7 +309,7 @@ bool PolandBall::initScene() {
         return false;
     }
 
-    m4a1->setPosition(-6.0f, 0.0f, 0.0f);
+    m4a1->setPosition(-4.0f, 0.0f, 0.0f);
     this->scene->addEntity(m4a1);
 
     //-----------------
@@ -318,7 +318,7 @@ bool PolandBall::initScene() {
         return false;
     }
 
-    ak74->setPosition(-3.0f, 0.0f, 0.0f);
+    ak74->setPosition(-2.0f, 0.0f, 0.0f);
     this->scene->addEntity(ak74);
 
     //-----------------
@@ -327,7 +327,7 @@ bool PolandBall::initScene() {
         return false;
     }
 
-    m1911->setPosition(3.0f, 0.0f, 0.0f);
+    m1911->setPosition(2.0f, 0.0f, 0.0f);
     this->scene->addEntity(m1911);
 
     //-----------------
@@ -336,7 +336,7 @@ bool PolandBall::initScene() {
         return false;
     }
 
-    beretta92->setPosition(6.0f, 0.0f, 0.0f);
+    beretta92->setPosition(4.0f, 0.0f, 0.0f);
     this->scene->addEntity(beretta92);
 
     //-----------------
@@ -345,7 +345,7 @@ bool PolandBall::initScene() {
         return false;
     }
 
-    wrench->setPosition(9.0f, 0.0f, 0.0f);
+    wrench->setPosition(6.0f, 0.0f, 0.0f);
     this->scene->addEntity(wrench);
 
     //-----------------
@@ -354,7 +354,7 @@ bool PolandBall::initScene() {
         return false;
     }
 
-    knife->setPosition(12.0f, 0.0f, 0.0f);
+    knife->setPosition(8.0f, 0.0f, 0.0f);
     this->scene->addEntity(knife);
 
     //-----------------
@@ -363,7 +363,7 @@ bool PolandBall::initScene() {
         return false;
     }
 
-    pack_health->setPosition(15.0f, 0.0f, 0.0f);
+    pack_health->setPosition(10.0f, 0.0f, 0.0f);
     this->scene->addEntity(pack_health);
 
     //-----------------
@@ -372,7 +372,7 @@ bool PolandBall::initScene() {
         return false;
     }
 
-    pack_armor->setPosition(18.0f, 0.0f, 0.0f);
+    pack_armor->setPosition(12.0f, 0.0f, 0.0f);
     this->scene->addEntity(pack_armor);
 
     //-----------------
@@ -415,7 +415,6 @@ bool PolandBall::initUi() {
     primaryWeapon.second = std::shared_ptr<Game::Label>(new Game::Label());
     primaryWeapon.second->setOrigin(this->screenToWorld(Math::Vec3(40.0f, 80.0f, 0.0f)));
     primaryWeapon.second->setFont(defaultFont);
-    primaryWeapon.second->scale(0.3f);
     this->scene->addEntity(primaryWeapon.second);
 
     //-----------------
@@ -436,7 +435,6 @@ bool PolandBall::initUi() {
     secondaryWeapon.second = std::shared_ptr<Game::Label>(new Game::Label());
     secondaryWeapon.second->setOrigin(this->screenToWorld(Math::Vec3(110.0f, 80.0f, 0.0f)));
     secondaryWeapon.second->setFont(defaultFont);
-    secondaryWeapon.second->scale(0.3f);
     this->scene->addEntity(secondaryWeapon.second);
 
     //-----------------
@@ -457,7 +455,6 @@ bool PolandBall::initUi() {
     meeleWeapon.second = std::shared_ptr<Game::Label>(new Game::Label());
     meeleWeapon.second->setOrigin(this->screenToWorld(Math::Vec3(180.0f, 80.0f, 0.0f)));
     meeleWeapon.second->setFont(defaultFont);
-    meeleWeapon.second->scale(0.3f);
     this->scene->addEntity(meeleWeapon.second);
 
     //-----------------
@@ -472,7 +469,6 @@ bool PolandBall::initUi() {
     this->armor = std::shared_ptr<Game::Label>(new Game::Label());
     this->armor->setOrigin(this->screenToWorld(Math::Vec3(this->width - 40.0f, 80.0f, 0.0f)));
     this->armor->setFont(defaultFont);
-    this->armor->scale(0.3f);
     this->scene->addEntity(this->armor);
 
     //-----------------
@@ -487,7 +483,6 @@ bool PolandBall::initUi() {
     this->health = std::shared_ptr<Game::Label>(new Game::Label());
     this->health->setOrigin(this->screenToWorld(Math::Vec3(this->width - 100.0f, 80.0f, 0.0f)));
     this->health->setFont(defaultFont);
-    this->health->scale(0.3f);
     this->scene->addEntity(this->health);
 
     //-----------------
