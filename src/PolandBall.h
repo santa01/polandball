@@ -24,7 +24,7 @@
 #define POLANDBALL_H
 
 #include "Entity.h"
-#include "TextLabel.h"
+#include "Label.h"
 #include "Player.h"
 #include "Scene.h"
 #include "NonCopyable.h"
@@ -72,10 +72,10 @@ private:
     std::shared_ptr<Game::Entity> cursor;
 
     // Requires sync if Weapon::WeaponSlot is updated
-    std::pair<std::shared_ptr<Game::Entity>, std::shared_ptr<Game::TextLabel>> weapons[3];
+    std::pair<std::shared_ptr<Game::Entity>, std::shared_ptr<Game::Label>> weapons[3];
     std::shared_ptr<Game::Entity> emptySlot;
-    std::shared_ptr<Game::TextLabel> health;
-    std::shared_ptr<Game::TextLabel> armor;
+    std::shared_ptr<Game::Label> health;
+    std::shared_ptr<Game::Label> armor;
 
     int argc;
     char** argv;

@@ -20,8 +20,8 @@
  * SOFTWARE.
  */
 
-#ifndef TEXTLABEL_H
-#define TEXTLABEL_H
+#ifndef LABEL_H
+#define LABEL_H
 
 #include <SDL2/SDL_ttf.h>
 #include <string>
@@ -33,12 +33,12 @@ namespace PolandBall {
 
 namespace Game {
 
-class TextLabel: public Entity {
+class Label: public Entity {
 public:
-    TextLabel();
+    Label();
 
-    TextLabel(const std::string& text):
-            TextLabel() {
+    Label(const std::string& text):
+            Label() {
         this->setText(text);
     }
 
@@ -82,4 +82,4 @@ private:
 
 }  // namespace Rubik
 
-#endif  // TEXTLABEL_H
+#endif  // LABEL_H

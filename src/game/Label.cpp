@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-#include "TextLabel.h"
+#include "Label.h"
 #include "Texture.h"
 #include "RenderEffect.h"
 
@@ -30,7 +30,7 @@ namespace PolandBall {
 
 namespace Game {
 
-TextLabel::TextLabel() {
+Label::Label() {
     this->type = Entity::EntityType::TYPE_UI;
     this->textAspectRatio = 1.0f;
 
@@ -78,7 +78,7 @@ TextLabel::TextLabel() {
     this->setEffect(effect);
 }
 
-void TextLabel::renderText() {
+void Label::renderText() {
     if (!this->text.empty()) {
         int textWidth, textHeight;
         TTF_SizeUTF8(this->font.get(), text.c_str(), &textWidth, &textHeight);

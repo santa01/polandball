@@ -412,7 +412,7 @@ bool PolandBall::initUi() {
     primaryWeaponBorder->setOrigin(this->screenToWorld(Math::Vec3(40.0f, 40.0f, 0.0f)));
     this->scene->addEntity(primaryWeaponBorder);
 
-    primaryWeapon.second = std::shared_ptr<Game::TextLabel>(new Game::TextLabel());
+    primaryWeapon.second = std::shared_ptr<Game::Label>(new Game::Label());
     primaryWeapon.second->setOrigin(this->screenToWorld(Math::Vec3(40.0f, 80.0f, 0.0f)));
     primaryWeapon.second->setFont(defaultFont);
     primaryWeapon.second->scale(0.3f);
@@ -433,7 +433,7 @@ bool PolandBall::initUi() {
     secondaryWeaponBorder->setOrigin(this->screenToWorld(Math::Vec3(110.0f, 40.0f, 0.0f)));
     this->scene->addEntity(secondaryWeaponBorder);
 
-    secondaryWeapon.second = std::shared_ptr<Game::TextLabel>(new Game::TextLabel());
+    secondaryWeapon.second = std::shared_ptr<Game::Label>(new Game::Label());
     secondaryWeapon.second->setOrigin(this->screenToWorld(Math::Vec3(110.0f, 80.0f, 0.0f)));
     secondaryWeapon.second->setFont(defaultFont);
     secondaryWeapon.second->scale(0.3f);
@@ -454,7 +454,7 @@ bool PolandBall::initUi() {
     meeleWeaponBorder->setOrigin(this->screenToWorld(Math::Vec3(180.0f, 40.0f, 0.0f)));
     this->scene->addEntity(meeleWeaponBorder);
 
-    meeleWeapon.second = std::shared_ptr<Game::TextLabel>(new Game::TextLabel());
+    meeleWeapon.second = std::shared_ptr<Game::Label>(new Game::Label());
     meeleWeapon.second->setOrigin(this->screenToWorld(Math::Vec3(180.0f, 80.0f, 0.0f)));
     meeleWeapon.second->setFont(defaultFont);
     meeleWeapon.second->scale(0.3f);
@@ -469,7 +469,7 @@ bool PolandBall::initUi() {
     armorShield->setOrigin(this->screenToWorld(Math::Vec3(this->width - 40.0f, 40.0f, 0.0f)));
     this->scene->addEntity(armorShield);
 
-    this->armor = std::shared_ptr<Game::TextLabel>(new Game::TextLabel());
+    this->armor = std::shared_ptr<Game::Label>(new Game::Label());
     this->armor->setOrigin(this->screenToWorld(Math::Vec3(this->width - 40.0f, 80.0f, 0.0f)));
     this->armor->setFont(defaultFont);
     this->armor->scale(0.3f);
@@ -484,7 +484,7 @@ bool PolandBall::initUi() {
     healthShield->setOrigin(this->screenToWorld(Math::Vec3(this->width - 100.0f, 40.0f, 0.0f)));
     this->scene->addEntity(healthShield);
 
-    this->health = std::shared_ptr<Game::TextLabel>(new Game::TextLabel());
+    this->health = std::shared_ptr<Game::Label>(new Game::Label());
     this->health->setOrigin(this->screenToWorld(Math::Vec3(this->width - 100.0f, 80.0f, 0.0f)));
     this->health->setFont(defaultFont);
     this->health->scale(0.3f);
