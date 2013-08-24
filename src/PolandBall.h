@@ -60,9 +60,6 @@ private:
     void onMouseButton(SDL_MouseButtonEvent& event);
     void onIdle();
 
-    // Orthographic projection only
-    Math::Vec3 screenToWorld(const Math::Vec3 vector) const;
-
     SDL_Window* window;
     SDL_GLContext context;
     Utils::ArgumentParser arguments;

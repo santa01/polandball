@@ -23,6 +23,8 @@
 #include "PolandBall.h"
 #include "Logger.h"
 #include "Vec3.h"
+#include "Vec4.h"
+#include "Mat4.h"
 #include "ResourceManager.h"
 #include "Weapon.h"
 
@@ -398,10 +400,21 @@ bool PolandBall::initUi() {
     }
 
     //-----------------
+    Math::Mat4 ndc;
+    ndc.set(0, 0, 2.0f / (this->width / 1.0f));
+    ndc.set(0, 3, -1.0f);
+    ndc.set(1, 1, -2.0f / (this->height / 1.0f));
+    ndc.set(1, 3, 1.0f);
+
+    Math::Mat4 world(this->scene->getCamera().getProjection());
+    world.invert();
+
+    //-----------------
     auto& primaryWeapon = this->weapons[Game::Weapon::WeaponSlot::SLOT_PRIMARY];
 
     primaryWeapon.first = Utils::ResourceManager::getInstance().makeEntity("assets/ui/slot_empty.asset");
-    primaryWeapon.first->setOrigin(this->screenToWorld(Math::Vec3(40.0f, 40.0f, 0.0f)));
+    Math::Vec4 primaryWeaponOrigin = (world * ndc) * Math::Vec4(40.0f, 40.0f, 0.0f, 1.0f);
+    primaryWeapon.first->setOrigin(primaryWeaponOrigin.extractVec3());
     this->scene->addEntity(primaryWeapon.first);
 
     auto primaryWeaponBorder = Utils::ResourceManager::getInstance().makeEntity("assets/ui/border_weapon.asset");
@@ -409,11 +422,12 @@ bool PolandBall::initUi() {
         return false;
     }
 
-    primaryWeaponBorder->setOrigin(this->screenToWorld(Math::Vec3(40.0f, 40.0f, 0.0f)));
+    primaryWeaponBorder->setOrigin(primaryWeaponOrigin.extractVec3());
     this->scene->addEntity(primaryWeaponBorder);
 
     primaryWeapon.second = std::shared_ptr<Game::Label>(new Game::Label());
-    primaryWeapon.second->setOrigin(this->screenToWorld(Math::Vec3(40.0f, 80.0f, 0.0f)));
+    Math::Vec4 primaryLabelOrigin = (world * ndc) * Math::Vec4(40.0f, 80.0f, 0.0f, 1.0f);
+    primaryWeapon.second->setOrigin(primaryLabelOrigin.extractVec3());
     primaryWeapon.second->setFont(defaultFont);
     this->scene->addEntity(primaryWeapon.second);
 
@@ -421,7 +435,8 @@ bool PolandBall::initUi() {
     auto& secondaryWeapon = this->weapons[Game::Weapon::WeaponSlot::SLOT_SECONDARY];
 
     secondaryWeapon.first = Utils::ResourceManager::getInstance().makeEntity("assets/ui/slot_empty.asset");
-    secondaryWeapon.first->setOrigin(this->screenToWorld(Math::Vec3(110.0f, 40.0f, 0.0f)));
+    Math::Vec4 secondaryWeaponOrigin = (world * ndc) * Math::Vec4(110.0f, 40.0f, 0.0f, 1.0f);
+    secondaryWeapon.first->setOrigin(secondaryWeaponOrigin.extractVec3());
     this->scene->addEntity(secondaryWeapon.first);
 
     auto secondaryWeaponBorder = Utils::ResourceManager::getInstance().makeEntity("assets/ui/border_weapon.asset");
@@ -429,11 +444,12 @@ bool PolandBall::initUi() {
         return false;
     }
 
-    secondaryWeaponBorder->setOrigin(this->screenToWorld(Math::Vec3(110.0f, 40.0f, 0.0f)));
+    secondaryWeaponBorder->setOrigin(secondaryWeaponOrigin.extractVec3());
     this->scene->addEntity(secondaryWeaponBorder);
 
     secondaryWeapon.second = std::shared_ptr<Game::Label>(new Game::Label());
-    secondaryWeapon.second->setOrigin(this->screenToWorld(Math::Vec3(110.0f, 80.0f, 0.0f)));
+    Math::Vec4 secondaryLabelOrigin = (world * ndc) * Math::Vec4(110.0f, 80.0f, 0.0f, 1.0f);
+    secondaryWeapon.second->setOrigin(secondaryLabelOrigin.extractVec3());
     secondaryWeapon.second->setFont(defaultFont);
     this->scene->addEntity(secondaryWeapon.second);
 
@@ -441,7 +457,8 @@ bool PolandBall::initUi() {
     auto& meeleWeapon = this->weapons[Game::Weapon::WeaponSlot::SLOT_MEELE];
 
     meeleWeapon.first = Utils::ResourceManager::getInstance().makeEntity("assets/ui/slot_empty.asset");
-    meeleWeapon.first->setOrigin(this->screenToWorld(Math::Vec3(180.0f, 40.0f, 0.0f)));
+    Math::Vec4 meeleWeaponOrigin = (world * ndc) * Math::Vec4(180.0f, 40.0f, 0.0f, 1.0f);
+    meeleWeapon.first->setOrigin(meeleWeaponOrigin.extractVec3());
     this->scene->addEntity(meeleWeapon.first);
 
     auto meeleWeaponBorder = Utils::ResourceManager::getInstance().makeEntity("assets/ui/border_weapon.asset");
@@ -449,11 +466,12 @@ bool PolandBall::initUi() {
         return false;
     }
 
-    meeleWeaponBorder->setOrigin(this->screenToWorld(Math::Vec3(180.0f, 40.0f, 0.0f)));
+    meeleWeaponBorder->setOrigin(meeleWeaponOrigin.extractVec3());
     this->scene->addEntity(meeleWeaponBorder);
 
     meeleWeapon.second = std::shared_ptr<Game::Label>(new Game::Label());
-    meeleWeapon.second->setOrigin(this->screenToWorld(Math::Vec3(180.0f, 80.0f, 0.0f)));
+    Math::Vec4 meeleLabelOrigin = (world * ndc) * Math::Vec4(180.0f, 80.0f, 0.0f, 1.0f);
+    meeleWeapon.second->setOrigin(meeleLabelOrigin.extractVec3());
     meeleWeapon.second->setFont(defaultFont);
     this->scene->addEntity(meeleWeapon.second);
 
@@ -463,11 +481,13 @@ bool PolandBall::initUi() {
         return false;
     }
 
-    armorShield->setOrigin(this->screenToWorld(Math::Vec3(this->width - 40.0f, 40.0f, 0.0f)));
+    Math::Vec4 armorShieldOrigin = (world * ndc) * Math::Vec4(Math::Vec3(this->width - 40.0f, 40.0f, 0.0f), 1.0f);
+    armorShield->setOrigin(armorShieldOrigin.extractVec3());
     this->scene->addEntity(armorShield);
 
     this->armor = std::shared_ptr<Game::Label>(new Game::Label());
-    this->armor->setOrigin(this->screenToWorld(Math::Vec3(this->width - 40.0f, 80.0f, 0.0f)));
+    Math::Vec4 armorLabelOrigin = (world * ndc) * Math::Vec4(Math::Vec3(this->width - 40.0f, 80.0f, 0.0f), 1.0f);
+    this->armor->setOrigin(armorLabelOrigin.extractVec3());
     this->armor->setFont(defaultFont);
     this->scene->addEntity(this->armor);
 
@@ -477,11 +497,13 @@ bool PolandBall::initUi() {
         return false;
     }
 
-    healthShield->setOrigin(this->screenToWorld(Math::Vec3(this->width - 100.0f, 40.0f, 0.0f)));
+    Math::Vec4 healthShieldOrigin = (world * ndc) * Math::Vec4(Math::Vec3(this->width - 100.0f, 40.0f, 0.0f), 1.0f);
+    healthShield->setOrigin(healthShieldOrigin.extractVec3());
     this->scene->addEntity(healthShield);
 
     this->health = std::shared_ptr<Game::Label>(new Game::Label());
-    this->health->setOrigin(this->screenToWorld(Math::Vec3(this->width - 100.0f, 80.0f, 0.0f)));
+    Math::Vec4 healthLabelOrigin = (world * ndc) * Math::Vec4(Math::Vec3(this->width - 100.0f, 80.0f, 0.0f), 1.0f);
+    this->health->setOrigin(healthLabelOrigin.extractVec3());
     this->health->setFont(defaultFont);
     this->scene->addEntity(this->health);
 
@@ -539,9 +561,18 @@ bool PolandBall::initUi() {
 }
 
 void PolandBall::onMouseMotion(SDL_MouseMotionEvent& event) {
-    Math::Vec3 cursorPosition = this->screenToWorld(Math::Vec3(event.x, event.y, 0.0f));
-    this->cursor->setOrigin(cursorPosition);
-    this->player->aimAt(cursorPosition);
+    Math::Mat4 ndc;
+    ndc.set(0, 0, 2.0f / (this->width / 1.0f));
+    ndc.set(0, 3, -1.0f);
+    ndc.set(1, 1, -2.0f / (this->height / 1.0f));
+    ndc.set(1, 3, 1.0f);
+
+    Math::Mat4 world(this->scene->getCamera().getProjection());
+    world.invert();
+
+    Math::Vec4 cursorPosition = (world * ndc) * Math::Vec4(event.x, event.y, 0.0f, 1.0f);
+    this->cursor->setOrigin(cursorPosition.extractVec3());
+    this->player->aimAt(cursorPosition.extractVec3());
 }
 
 void PolandBall::onMouseButton(SDL_MouseButtonEvent& event) {
@@ -613,20 +644,6 @@ void PolandBall::onIdle() {
 
     this->scene->update(this->frameTime, this->frameStep);
     this->scene->render();
-}
-
-Math::Vec3 PolandBall::screenToWorld(const Math::Vec3 vector) const {
-    const Game::Camera& camera = this->scene->getCamera();
-    Math::Mat4 translation;
-
-    translation.set(0, 0, (camera.getFarPlane() - camera.getNearPlane()) * camera.getAspectRatio() /
-                          (this->width / 2.0f));
-    translation.set(1, 1, (camera.getNearPlane() - camera.getFarPlane()) / (this->height / 2.0f));
-    translation.set(0, 3, (camera.getNearPlane() - camera.getFarPlane()) * camera.getAspectRatio());
-    translation.set(1, 3, camera.getFarPlane() - camera.getNearPlane());
-
-    Math::Vec4 worldPosition = translation * Math::Vec4(vector, 1.0f);
-    return Math::Vec3(worldPosition.get(Math::Vec3::X), worldPosition.get(Math::Vec3::Y), vector.get(Math::Vec3::Z));
 }
 
 }  // namespace PolandBall
