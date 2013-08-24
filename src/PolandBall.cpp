@@ -33,20 +33,26 @@
 
 namespace PolandBall {
 
-PolandBall::PolandBall() {
+PolandBall::PolandBall(int argc, char** argv) {
     this->window = nullptr;
     this->context = nullptr;
+    this->argc = argc;
+    this->argv = argv;
 
     this->running = true;
-    this->width = 800;
-    this->height = 600;
-    this->maxFps = 100.0f;
-
     this->frameTime = 0.0f;
-    this->frameStep = 0.1f / this->maxFps;
+    this->frameStep = 0.001f;
 }
 
 int PolandBall::exec() {
+    if (!this->parseCLI()) {
+        return ERROR_SETUP;
+    }
+
+    if (this->arguments.isSet("help") || this->arguments.isSet("version")) {
+        return ERROR_OK;
+    }
+
     if (!this->initialize()) {
         this->shutdown();
         return ERROR_SETUP;
@@ -138,6 +144,34 @@ void PolandBall::shutdown() {
     Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Shutting down...");
 }
 
+bool PolandBall::parseCLI() {
+    this->arguments.addArgument('v', "vsync", "vertical sync",
+            Utils::ArgumentParser::ArgumentType::TYPE_BOOL);
+    this->arguments.addArgument('F', "fps", "maximum fps limit",
+            Utils::ArgumentParser::ArgumentType::TYPE_INT);
+    this->arguments.addArgument('h', "height", "viewport height",
+            Utils::ArgumentParser::ArgumentType::TYPE_INT);
+    this->arguments.addArgument('w', "width", "viewport width",
+            Utils::ArgumentParser::ArgumentType::TYPE_INT);
+
+    this->arguments.setDescription("PolandBall the Gaem");
+    this->arguments.setVersion("PolandBall the Gaem 0.0.1\n"
+            "Copyright (c) 2013 Pavlo Lavrenenko\n"
+            "This is free software: you are free to change and redistribute it.\n"
+            "The software is provided \"AS IS\", WITHOUT WARRANTY of any kind.");
+
+    if (!this->arguments.parse(this->argc, this->argv)) {
+        return false;
+    }
+
+    this->vsync = this->arguments.isSet("vsync");
+    this->maxFps = this->arguments.isSet("fps") ? std::stof(this->arguments.getOption("fps")) : 100.0f;
+    this->height = this->arguments.isSet("height") ? std::stoi(this->arguments.getOption("height")) : 600;
+    this->width = this->arguments.isSet("width") ? std::stoi(this->arguments.getOption("width")) : 800;
+
+    return true;
+}
+
 bool PolandBall::initSDL() {
     if (SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE)) {
         Utils::Logger::getInstance().log(Utils::Logger::LOG_ERROR, "SDL_Init() failed: %s", SDL_GetError());
@@ -205,6 +239,11 @@ bool PolandBall::initOpenGL() {
     }
 
     Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "GLEW version: %s", glewGetString(GLEW_VERSION));
+
+    if (this->vsync && SDL_GL_SetSwapInterval(1)) {
+        Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "SDL_GL_SetSwapInterval() failed: %s",
+                SDL_GetError());
+    }
 
     glEnable(GL_CULL_FACE);
     glEnable(GL_BLEND);

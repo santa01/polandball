@@ -29,7 +29,7 @@
 #include <iostream>
 #include <unordered_map>
 
-namespace Rubik {
+namespace PolandBall {
 
 namespace Utils {
 
@@ -135,6 +135,6 @@ private:
 
 }  // namespace Utils
 
-}  // namespace Rubik
+}  // namespace PolandBall
 
 #endif  // ARGUMENTPARSER_H

@@ -28,6 +28,7 @@
 #include "Player.h"
 #include "Scene.h"
 #include "NonCopyable.h"
+#include "ArgumentParser.h"
 
 #include <SDL2/SDL_events.h>
 #include <memory>
@@ -42,13 +43,14 @@ public:
         ERROR_SETUP
     };
 
-    PolandBall();
+    PolandBall(int argc, char** argv);
     int exec();
 
 private:
     bool initialize();
     void shutdown();
 
+    bool parseCLI();
     bool initSDL();
     bool initOpenGL();
     bool initScene();
@@ -63,6 +65,7 @@ private:
 
     SDL_Window* window;
     SDL_GLContext context;
+    Utils::ArgumentParser arguments;
 
     std::shared_ptr<Game::Scene> scene;
     std::shared_ptr<Game::Player> player;
@@ -74,11 +77,15 @@ private:
     std::shared_ptr<Game::TextLabel> health;
     std::shared_ptr<Game::TextLabel> armor;
 
-    bool running;
+    int argc;
+    char** argv;
+
     int width;
     int height;
     float maxFps;
+    bool vsync;
 
+    bool running;
     float frameTime;
     float frameStep;
 };

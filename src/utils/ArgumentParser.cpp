@@ -28,7 +28,7 @@
 #include <sstream>
 #include <vector>
 
-namespace Rubik {
+namespace PolandBall {
 
 namespace Utils {
 
@@ -214,4 +214,4 @@ bool ArgumentParser::validate(const std::shared_ptr<Argument>& argument, const c
 
 }  // namespace Utils
 
-}  // namespace Rubik
+}  // namespace PolandBall

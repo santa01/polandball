@@ -23,6 +23,6 @@
 #include "PolandBall.h"
 
 int main(int argc, char** argv) {
-    PolandBall::PolandBall game;
+    PolandBall::PolandBall game(argc, argv);
     return game.exec();
 }
