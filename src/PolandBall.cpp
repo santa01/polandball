@@ -389,7 +389,7 @@ bool PolandBall::initScene() {
 }
 
 bool PolandBall::initUi() {
-    auto defaultFont = Utils::ResourceManager::getInstance().makeFont("fonts/dejavu-sans.ttf");
+    auto defaultFont = Utils::ResourceManager::getInstance().makeFont("fonts/dejavu-sans.ttf", 14);
     if (defaultFont == nullptr) {
         return false;
     }

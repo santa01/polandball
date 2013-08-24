@@ -143,20 +143,20 @@ std::shared_ptr<Game::Entity> ResourceManager::makeEntity(const std::string& nam
     return entity;
 }
 
-std::shared_ptr<TTF_Font>& ResourceManager::makeFont(const std::string& name) {
-    if (this->fontCache.find(name) == this->fontCache.end()) {
-        Logger::getInstance().log(Logger::LOG_INFO, "Loading font `%s'", name.c_str());
+std::shared_ptr<TTF_Font>& ResourceManager::makeFont(const std::string& name, unsigned int size) {
+    if (this->fontCache[name].find(size) == this->fontCache[name].end()) {
+        Logger::getInstance().log(Logger::LOG_INFO, "Loading font `%s' (%dpt)", name.c_str(), size);
 
-        std::shared_ptr<TTF_Font> font(TTF_OpenFont(name.c_str(), 14), TTF_CloseFont);
+        std::shared_ptr<TTF_Font> font(TTF_OpenFont(name.c_str(), size), TTF_CloseFont);
         if (font == nullptr) {
             Logger::getInstance().log(Logger::LOG_ERROR, "TTF_OpenFont() failed: %s", TTF_GetError());
-            return this->fontCache["nullptr"];
+            return this->fontCache[name][-1];
         }
 
-        this->fontCache.insert(std::make_pair(name, font));
+        this->fontCache[name].insert(std::make_pair(size, font));
     }
 
-    return this->fontCache[name];
+    return this->fontCache[name][size];
 }
 
 void ResourceManager::purgeCaches() {
@@ -174,11 +174,15 @@ void ResourceManager::purgeCaches() {
         }
     }
 
-    for (auto& font: this->fontCache) {
-        if (!font.second.unique() && font.second != nullptr) {
-            Logger::getInstance().log(Logger::LOG_WARNING, "Font %p has %d references left!",
-                    font.second.get(), font.second.use_count() - 1);
+    for (auto& fontName: this->fontCache) {
+        for (auto& font: fontName.second) {
+            if (!font.second.unique() && font.second != nullptr) {
+                Logger::getInstance().log(Logger::LOG_WARNING, "Font %p has %d references left!",
+                        font.second.get(), font.second.use_count() - 1);
+            }
         }
+
+        fontName.second.clear();
     }
 
     this->textureCache.clear();
