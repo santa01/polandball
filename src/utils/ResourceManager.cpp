@@ -147,7 +147,6 @@ std::shared_ptr<TTF_Font>& ResourceManager::makeFont(const std::string& name) {
     if (this->fontCache.find(name) == this->fontCache.end()) {
         Logger::getInstance().log(Logger::LOG_INFO, "Loading font `%s'", name.c_str());
 
-        // Yep, its always 12pt sized
         std::shared_ptr<TTF_Font> font(TTF_OpenFont(name.c_str(), 14), TTF_CloseFont);
         if (font == nullptr) {
             Logger::getInstance().log(Logger::LOG_ERROR, "TTF_OpenFont() failed: %s", TTF_GetError());

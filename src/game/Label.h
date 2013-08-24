@@ -45,10 +45,7 @@ public:
     void setText(const std::string& text) {
         if (this->text != text) {
             this->text = text;
-
-            if (this->font != nullptr) {
-                this->renderText();
-            }
+            this->renderText();
         }
     }
 
@@ -65,6 +62,15 @@ public:
         return this->font;
     }
 
+    void setProjection(const Math::Mat4& projection) {
+        this->projection = projection;
+        this->renderText();
+    }
+
+    const Math::Mat4& getProjection() const {
+        return this->projection;
+    }
+
     void clear() {
         this->setText("");
     }
@@ -75,7 +81,11 @@ private:
     std::shared_ptr<TTF_Font> font;
     std::string text;
 
-    float textAspectRatio;
+    Math::Mat4 projection;
+    Math::Mat4 ndc;
+
+    float widthScaleFactor;
+    float heightScaleFactor;
 };
 
 }  // namespace Game

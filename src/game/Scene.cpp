@@ -30,6 +30,24 @@ namespace PolandBall {
 
 namespace Game {
 
+void Scene::addEntity(const std::shared_ptr<Entity>& entity) {
+    if (entity != nullptr) {
+        this->entities.insert(std::make_pair(entity->getType(), entity));
+
+        auto effect = entity->getEffect();
+        if (effect != nullptr) {
+            this->effects.insert(effect);
+        }
+
+        if (entity->getType() == Entity::EntityType::TYPE_UI) {
+            auto label = std::dynamic_pointer_cast<Label>(entity);
+            if (label != nullptr) {
+                label->setProjection(this->camera.getProjection());
+            }
+        }
+    }
+}
+
 void Scene::render() {
     glClear(GL_COLOR_BUFFER_BIT);
 

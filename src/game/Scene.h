@@ -29,6 +29,7 @@
 #include "RenderEffect.h"
 #include "Logger.h"
 #include "Vec3.h"
+#include "Label.h"
 
 #include <memory>
 #include <map>
@@ -56,22 +57,22 @@ public:
 
     void setCamera(const Camera& camera) {
         this->camera = camera;
+
+        for (auto& entity: this->entities) {
+            if (entity.first == Entity::EntityType::TYPE_UI) {
+                auto label = std::dynamic_pointer_cast<Label>(entity.second);
+                if (label != nullptr) {
+                    label->setProjection(this->camera.getProjection());
+                }
+            }
+        }
     }
 
     Camera& getCamera() {
         return this->camera;
     }
 
-    void addEntity(const std::shared_ptr<Entity>& entity) {
-        if (entity != nullptr) {
-            this->entities.insert(std::make_pair(entity->getType(), entity));
-
-            auto effect = entity->getEffect();
-            if (effect != nullptr) {
-                this->effects.insert(effect);
-            }
-        }
-    }
+    void addEntity(const std::shared_ptr<Entity>& entity);
 
     void render();
     void update(float frameTime, float frameStep);

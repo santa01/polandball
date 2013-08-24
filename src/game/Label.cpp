@@ -32,16 +32,18 @@ namespace Game {
 
 Label::Label() {
     this->type = Entity::EntityType::TYPE_UI;
-    this->textAspectRatio = 1.0f;
+    this->widthScaleFactor = 1.0f;
+    this->heightScaleFactor = 1.0f;
 
-    // Keep data 2x2, 1x1 doesn't seem to work
-    Uint32 data[] = { 0x00000000, 0x00000000, 0x00000000, 0x00000000 };
-    SDL_Surface* image = SDL_CreateRGBSurfaceFrom(&data, 2, 2, 32, 4,
-            0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
+    GLint viewportParameters[4];
+    glGetIntegerv(GL_VIEWPORT, viewportParameters);
+
+    this->ndc.set(0, 0, 2.0f / (viewportParameters[2] / 1.0f));
+    this->ndc.set(0, 3, -1.0f);
+    this->ndc.set(1, 1, 2.0f / (viewportParameters[3] / 1.0f));
+    this->ndc.set(1, 3, -1.0f);
 
     auto texture = std::shared_ptr<Opengl::Texture>(new Opengl::Texture());
-    texture->load(image);
-    SDL_FreeSurface(image);
     this->setTexture(texture);
 
     std::string vertexShader = "                                  \n\
@@ -79,13 +81,24 @@ Label::Label() {
 }
 
 void Label::renderText() {
-    if (!this->text.empty()) {
+    if (!this->text.empty() && this->font != nullptr) {
         int textWidth, textHeight;
         TTF_SizeUTF8(this->font.get(), text.c_str(), &textWidth, &textHeight);
 
-        this->scaleX(1.0f / this->textAspectRatio);
-        this->textAspectRatio = textWidth / (textHeight / 1.0f);
-        this->scaleX(this->textAspectRatio);
+        Math::Mat4 world(this->projection);
+        world.invert();
+
+        Math::Vec4 origin((world * this->ndc) * Math::Vec4(0.0f, 0.0f, 0.0f, 1.0f));
+        Math::Vec4 size(textWidth, textHeight, 0.0f, 1.0f);
+        size = (world * this->ndc) * size - origin;
+
+        this->scaleX(1.0f / this->widthScaleFactor);
+        this->widthScaleFactor = size.get(Math::Vec4::X);
+        this->scaleX(this->widthScaleFactor);
+
+        this->scaleY(1.0f / this->heightScaleFactor);
+        this->heightScaleFactor = size.get(Math::Vec4::Y);
+        this->scaleY(this->heightScaleFactor);
 
         SDL_Color color = {0, 0, 0, 0};
         SDL_Surface *textSurface = TTF_RenderUTF8_Blended(this->font.get(), text.c_str(), color);
