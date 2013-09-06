@@ -114,7 +114,9 @@ bool PolandBall::initialize() {
 
 void PolandBall::shutdown() {
     this->scene->getCamera().positionChanged.disconnectAll();
-    this->player->positionChanged.disconnectAll();
+    if (this->player != nullptr) {
+        this->player->positionChanged.disconnectAll();
+    }
 
     this->player.reset();
     this->cursor.reset();
