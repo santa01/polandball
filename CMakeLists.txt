@@ -22,8 +22,17 @@ pkg_search_module(SDL2_IMAGE REQUIRED SDL2_image)
 pkg_search_module(JSON_C REQUIRED json-c)
 pkg_search_module(GLEW REQUIRED glew)
 
+set (POLANDBALL_DATADIR ${CMAKE_INSTALL_PREFIX}/share/rubik CACHE PATH "Data directory")
+set (POLANDBALL_INCLUDE "src" "src/common" "src/game" "src/math" "src/opengl" "src/signals" "src/utils")
+
 file (GLOB_RECURSE POLANDBALL_SOURCES "src/*.cpp")
-include_directories ("src" "src/common" "src/game" "src/math" "src/opengl" "src/signals" "src/utils")
+include_directories (${POLANDBALL_INCLUDE} ${PROJECT_BINARY_DIR})
+
+set (POLANDBALL_NAME "PolandBall")
+set (POLANDBALL_DESCRIPTION "PolandBall the Gaem")
+set (POLANDBALL_VERSION 0.0.1)
+
+configure_file (Config.h.in Config.h @ONLY)
 
 set (POLANDBALL_EXECUTABLE "polandball")
 add_executable (${POLANDBALL_EXECUTABLE} ${POLANDBALL_SOURCES})

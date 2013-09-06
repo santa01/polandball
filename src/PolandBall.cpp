@@ -22,6 +22,7 @@
 
 #include "PolandBall.h"
 #include "Logger.h"
+#include "Config.h"
 #include "Vec3.h"
 #include "Vec4.h"
 #include "Mat4.h"
@@ -156,11 +157,8 @@ bool PolandBall::parseCLI() {
     this->arguments.addArgument('w', "width", "viewport width",
             Utils::ArgumentParser::ArgumentType::TYPE_INT);
 
-    this->arguments.setDescription("PolandBall the Gaem");
-    this->arguments.setVersion("PolandBall the Gaem 0.0.1\n"
-            "Copyright (c) 2013 Pavlo Lavrenenko\n"
-            "This is free software: you are free to change and redistribute it.\n"
-            "The software is provided \"AS IS\", WITHOUT WARRANTY of any kind.");
+    this->arguments.setDescription(POLANDBALL_DESCRIPTION);
+    this->arguments.setVersion(POLANDBALL_VERSION);
 
     if (!this->arguments.parse(this->argc, this->argv)) {
         return false;
