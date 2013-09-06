@@ -24,6 +24,7 @@ pkg_search_module(GLEW REQUIRED glew)
 
 set (POLANDBALL_DATADIR ${CMAKE_INSTALL_PREFIX}/share/rubik CACHE PATH "Data directory")
 set (POLANDBALL_INCLUDE "src" "src/common" "src/game" "src/math" "src/opengl" "src/signals" "src/utils")
+set (POLANDBALL_RESOURCES "assets" "fonts" "shaders" "sounds" "textures")
 
 file (GLOB_RECURSE POLANDBALL_SOURCES "src/*.cpp")
 include_directories (${POLANDBALL_INCLUDE} ${PROJECT_BINARY_DIR})
@@ -43,3 +44,6 @@ target_link_libraries (${POLANDBALL_EXECUTABLE} ${SDL2_TTF_LIBRARIES})
 target_link_libraries (${POLANDBALL_EXECUTABLE} ${SDL2_IMAGE_LIBRARIES})
 target_link_libraries (${POLANDBALL_EXECUTABLE} ${JSON_C_LIBRARIES})
 target_link_libraries (${POLANDBALL_EXECUTABLE} ${GLEW_LIBRARIES})
+
+install (TARGETS ${POLANDBALL_EXECUTABLE} DESTINATION bin)
+install (DIRECTORY ${POLANDBALL_RESOURCES} DESTINATION ${POLANDBALL_DATADIR})
