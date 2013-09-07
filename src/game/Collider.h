@@ -23,12 +23,12 @@
 #ifndef COLLIDER_H
 #define COLLIDER_H
 
-#include "Vec3.h"
-#include "Vec4.h"
-#include "Mat4.h"
 #include "Scalable.h"
 #include "Movable.h"
 
+#include <Vec3.h>
+#include <Vec4.h>
+#include <Mat4.h>
 #include <array>
 #include <memory>
 

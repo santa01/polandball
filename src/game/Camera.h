@@ -23,10 +23,11 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include "Mat4.h"
 #include "Signals.h"
 #include "Movable.h"
 #include "Rotatable.h"
+
+#include <Mat4.h>
 
 namespace PolandBall {
 

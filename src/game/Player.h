@@ -25,9 +25,9 @@
 
 #include "Entity.h"
 #include "Collider.h"
-#include "Vec3.h"
 #include "Weapon.h"
 
+#include <Vec3.h>
 #include <memory>
 #include <array>
 

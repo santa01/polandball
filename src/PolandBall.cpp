@@ -23,15 +23,15 @@
 #include "PolandBall.h"
 #include "Logger.h"
 #include "Config.h"
-#include "Vec3.h"
-#include "Vec4.h"
-#include "Mat4.h"
 #include "ResourceManager.h"
 #include "Weapon.h"
 
 #include <GL/glew.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <Vec3.h>
+#include <Vec4.h>
+#include <Mat4.h>
 #include <sstream>
 
 namespace PolandBall {

@@ -27,12 +27,12 @@
 #include "Sprite.h"
 #include "RenderEffect.h"
 #include "Texture.h"
-#include "Vec3.h"
 #include "Movable.h"
 #include "Scalable.h"
 #include "Transformable.h"
 #include "Signals.h"
 
+#include <Vec3.h>
 #include <memory>
 #include <utility>
 

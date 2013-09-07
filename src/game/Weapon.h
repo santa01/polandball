@@ -24,8 +24,8 @@
 #define WEAPON_H
 
 #include "Entity.h"
-#include "Vec3.h"
 
+#include <Vec3.h>
 #include <cmath>
 
 namespace PolandBall {

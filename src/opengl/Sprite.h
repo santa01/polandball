@@ -23,9 +23,6 @@
 #ifndef SPRITE_H
 #define SPRITE_H
 
-#include "Vec3.h"
-#include "Mat4.h"
-#include "Quaternion.h"
 #include "Movable.h"
 #include "Scalable.h"
 #include "Transformable.h"
@@ -35,6 +32,9 @@
 #include "RenderEffect.h"
 
 #include <GL/glew.h>
+#include <Vec3.h>
+#include <Mat4.h>
+#include <Quaternion.h>
 #include <string>
 #include <memory>
 
