@@ -1,5 +1,4 @@
 cmake_minimum_required (VERSION 2.6)
-cmake_policy(SET CMP0015 NEW)
 project (POLANDBALL)
 
 if (CMAKE_COMPILER_IS_GNUCC)
@@ -31,8 +30,10 @@ set (MATH_LIBRARY "math")
 set (MATH_INCLUDE ${MATH_LIBRARY}/src)
 add_subdirectory (${MATH_LIBRARY})
 
+set (SIGNALS_INCLUDE "signals")
+
 file (GLOB_RECURSE POLANDBALL_SOURCES "src/*.cpp")
-include_directories (${POLANDBALL_INCLUDE} ${MATH_INCLUDE} ${PROJECT_BINARY_DIR})
+include_directories (${POLANDBALL_INCLUDE} ${MATH_INCLUDE} ${SIGNALS_INCLUDE} ${PROJECT_BINARY_DIR})
 
 set (POLANDBALL_NAME "PolandBall")
 set (POLANDBALL_DESCRIPTION "PolandBall the Gaem")
