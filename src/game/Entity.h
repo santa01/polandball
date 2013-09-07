@@ -30,9 +30,9 @@
 #include "Movable.h"
 #include "Scalable.h"
 #include "Transformable.h"
-#include "Signals.h"
 
 #include <Vec3.h>
+#include <Signals.h>
 #include <memory>
 #include <utility>
 
