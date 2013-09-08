@@ -266,7 +266,8 @@ bool PolandBall::initScene() {
     camera.setFarPlane(2.5f);
 
     //-----------------
-    auto backgroundEntity = Utils::ResourceManager::getInstance().makeEntity("assets/backgrounds/sunny.asset");
+    auto backgroundEntity = Utils::ResourceManager::getInstance().makeEntity(
+            POLANDBALL_DATADIR "/assets/backgrounds/sunny.asset");
     if (backgroundEntity == nullptr) {
         return false;
     }
@@ -276,7 +277,8 @@ bool PolandBall::initScene() {
     this->scene->addEntity(backgroundEntity);
 
     //-----------------
-    auto bricksEntity = Utils::ResourceManager::getInstance().makeEntity("assets/blocks/kazakhstan.asset");
+    auto bricksEntity = Utils::ResourceManager::getInstance().makeEntity(
+            POLANDBALL_DATADIR "/assets/blocks/kazakhstan.asset");
     if (bricksEntity == nullptr) {
         return false;
     }
@@ -287,7 +289,8 @@ bool PolandBall::initScene() {
     this->scene->addEntity(bricksEntity);
 
     //-----------------
-    bricksEntity = Utils::ResourceManager::getInstance().makeEntity("assets/blocks/kazakhstan.asset");
+    bricksEntity = Utils::ResourceManager::getInstance().makeEntity(
+            POLANDBALL_DATADIR "/assets/blocks/kazakhstan.asset");
     if (bricksEntity == nullptr) {
         return false;
     }
@@ -298,7 +301,7 @@ bool PolandBall::initScene() {
 
     //-----------------
     this->player = std::dynamic_pointer_cast<Game::Player>(
-            Utils::ResourceManager::getInstance().makeEntity("assets/players/turkey.asset"));
+            Utils::ResourceManager::getInstance().makeEntity(POLANDBALL_DATADIR "/assets/players/turkey.asset"));
     if (this->player == nullptr) {
         return false;
     }
@@ -306,7 +309,8 @@ bool PolandBall::initScene() {
     this->scene->addEntity(this->player);
 
     //-----------------
-    auto m4a1 = Utils::ResourceManager::getInstance().makeEntity("assets/weapons/m4a1.asset");
+    auto m4a1 = Utils::ResourceManager::getInstance().makeEntity(
+            POLANDBALL_DATADIR "/assets/weapons/m4a1.asset");
     if (m4a1 == nullptr) {
         return false;
     }
@@ -315,7 +319,8 @@ bool PolandBall::initScene() {
     this->scene->addEntity(m4a1);
 
     //-----------------
-    auto ak74 = Utils::ResourceManager::getInstance().makeEntity("assets/weapons/ak74.asset");
+    auto ak74 = Utils::ResourceManager::getInstance().makeEntity(
+            POLANDBALL_DATADIR "/assets/weapons/ak74.asset");
     if (ak74 == nullptr) {
         return false;
     }
@@ -324,7 +329,8 @@ bool PolandBall::initScene() {
     this->scene->addEntity(ak74);
 
     //-----------------
-    auto m1911 = Utils::ResourceManager::getInstance().makeEntity("assets/weapons/m1911.asset");
+    auto m1911 = Utils::ResourceManager::getInstance().makeEntity(
+            POLANDBALL_DATADIR "/assets/weapons/m1911.asset");
     if (m1911 == nullptr) {
         return false;
     }
@@ -333,7 +339,8 @@ bool PolandBall::initScene() {
     this->scene->addEntity(m1911);
 
     //-----------------
-    auto beretta92 = Utils::ResourceManager::getInstance().makeEntity("assets/weapons/beretta92.asset");
+    auto beretta92 = Utils::ResourceManager::getInstance().makeEntity(
+            POLANDBALL_DATADIR "/assets/weapons/beretta92.asset");
     if (beretta92 == nullptr) {
         return false;
     }
@@ -342,7 +349,8 @@ bool PolandBall::initScene() {
     this->scene->addEntity(beretta92);
 
     //-----------------
-    auto wrench = Utils::ResourceManager::getInstance().makeEntity("assets/weapons/wrench.asset");
+    auto wrench = Utils::ResourceManager::getInstance().makeEntity(
+            POLANDBALL_DATADIR "/assets/weapons/wrench.asset");
     if (wrench == nullptr) {
         return false;
     }
@@ -351,7 +359,8 @@ bool PolandBall::initScene() {
     this->scene->addEntity(wrench);
 
     //-----------------
-    auto knife = Utils::ResourceManager::getInstance().makeEntity("assets/weapons/knife.asset");
+    auto knife = Utils::ResourceManager::getInstance().makeEntity(
+            POLANDBALL_DATADIR "/assets/weapons/knife.asset");
     if (knife == nullptr) {
         return false;
     }
@@ -360,7 +369,8 @@ bool PolandBall::initScene() {
     this->scene->addEntity(knife);
 
     //-----------------
-    auto pack_health = Utils::ResourceManager::getInstance().makeEntity("assets/items/pack_health.asset");
+    auto pack_health = Utils::ResourceManager::getInstance().makeEntity(
+            POLANDBALL_DATADIR "/assets/items/pack_health.asset");
     if (pack_health == nullptr) {
         return false;
     }
@@ -369,7 +379,8 @@ bool PolandBall::initScene() {
     this->scene->addEntity(pack_health);
 
     //-----------------
-    auto pack_armor = Utils::ResourceManager::getInstance().makeEntity("assets/items/pack_armor.asset");
+    auto pack_armor = Utils::ResourceManager::getInstance().makeEntity(
+            POLANDBALL_DATADIR "/assets/items/pack_armor.asset");
     if (pack_armor == nullptr) {
         return false;
     }
@@ -389,12 +400,14 @@ bool PolandBall::initScene() {
 }
 
 bool PolandBall::initUi() {
-    auto defaultFont = Utils::ResourceManager::getInstance().makeFont("fonts/dejavu-sans.ttf", 14);
+    auto defaultFont = Utils::ResourceManager::getInstance().makeFont(
+            POLANDBALL_DATADIR "/fonts/dejavu-sans.ttf", 14);
     if (defaultFont == nullptr) {
         return false;
     }
 
-    this->emptySlot = Utils::ResourceManager::getInstance().makeEntity("assets/ui/slot_empty.asset");
+    this->emptySlot = Utils::ResourceManager::getInstance().makeEntity(
+            POLANDBALL_DATADIR "/assets/ui/slot_empty.asset");
     if (this->emptySlot == nullptr) {
         return false;
     }
@@ -412,12 +425,14 @@ bool PolandBall::initUi() {
     //-----------------
     auto& primaryWeapon = this->weapons[Game::Weapon::WeaponSlot::SLOT_PRIMARY];
 
-    primaryWeapon.first = Utils::ResourceManager::getInstance().makeEntity("assets/ui/slot_empty.asset");
+    primaryWeapon.first = Utils::ResourceManager::getInstance().makeEntity(
+            POLANDBALL_DATADIR "/assets/ui/slot_empty.asset");
     Math::Vec4 primaryWeaponOrigin = (world * ndc) * Math::Vec4(40.0f, 40.0f, 0.0f, 1.0f);
     primaryWeapon.first->setOrigin(primaryWeaponOrigin.extractVec3());
     this->scene->addEntity(primaryWeapon.first);
 
-    auto primaryWeaponBorder = Utils::ResourceManager::getInstance().makeEntity("assets/ui/border_weapon.asset");
+    auto primaryWeaponBorder = Utils::ResourceManager::getInstance().makeEntity(
+            POLANDBALL_DATADIR "/assets/ui/border_weapon.asset");
     if (primaryWeaponBorder == nullptr) {
         return false;
     }
@@ -434,12 +449,14 @@ bool PolandBall::initUi() {
     //-----------------
     auto& secondaryWeapon = this->weapons[Game::Weapon::WeaponSlot::SLOT_SECONDARY];
 
-    secondaryWeapon.first = Utils::ResourceManager::getInstance().makeEntity("assets/ui/slot_empty.asset");
+    secondaryWeapon.first = Utils::ResourceManager::getInstance().makeEntity(
+            POLANDBALL_DATADIR "/assets/ui/slot_empty.asset");
     Math::Vec4 secondaryWeaponOrigin = (world * ndc) * Math::Vec4(110.0f, 40.0f, 0.0f, 1.0f);
     secondaryWeapon.first->setOrigin(secondaryWeaponOrigin.extractVec3());
     this->scene->addEntity(secondaryWeapon.first);
 
-    auto secondaryWeaponBorder = Utils::ResourceManager::getInstance().makeEntity("assets/ui/border_weapon.asset");
+    auto secondaryWeaponBorder = Utils::ResourceManager::getInstance().makeEntity(
+            POLANDBALL_DATADIR "/assets/ui/border_weapon.asset");
     if (secondaryWeaponBorder == nullptr) {
         return false;
     }
@@ -456,12 +473,14 @@ bool PolandBall::initUi() {
     //-----------------
     auto& meeleWeapon = this->weapons[Game::Weapon::WeaponSlot::SLOT_MEELE];
 
-    meeleWeapon.first = Utils::ResourceManager::getInstance().makeEntity("assets/ui/slot_empty.asset");
+    meeleWeapon.first = Utils::ResourceManager::getInstance().makeEntity(
+            POLANDBALL_DATADIR "/assets/ui/slot_empty.asset");
     Math::Vec4 meeleWeaponOrigin = (world * ndc) * Math::Vec4(180.0f, 40.0f, 0.0f, 1.0f);
     meeleWeapon.first->setOrigin(meeleWeaponOrigin.extractVec3());
     this->scene->addEntity(meeleWeapon.first);
 
-    auto meeleWeaponBorder = Utils::ResourceManager::getInstance().makeEntity("assets/ui/border_weapon.asset");
+    auto meeleWeaponBorder = Utils::ResourceManager::getInstance().makeEntity(
+            POLANDBALL_DATADIR "/assets/ui/border_weapon.asset");
     if (meeleWeaponBorder == nullptr) {
         return false;
     }
@@ -476,7 +495,8 @@ bool PolandBall::initUi() {
     this->scene->addEntity(meeleWeapon.second);
 
     //-----------------
-    auto armorShield = Utils::ResourceManager::getInstance().makeEntity("assets/ui/shield_armor.asset");
+    auto armorShield = Utils::ResourceManager::getInstance().makeEntity(
+            POLANDBALL_DATADIR "/assets/ui/shield_armor.asset");
     if (armorShield == nullptr) {
         return false;
     }
@@ -492,7 +512,8 @@ bool PolandBall::initUi() {
     this->scene->addEntity(this->armor);
 
     //-----------------
-    auto healthShield = Utils::ResourceManager::getInstance().makeEntity("assets/ui/shield_health.asset");
+    auto healthShield = Utils::ResourceManager::getInstance().makeEntity(
+            POLANDBALL_DATADIR "/assets/ui/shield_health.asset");
     if (healthShield == nullptr) {
         return false;
     }
@@ -545,7 +566,8 @@ bool PolandBall::initUi() {
         this->armor, std::placeholders::_1));
 
     //-----------------
-    this->cursor = Utils::ResourceManager::getInstance().makeEntity("assets/ui/cursor_aim.asset");
+    this->cursor = Utils::ResourceManager::getInstance().makeEntity(
+            POLANDBALL_DATADIR "/assets/ui/cursor_aim.asset");
     if (this->cursor == nullptr) {
         return false;
     }

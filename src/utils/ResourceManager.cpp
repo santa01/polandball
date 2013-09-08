@@ -22,6 +22,7 @@
 
 #include "ResourceManager.h"
 #include "Logger.h"
+#include "Config.h"
 #include "ShaderLoader.h"
 
 #include <utility>
@@ -129,14 +130,18 @@ std::shared_ptr<Game::Entity> ResourceManager::makeEntity(const std::string& nam
         if (texture == nullptr || json_object_get_type(texture) != json_type_string) {
             Logger::getInstance().log(Logger::LOG_WARNING, "Failed to read `texture' parameter");
         } else {
-            entity->setTexture(this->makeTexture(json_object_get_string(texture)));
+            std::stringstream texturePath;
+            texturePath << POLANDBALL_DATADIR <<  "/" << json_object_get_string(texture);
+            entity->setTexture(this->makeTexture(texturePath.str()));
         }
 
         json_object* effect = json_object_object_get(object.get(), "effect");
         if (effect == nullptr || json_object_get_type(effect) != json_type_string) {
             Logger::getInstance().log(Logger::LOG_WARNING, "Failed to read `effect' parameter");
         } else {
-            entity->setEffect(this->makeEffect(json_object_get_string(effect)));
+            std::stringstream effectPath;
+            effectPath << POLANDBALL_DATADIR <<  "/" << json_object_get_string(effect);
+            entity->setEffect(this->makeEffect(effectPath.str()));
         }
     }
 
