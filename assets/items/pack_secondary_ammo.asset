@@ -1,0 +1,7 @@
+{
+    "type": "pack",
+    "payload": "secondary_ammo",
+    "texture": "textures/items/pack_secondary_ammo.png",
+    "effect": "shaders/default.shader",
+    "value": 10
+}

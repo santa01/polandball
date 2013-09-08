@@ -130,7 +130,7 @@ void Player::onCollision(const std::shared_ptr<Entity>& another, Collider::Colli
         auto pack = std::dynamic_pointer_cast<Pack>(another);
         Weapon::WeaponSlot slot = Weapon::WeaponSlot::SLOT_MEELE;
         int value = pack->getValue();
-        bool packStaysAlive;
+        bool packStaysAlive = true;
 
         switch (pack->getPayloadType()) {
             case Pack::PayloadType::TYPE_ARMOR:

@@ -309,6 +309,26 @@ bool PolandBall::initScene() {
     this->scene->addEntity(this->player);
 
     //-----------------
+    auto pack_primary_ammo = Utils::ResourceManager::getInstance().makeEntity(
+            POLANDBALL_DATADIR "/assets/items/pack_primary_ammo.asset");
+    if (pack_primary_ammo == nullptr) {
+        return false;
+    }
+
+    pack_primary_ammo->setPosition(-8.0f, 0.0f, 0.0f);
+    this->scene->addEntity(pack_primary_ammo);
+
+    //-----------------
+    auto pack_secondary_ammo = Utils::ResourceManager::getInstance().makeEntity(
+            POLANDBALL_DATADIR "/assets/items/pack_secondary_ammo.asset");
+    if (pack_secondary_ammo == nullptr) {
+        return false;
+    }
+
+    pack_secondary_ammo->setPosition(-6.0f, 0.0f, 0.0f);
+    this->scene->addEntity(pack_secondary_ammo);
+
+    //-----------------
     auto m4a1 = Utils::ResourceManager::getInstance().makeEntity(
             POLANDBALL_DATADIR "/assets/weapons/m4a1.asset");
     if (m4a1 == nullptr) {
