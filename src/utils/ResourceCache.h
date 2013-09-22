@@ -20,16 +20,12 @@
  * SOFTWARE.
  */
 
-#ifndef RESOURCEMANAGER_H
-#define RESOURCEMANAGER_H
+#ifndef RESOURCECACHE_H
+#define RESOURCECACHE_H
 
 #include "Texture.h"
-#include "Entity.h"
 #include "RenderEffect.h"
 #include "NonCopyable.h"
-#include "Pack.h"
-#include "Player.h"
-#include "Weapon.h"
 
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
@@ -42,23 +38,16 @@ namespace PolandBall {
 
 namespace Utils {
 
-class ResourceManager: public Common::NonCopyable {
+class ResourceCache: public Common::NonCopyable {
 public:
-    static ResourceManager& getInstance() {
-        static ResourceManager instance;
-        return instance;
-    }
+    std::shared_ptr<Opengl::Texture>& loadTexture(const std::string& name);
+    std::shared_ptr<Opengl::RenderEffect>& loadEffect(const std::string& name);
+    std::shared_ptr<json_object>& loadAsset(const std::string& name);
+    std::shared_ptr<TTF_Font>& loadFont(const std::string& name, unsigned int size);
 
-    std::shared_ptr<Opengl::Texture>& makeTexture(const std::string& name);
-    std::shared_ptr<Opengl::RenderEffect>& makeEffect(const std::string& name);
-    std::shared_ptr<Game::Entity> makeEntity(const std::string& name);
-    std::shared_ptr<TTF_Font>& makeFont(const std::string& name, unsigned int size);
-
-    void purgeCaches();
+    void purge();
 
 private:
-    ResourceManager() = default;
-
     void insertTexture(const std::string& name, SDL_Surface* image) {
         std::shared_ptr<Opengl::Texture> texture(new Opengl::Texture());
         texture->load(image);
@@ -66,15 +55,11 @@ private:
     }
 
     void insertEffect(const std::string& name, const std::string& source);
-
     std::unique_ptr<char[]> loadSource(const std::string& name) const;
-    std::shared_ptr<Game::Pack> loadPack(const std::shared_ptr<json_object>& object) const;
-    std::shared_ptr<Game::Player> loadPlayer(const std::shared_ptr<json_object>& object) const;
-    std::shared_ptr<Game::Weapon> loadWeapon(const std::shared_ptr<json_object>& object) const;
 
     std::unordered_map<std::string, std::shared_ptr<Opengl::Texture>> textureCache;
     std::unordered_map<std::string, std::shared_ptr<Opengl::RenderEffect>> effectCache;
-    std::unordered_map<std::string, std::shared_ptr<json_object>> entityCache;
+    std::unordered_map<std::string, std::shared_ptr<json_object>> assetCache;
     std::unordered_map<std::string, std::unordered_map<int, std::shared_ptr<TTF_Font>>> fontCache;
 };
 
@@ -82,4 +67,4 @@ private:
 
 }  // namespace PolandBall
 
-#endif  // RESOURCEMANAGER_H
+#endif  // RESOURCECACHE_H

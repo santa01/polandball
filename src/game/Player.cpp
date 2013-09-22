@@ -49,8 +49,9 @@ Player::Player():
     this->state = STATE_IDLE;
     this->previousState = this->state;
 
+    this->passive = false;
     this->type = Entity::EntityType::TYPE_PLAYER;
-    this->shearX(0.0f, 2);
+    this->sprite->shearX(0.0f, 2);
 }
 
 void Player::pickWeapon(const std::shared_ptr<Weapon>& weapon) {
@@ -59,7 +60,9 @@ void Player::pickWeapon(const std::shared_ptr<Weapon>& weapon) {
     if (this->getWeapon(targetSlot) == nullptr) {
         this->weapons[targetSlot] = weapon;
         this->weapons[targetSlot]->setState(Weapon::WeaponState::STATE_PICKED);
-        this->weapons[targetSlot]->shearX(0.0f, 2);
+
+        auto weaponSprite = std::dynamic_pointer_cast<Opengl::Sprite>(this->weapons[targetSlot]->getPrimitive());
+        weaponSprite->shearX(0.0f, 2);
 
         if (targetSlot > this->activeSlot || this->activeSlot == -1) {
             this->activateSlot(targetSlot);
@@ -108,7 +111,7 @@ void Player::aimAt(const Math::Vec3& target) {
     this->viewAngle = newAngle;
 
     this->roll(newAngle);
-    this->shearX(shear, 2);
+    this->sprite->shearX(shear, 2);
 
     if (this->activeSlot != -1) {
         this->weapons[this->activeSlot]->aimAt(newTarget);
@@ -126,7 +129,7 @@ void Player::onCollision(const std::shared_ptr<Entity>& another, Collider::Colli
         }
     }
 
-    if (another->getType() == Entity::EntityType::TYPE_PACK && !another->isDestroyed()) {
+    if (another->getType() == Entity::EntityType::TYPE_PACK) {
         auto pack = std::dynamic_pointer_cast<Pack>(another);
         Weapon::WeaponSlot slot = Weapon::WeaponSlot::SLOT_MEELE;
         int value = pack->getValue();

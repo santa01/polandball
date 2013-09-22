@@ -20,47 +20,32 @@
  * SOFTWARE.
  */
 
-#include "Sprite.h"
+#include "Line.h"
+
+#include <GL/glew.h>
+#include <string.h>
+#include <memory>
 
 namespace PolandBall {
 
 namespace Opengl {
 
-const GLfloat Sprite::vertices[] = {
-    // coords
-     0.5f,  0.5f,  0.0f,  // 0  2<--1
-    -0.5f,  0.5f,  0.0f,  // 1  |   ^
-    -0.5f, -0.5f,  0.0f,  // 2  v   |
-     0.5f, -0.5f,  0.0f,  // 3  3-->4
-     // UVs
-     1.0f,  0.0f,  // 0
-     0.0f,  0.0f,  // 1
-     0.0f,  1.0f,  // 2
-     1.0f,  1.0f,  // 3
-};
-
-const GLuint Sprite::indices[] = {
-    0, 1, 2,
-    0, 2, 3,
-};
-
-Sprite::Sprite() {
+void Line::initialize() {
     PrimitiveData data;
 
-    data.vertexDataSize = sizeof(Sprite::vertices);
-    data.vertexData = std::unique_ptr<GLfloat[]>(new GLfloat[data.vertexDataSize / sizeof(GLfloat)]);
-    memcpy(data.vertexData.get(), Sprite::vertices, data.vertexDataSize);
+    data.vertexDataSize = sizeof(float) * 6;
+    data.vertexData = std::unique_ptr<GLfloat[]>(new GLfloat[6]);
+    memcmp(data.vertexData.get(), this->from.data(), data.vertexDataSize / 2);
+    memcmp(data.vertexData.get() + 3, this->to.data(), data.vertexDataSize / 2);
 
-    data.indexDataSize = sizeof(Sprite::indices);
-    data.indexData = std::unique_ptr<GLuint[]>(new GLuint[data.indexDataSize / sizeof(GLuint)]);
-    memcpy(data.indexData.get(), Sprite::indices, data.indexDataSize);
+    const GLuint indices[] = { 0, 1 };
+    data.indexDataSize = sizeof(int) * 2;
+    data.indexData = std::unique_ptr<GLuint[]>(new GLuint[2]);
+    memcmp(data.indexData.get(), indices, data.indexDataSize);
 
     PrimitiveData::VertexAttribute coordinate = { 3, GL_FLOAT, 0 };
-    PrimitiveData::VertexAttribute uv = { 2, GL_FLOAT, sizeof(float) * 12 };
-
     data.vertexAttributes.push_back(coordinate);
-    data.vertexAttributes.push_back(uv);
-    data.renderMode = GL_TRIANGLES;
+    data.renderMode = GL_LINES;
 
     this->load(data);
 }

@@ -23,16 +23,17 @@
 #ifndef WEAPON_H
 #define WEAPON_H
 
-#include "Entity.h"
+#include "SpriteEntity.h"
 
 #include <Vec3.h>
 #include <cmath>
+#include <memory>
 
 namespace PolandBall {
 
 namespace Game {
 
-class Weapon: public Entity {
+class Weapon: public SpriteEntity {
 public:
     enum WeaponSlot {
         SLOT_MEELE,
@@ -47,7 +48,7 @@ public:
     };
 
     Weapon():
-            Weapon(SLOT_MEELE) {
+            Weapon(SLOT_PRIMARY) {
     }
 
     Weapon(WeaponSlot slot);
@@ -101,15 +102,12 @@ public:
     }
 
     void aimAt(const Math::Vec3& target);
-    void shoot() {
-    }
+    void shoot();
 
 private:
     void onCollision(const std::shared_ptr<Entity>& another, Collider::CollideSide side) {
         if (this->state == STATE_THROWN) {
-            if (side == Collider::CollideSide::SIDE_BOTTOM &&
-                    (another->getType() == Entity::EntityType::TYPE_SOLID ||
-                     another->getType() == Entity::EntityType::TYPE_CLIP)) {
+            if (side == Collider::CollideSide::SIDE_BOTTOM && another->isCollidable()) {
                 this->setSpeed(Math::Vec3::ZERO);
                 this->state = STATE_AVAILABLE;
             }
@@ -120,10 +118,10 @@ private:
         float targetSignCorrection = (this->target.get(Math::Vec3::X) < 0.0f) ? -1.0f : 1.0f;
 
         if (this->state == STATE_AVAILABLE) {
-            this->shearY(sinf(this->bounce) / 13.33f - 0.075f * targetSignCorrection, 1);
+            this->sprite->shearY(sinf(this->bounce) / 13.33f - 0.075f * targetSignCorrection, 1);
             this->bounce += frameTime * 6.0f;
         } else {
-            this->shearY(-0.15f * targetSignCorrection, 1);
+            this->sprite->shearY(-0.15f * targetSignCorrection, 1);
             this->bounce = 0.0f;
         }
     }

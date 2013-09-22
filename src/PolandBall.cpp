@@ -23,8 +23,8 @@
 #include "PolandBall.h"
 #include "Logger.h"
 #include "Config.h"
-#include "ResourceManager.h"
-#include "Weapon.h"
+#include "Sprite.h"
+#include "EntityFactory.h"
 
 #include <GL/glew.h>
 #include <SDL2/SDL.h>
@@ -132,7 +132,7 @@ void PolandBall::shutdown() {
     this->health.reset();
 
     Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Cleaning caches...");
-    Utils::ResourceManager::getInstance().purgeCaches();
+    Game::EntityFactory::getInstance().getResourceCache()->purge();
 
     if (this->context) {
         SDL_GL_DeleteContext(this->context);
@@ -266,7 +266,7 @@ bool PolandBall::initScene() {
     camera.setFarPlane(2.5f);
 
     //-----------------
-    auto backgroundEntity = Utils::ResourceManager::getInstance().makeEntity(
+    auto backgroundEntity = Game::EntityFactory::getInstance().createBlock(
             POLANDBALL_DATADIR "/assets/backgrounds/sunny.asset");
     if (backgroundEntity == nullptr) {
         return false;
@@ -277,7 +277,7 @@ bool PolandBall::initScene() {
     this->scene->addEntity(backgroundEntity);
 
     //-----------------
-    auto bricksEntity = Utils::ResourceManager::getInstance().makeEntity(
+    auto bricksEntity = Game::EntityFactory::getInstance().createBlock(
             POLANDBALL_DATADIR "/assets/blocks/kazakhstan.asset");
     if (bricksEntity == nullptr) {
         return false;
@@ -285,11 +285,11 @@ bool PolandBall::initScene() {
 
     bricksEntity->setPosition(0.0f, -2.0f, 0.0f);
     bricksEntity->scaleX(20.0f * 1.5f);  // Scale for aspect ratio
-    bricksEntity->replicateX(20.0f);
+    bricksEntity->getSprite()->replicateX(20.0f);
     this->scene->addEntity(bricksEntity);
 
     //-----------------
-    bricksEntity = Utils::ResourceManager::getInstance().makeEntity(
+    bricksEntity = Game::EntityFactory::getInstance().createBlock(
             POLANDBALL_DATADIR "/assets/blocks/kazakhstan.asset");
     if (bricksEntity == nullptr) {
         return false;
@@ -300,8 +300,8 @@ bool PolandBall::initScene() {
     this->scene->addEntity(bricksEntity);
 
     //-----------------
-    this->player = std::dynamic_pointer_cast<Game::Player>(
-            Utils::ResourceManager::getInstance().makeEntity(POLANDBALL_DATADIR "/assets/players/turkey.asset"));
+    this->player = Game::EntityFactory::getInstance().createPlayer(
+            POLANDBALL_DATADIR "/assets/players/turkey.asset");
     if (this->player == nullptr) {
         return false;
     }
@@ -309,7 +309,7 @@ bool PolandBall::initScene() {
     this->scene->addEntity(this->player);
 
     //-----------------
-    auto pack_primary_ammo = Utils::ResourceManager::getInstance().makeEntity(
+    auto pack_primary_ammo = Game::EntityFactory::getInstance().createPack(
             POLANDBALL_DATADIR "/assets/items/pack_primary_ammo.asset");
     if (pack_primary_ammo == nullptr) {
         return false;
@@ -319,7 +319,7 @@ bool PolandBall::initScene() {
     this->scene->addEntity(pack_primary_ammo);
 
     //-----------------
-    auto pack_secondary_ammo = Utils::ResourceManager::getInstance().makeEntity(
+    auto pack_secondary_ammo = Game::EntityFactory::getInstance().createPack(
             POLANDBALL_DATADIR "/assets/items/pack_secondary_ammo.asset");
     if (pack_secondary_ammo == nullptr) {
         return false;
@@ -329,7 +329,7 @@ bool PolandBall::initScene() {
     this->scene->addEntity(pack_secondary_ammo);
 
     //-----------------
-    auto m4a1 = Utils::ResourceManager::getInstance().makeEntity(
+    auto m4a1 = Game::EntityFactory::getInstance().createWeapon(
             POLANDBALL_DATADIR "/assets/weapons/m4a1.asset");
     if (m4a1 == nullptr) {
         return false;
@@ -339,7 +339,7 @@ bool PolandBall::initScene() {
     this->scene->addEntity(m4a1);
 
     //-----------------
-    auto ak74 = Utils::ResourceManager::getInstance().makeEntity(
+    auto ak74 = Game::EntityFactory::getInstance().createWeapon(
             POLANDBALL_DATADIR "/assets/weapons/ak74.asset");
     if (ak74 == nullptr) {
         return false;
@@ -349,7 +349,7 @@ bool PolandBall::initScene() {
     this->scene->addEntity(ak74);
 
     //-----------------
-    auto m1911 = Utils::ResourceManager::getInstance().makeEntity(
+    auto m1911 = Game::EntityFactory::getInstance().createWeapon(
             POLANDBALL_DATADIR "/assets/weapons/m1911.asset");
     if (m1911 == nullptr) {
         return false;
@@ -359,7 +359,7 @@ bool PolandBall::initScene() {
     this->scene->addEntity(m1911);
 
     //-----------------
-    auto beretta92 = Utils::ResourceManager::getInstance().makeEntity(
+    auto beretta92 = Game::EntityFactory::getInstance().createWeapon(
             POLANDBALL_DATADIR "/assets/weapons/beretta92.asset");
     if (beretta92 == nullptr) {
         return false;
@@ -369,7 +369,7 @@ bool PolandBall::initScene() {
     this->scene->addEntity(beretta92);
 
     //-----------------
-    auto wrench = Utils::ResourceManager::getInstance().makeEntity(
+    auto wrench = Game::EntityFactory::getInstance().createWeapon(
             POLANDBALL_DATADIR "/assets/weapons/wrench.asset");
     if (wrench == nullptr) {
         return false;
@@ -379,7 +379,7 @@ bool PolandBall::initScene() {
     this->scene->addEntity(wrench);
 
     //-----------------
-    auto knife = Utils::ResourceManager::getInstance().makeEntity(
+    auto knife = Game::EntityFactory::getInstance().createWeapon(
             POLANDBALL_DATADIR "/assets/weapons/knife.asset");
     if (knife == nullptr) {
         return false;
@@ -389,7 +389,7 @@ bool PolandBall::initScene() {
     this->scene->addEntity(knife);
 
     //-----------------
-    auto pack_health = Utils::ResourceManager::getInstance().makeEntity(
+    auto pack_health = Game::EntityFactory::getInstance().createPack(
             POLANDBALL_DATADIR "/assets/items/pack_health.asset");
     if (pack_health == nullptr) {
         return false;
@@ -399,7 +399,7 @@ bool PolandBall::initScene() {
     this->scene->addEntity(pack_health);
 
     //-----------------
-    auto pack_armor = Utils::ResourceManager::getInstance().makeEntity(
+    auto pack_armor = Game::EntityFactory::getInstance().createPack(
             POLANDBALL_DATADIR "/assets/items/pack_armor.asset");
     if (pack_armor == nullptr) {
         return false;
@@ -420,19 +420,6 @@ bool PolandBall::initScene() {
 }
 
 bool PolandBall::initUi() {
-    auto defaultFont = Utils::ResourceManager::getInstance().makeFont(
-            POLANDBALL_DATADIR "/fonts/dejavu-sans.ttf", 14);
-    if (defaultFont == nullptr) {
-        return false;
-    }
-
-    this->emptySlot = Utils::ResourceManager::getInstance().makeEntity(
-            POLANDBALL_DATADIR "/assets/ui/slot_empty.asset");
-    if (this->emptySlot == nullptr) {
-        return false;
-    }
-
-    //-----------------
     Math::Mat4 ndc;
     ndc.set(0, 0, 2.0f / (this->width / 1.0f));
     ndc.set(0, 3, -1.0f);
@@ -443,15 +430,22 @@ bool PolandBall::initUi() {
     world.invert();
 
     //-----------------
+    this->emptySlot = Game::EntityFactory::getInstance().createWidget(
+            POLANDBALL_DATADIR "/assets/ui/slot_empty.asset");
+    if (this->emptySlot == nullptr) {
+        return false;
+    }
+
+    //-----------------
     auto& primaryWeapon = this->weapons[Game::Weapon::WeaponSlot::SLOT_PRIMARY];
 
-    primaryWeapon.first = Utils::ResourceManager::getInstance().makeEntity(
+    primaryWeapon.first = Game::EntityFactory::getInstance().createWidget(
             POLANDBALL_DATADIR "/assets/ui/slot_empty.asset");
     Math::Vec4 primaryWeaponOrigin = (world * ndc) * Math::Vec4(40.0f, 40.0f, 0.0f, 1.0f);
     primaryWeapon.first->setOrigin(primaryWeaponOrigin.extractVec3());
     this->scene->addEntity(primaryWeapon.first);
 
-    auto primaryWeaponBorder = Utils::ResourceManager::getInstance().makeEntity(
+    auto primaryWeaponBorder = Game::EntityFactory::getInstance().createWidget(
             POLANDBALL_DATADIR "/assets/ui/border_weapon.asset");
     if (primaryWeaponBorder == nullptr) {
         return false;
@@ -460,22 +454,21 @@ bool PolandBall::initUi() {
     primaryWeaponBorder->setOrigin(primaryWeaponOrigin.extractVec3());
     this->scene->addEntity(primaryWeaponBorder);
 
-    primaryWeapon.second = std::shared_ptr<Game::Label>(new Game::Label());
+    primaryWeapon.second = Game::EntityFactory::getInstance().createLabel("dejavu-sans", 14);
     Math::Vec4 primaryLabelOrigin = (world * ndc) * Math::Vec4(40.0f, 80.0f, 0.0f, 1.0f);
     primaryWeapon.second->setOrigin(primaryLabelOrigin.extractVec3());
-    primaryWeapon.second->setFont(defaultFont);
     this->scene->addEntity(primaryWeapon.second);
 
     //-----------------
     auto& secondaryWeapon = this->weapons[Game::Weapon::WeaponSlot::SLOT_SECONDARY];
 
-    secondaryWeapon.first = Utils::ResourceManager::getInstance().makeEntity(
+    secondaryWeapon.first = Game::EntityFactory::getInstance().createWidget(
             POLANDBALL_DATADIR "/assets/ui/slot_empty.asset");
     Math::Vec4 secondaryWeaponOrigin = (world * ndc) * Math::Vec4(110.0f, 40.0f, 0.0f, 1.0f);
     secondaryWeapon.first->setOrigin(secondaryWeaponOrigin.extractVec3());
     this->scene->addEntity(secondaryWeapon.first);
 
-    auto secondaryWeaponBorder = Utils::ResourceManager::getInstance().makeEntity(
+    auto secondaryWeaponBorder = Game::EntityFactory::getInstance().createWidget(
             POLANDBALL_DATADIR "/assets/ui/border_weapon.asset");
     if (secondaryWeaponBorder == nullptr) {
         return false;
@@ -484,22 +477,21 @@ bool PolandBall::initUi() {
     secondaryWeaponBorder->setOrigin(secondaryWeaponOrigin.extractVec3());
     this->scene->addEntity(secondaryWeaponBorder);
 
-    secondaryWeapon.second = std::shared_ptr<Game::Label>(new Game::Label());
+    secondaryWeapon.second = Game::EntityFactory::getInstance().createLabel("dejavu-sans", 14);
     Math::Vec4 secondaryLabelOrigin = (world * ndc) * Math::Vec4(110.0f, 80.0f, 0.0f, 1.0f);
     secondaryWeapon.second->setOrigin(secondaryLabelOrigin.extractVec3());
-    secondaryWeapon.second->setFont(defaultFont);
     this->scene->addEntity(secondaryWeapon.second);
 
     //-----------------
     auto& meeleWeapon = this->weapons[Game::Weapon::WeaponSlot::SLOT_MEELE];
 
-    meeleWeapon.first = Utils::ResourceManager::getInstance().makeEntity(
+    meeleWeapon.first = Game::EntityFactory::getInstance().createWidget(
             POLANDBALL_DATADIR "/assets/ui/slot_empty.asset");
     Math::Vec4 meeleWeaponOrigin = (world * ndc) * Math::Vec4(180.0f, 40.0f, 0.0f, 1.0f);
     meeleWeapon.first->setOrigin(meeleWeaponOrigin.extractVec3());
     this->scene->addEntity(meeleWeapon.first);
 
-    auto meeleWeaponBorder = Utils::ResourceManager::getInstance().makeEntity(
+    auto meeleWeaponBorder = Game::EntityFactory::getInstance().createWidget(
             POLANDBALL_DATADIR "/assets/ui/border_weapon.asset");
     if (meeleWeaponBorder == nullptr) {
         return false;
@@ -508,14 +500,13 @@ bool PolandBall::initUi() {
     meeleWeaponBorder->setOrigin(meeleWeaponOrigin.extractVec3());
     this->scene->addEntity(meeleWeaponBorder);
 
-    meeleWeapon.second = std::shared_ptr<Game::Label>(new Game::Label());
+    meeleWeapon.second = Game::EntityFactory::getInstance().createLabel("dejavu-sans", 14);
     Math::Vec4 meeleLabelOrigin = (world * ndc) * Math::Vec4(180.0f, 80.0f, 0.0f, 1.0f);
     meeleWeapon.second->setOrigin(meeleLabelOrigin.extractVec3());
-    meeleWeapon.second->setFont(defaultFont);
     this->scene->addEntity(meeleWeapon.second);
 
     //-----------------
-    auto armorShield = Utils::ResourceManager::getInstance().makeEntity(
+    auto armorShield = Game::EntityFactory::getInstance().createWidget(
             POLANDBALL_DATADIR "/assets/ui/shield_armor.asset");
     if (armorShield == nullptr) {
         return false;
@@ -525,14 +516,13 @@ bool PolandBall::initUi() {
     armorShield->setOrigin(armorShieldOrigin.extractVec3());
     this->scene->addEntity(armorShield);
 
-    this->armor = std::shared_ptr<Game::Label>(new Game::Label());
+    this->armor = Game::EntityFactory::getInstance().createLabel("dejavu-sans", 14);
     Math::Vec4 armorLabelOrigin = (world * ndc) * Math::Vec4(Math::Vec3(this->width - 40.0f, 80.0f, 0.0f), 1.0f);
     this->armor->setOrigin(armorLabelOrigin.extractVec3());
-    this->armor->setFont(defaultFont);
     this->scene->addEntity(this->armor);
 
     //-----------------
-    auto healthShield = Utils::ResourceManager::getInstance().makeEntity(
+    auto healthShield = Game::EntityFactory::getInstance().createWidget(
             POLANDBALL_DATADIR "/assets/ui/shield_health.asset");
     if (healthShield == nullptr) {
         return false;
@@ -542,10 +532,9 @@ bool PolandBall::initUi() {
     healthShield->setOrigin(healthShieldOrigin.extractVec3());
     this->scene->addEntity(healthShield);
 
-    this->health = std::shared_ptr<Game::Label>(new Game::Label());
+    this->health = Game::EntityFactory::getInstance().createLabel("dejavu-sans", 14);
     Math::Vec4 healthLabelOrigin = (world * ndc) * Math::Vec4(Math::Vec3(this->width - 100.0f, 80.0f, 0.0f), 1.0f);
     this->health->setOrigin(healthLabelOrigin.extractVec3());
-    this->health->setFont(defaultFont);
     this->scene->addEntity(this->health);
 
     //-----------------
@@ -586,7 +575,7 @@ bool PolandBall::initUi() {
         this->armor, std::placeholders::_1));
 
     //-----------------
-    this->cursor = Utils::ResourceManager::getInstance().makeEntity(
+    this->cursor = Game::EntityFactory::getInstance().createWidget(
             POLANDBALL_DATADIR "/assets/ui/cursor_aim.asset");
     if (this->cursor == nullptr) {
         return false;
@@ -624,7 +613,7 @@ void PolandBall::onMouseButton(SDL_MouseButtonEvent& event) {
 }
 
 void PolandBall::onIdle() {
-    Uint8 *keyStates = SDL_GetKeyboardState(nullptr);
+    const Uint8* keyStates = SDL_GetKeyboardState(nullptr);
 
     if (keyStates[SDL_SCANCODE_ESCAPE] > 0) {
         this->running = false;
@@ -656,6 +645,8 @@ void PolandBall::onIdle() {
 
     for (int slot = 0; slot < 3; slot++) {
         auto& weapon = this->player->getWeapon(static_cast<Game::Weapon::WeaponSlot>(slot));
+        auto weaponSprite = std::dynamic_pointer_cast<Opengl::Sprite>(this->weapons[slot].first->getPrimitive());
+
         if (weapon != nullptr) {
             weaponAmmo = weapon->getAmmo();
             text.str("");
@@ -666,12 +657,14 @@ void PolandBall::onIdle() {
                 text << weaponAmmo;
             }
 
-            this->weapons[slot].first->setTexture(weapon->getTexture());
-            this->weapons[slot].first->shearX(0.0f, 2);
+            auto playerWeaponSprite = std::dynamic_pointer_cast<Opengl::Sprite>(weapon->getPrimitive());
+            weaponSprite->setTexture(playerWeaponSprite->getTexture());
+            weaponSprite->shearX(0.0f, 2);
             this->weapons[slot].first->roll(45.0f);
             this->weapons[slot].second->setText(text.str());
         } else {
-            this->weapons[slot].first->setTexture(this->emptySlot->getTexture());
+            auto emptySprite = std::dynamic_pointer_cast<Opengl::Sprite>(this->emptySlot->getPrimitive());
+            weaponSprite->setTexture(emptySprite->getTexture());
             this->weapons[slot].second->clear();
         }
     }

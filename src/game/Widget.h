@@ -20,76 +20,29 @@
  * SOFTWARE.
  */
 
-#ifndef LABEL_H
-#define LABEL_H
+#ifndef WIDGET_H
+#define WIDGET_H
 
-#include "Widget.h"
-
-#include <SDL2/SDL_ttf.h>
-#include <string>
-#include <memory>
+#include "SpriteEntity.h"
+#include "Entity.h"
+#include "Collider.h"
 
 namespace PolandBall {
 
 namespace Game {
 
-class Label: public Widget {
+class Widget: public SpriteEntity {
 public:
-    Label();
-
-    Label(const std::string& text):
-            Label() {
-        this->setText(text);
+    Widget() {
+        this->collidable = false;
+        this->type = Entity::EntityType::TYPE_WIDGET;
     }
 
-    void setText(const std::string& text) {
-        if (this->text != text) {
-            this->text = text;
-            this->renderText();
-        }
-    }
-
-    const std::string& getText() const {
-        return this->text;
-    }
-
-    void setFont(const std::shared_ptr<TTF_Font>& font) {
-        this->font = font;
-        this->renderText();
-    }
-
-    const std::shared_ptr<TTF_Font>& getFont() const {
-        return this->font;
-    }
-
-    void setProjection(const Math::Mat4& projection) {
-        this->projection = projection;
-        this->renderText();
-    }
-
-    const Math::Mat4& getProjection() const {
-        return this->projection;
-    }
-
-    void clear() {
-        this->setText("");
-    }
-
-private:
-    void renderText();
-
-    std::shared_ptr<TTF_Font> font;
-    std::string text;
-
-    Math::Mat4 projection;
-    Math::Mat4 ndc;
-
-    float widthScaleFactor;
-    float heightScaleFactor;
+    virtual ~Widget() {}
 };
 
 }  // namespace Game
 
 }  // namespace Rubik
 
-#endif  // LABEL_H
+#endif  // WIDGET_H

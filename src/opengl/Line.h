@@ -20,76 +20,67 @@
  * SOFTWARE.
  */
 
-#ifndef LABEL_H
-#define LABEL_H
+#ifndef LINE_H
+#define LINE_H
 
-#include "Widget.h"
+#include "Primitive.h"
 
-#include <SDL2/SDL_ttf.h>
-#include <string>
-#include <memory>
+#include <Vec3.h>
+#include <Vec4.h>
 
 namespace PolandBall {
 
-namespace Game {
+namespace Opengl {
 
-class Label: public Widget {
+class Line: public Primitive {
 public:
-    Label();
-
-    Label(const std::string& text):
-            Label() {
-        this->setText(text);
+    Line():
+            from(Math::Vec3::ZERO),
+            to(Math::Vec3::UNIT_X) {
+        this->initialize();
     }
 
-    void setText(const std::string& text) {
-        if (this->text != text) {
-            this->text = text;
-            this->renderText();
-        }
+    const Math::Vec4& getColor() const {
+        return this->color;
     }
 
-    const std::string& getText() const {
-        return this->text;
+    void setColor(const Math::Vec4& color) {
+        this->color = color;
     }
 
-    void setFont(const std::shared_ptr<TTF_Font>& font) {
-        this->font = font;
-        this->renderText();
+    const Math::Vec3& getFrom() const {
+        return this->from;
     }
 
-    const std::shared_ptr<TTF_Font>& getFont() const {
-        return this->font;
+    void setFrom(const Math::Vec3& from) {
+        this->from = from;
+        this->initialize();
     }
 
-    void setProjection(const Math::Mat4& projection) {
-        this->projection = projection;
-        this->renderText();
+    const Math::Vec3& getTo() const {
+        return this->to;
     }
 
-    const Math::Mat4& getProjection() const {
-        return this->projection;
-    }
-
-    void clear() {
-        this->setText("");
+    void setTo(const Math::Vec3& to) {
+        this->to = to;
+        this->initialize();
     }
 
 private:
-    void renderText();
+    void initialize();
 
-    std::shared_ptr<TTF_Font> font;
-    std::string text;
+    void onRender() {
+        this->effect->enable();
+        this->effect->setUniform("color", this->color);
+    }
 
-    Math::Mat4 projection;
-    Math::Mat4 ndc;
-
-    float widthScaleFactor;
-    float heightScaleFactor;
+    Math::Vec4 color;
+    Math::Vec3 from;
+    Math::Vec3 to;
 };
 
-}  // namespace Game
+}  // namespace Opengl
 
-}  // namespace Rubik
+}  // namespace PolandBall
 
-#endif  // LABEL_H
+#endif  // LINE_H

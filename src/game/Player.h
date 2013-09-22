@@ -23,7 +23,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "Entity.h"
+#include "SpriteEntity.h"
 #include "Collider.h"
 #include "Weapon.h"
 
@@ -35,7 +35,7 @@ namespace PolandBall {
 
 namespace Game {
 
-class Player: public Entity {
+class Player: public SpriteEntity {
 public:
     enum PlayerState {
         STATE_IDLE = 1 << 0,
@@ -130,14 +130,11 @@ public:
     }
 
 private:
-    /* NOTE: Weapon::activeSlot should be accessible by Scene. Still exposing
-     * Weapon::activeSlot through the Weapon inteface by any know method requires
-     * special attention to be payed for activeSlot value of -1. Scene is marked
-     * as friend for now. */
     friend class Scene;
 
     void onCollision(const std::shared_ptr<Entity>& another, Collider::CollideSide side);
     void animate(float frameTime);
+
     void dropWeapon();
 
     std::array<std::shared_ptr<Weapon>, 3> weapons;

@@ -31,17 +31,17 @@ Weapon::Weapon(WeaponSlot slot):
     this->targetSlot = slot;
     this->state = STATE_AVAILABLE;
 
-    this->maxAmmo = 100;
-
     this->viewAngle = 0.0f;
     this->bounce = 0.0f;
     this->groupingAngle = 1.0f;
     this->firingSpeed = 3.0f;
+    this->maxAmmo = 100;
     this->ammo = this->maxAmmo;
 
+    this->passive = false;
     this->type = Entity::EntityType::TYPE_WEAPON;
-    this->shearX(0.0f, 2);
-    this->shearY(-0.15f, 1);
+    sprite->shearX(0.0f, 2);
+    sprite->shearY(-0.15f, 1);
 }
 
 void Weapon::aimAt(const Math::Vec3& target) {
@@ -70,10 +70,13 @@ void Weapon::aimAt(const Math::Vec3& target) {
     this->viewAngle = newAngle;
 
     this->roll(newAngle);
-    this->shearX(shear, 2);
-    this->shearY(-0.15f * targetSignCorrection, 1);
+    this->sprite->shearX(shear, 2);
+    this->sprite->shearY(-0.15f * targetSignCorrection, 1);
 
     this->target = newTarget;
+}
+
+void Weapon::shoot() {
 }
 
 }  // namespace Game

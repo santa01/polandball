@@ -34,12 +34,12 @@ void Scene::addEntity(const std::shared_ptr<Entity>& entity) {
     if (entity != nullptr) {
         this->entities.insert(std::make_pair(entity->getType(), entity));
 
-        auto effect = entity->getEffect();
+        auto effect = entity->getPrimitive()->getEffect();
         if (effect != nullptr) {
             this->effects.insert(effect);
         }
 
-        if (entity->getType() == Entity::EntityType::TYPE_UI) {
+        if (entity->getType() == Entity::EntityType::TYPE_WIDGET) {
             auto label = std::dynamic_pointer_cast<Label>(entity);
             if (label != nullptr) {
                 label->setProjection(this->camera.getProjection());
@@ -61,7 +61,7 @@ void Scene::render() {
 
     auto playerEntity = this->entities.find(Entity::EntityType::TYPE_PLAYER);
     for (auto& entity: this->entities) {
-        if (entity.first == Entity::EntityType::TYPE_CLIP) {
+        if (!entity.second->isVisible()) {
             continue;
         }
 
@@ -86,30 +86,21 @@ void Scene::render() {
             }
         }
 
-        entity.second->render();
+        entity.second->getPrimitive()->render();
     }
 }
 
 void Scene::update(float frameTime, float frameStep) {
-    for (auto entity = this->entities.begin(); entity != this->entities.end(); ) {
-        if (entity->second->isDestroyed()) {
-            this->entities.erase(entity++);
+    for (auto entity = this->entities.begin(); entity != this->entities.end(); ++entity) {
+        if (entity->second->destroyed || !entity->second->isCollidable() ||
+                (entity->second->isCollidable() && entity->second->isPassive())) {
             continue;
         }
 
         Entity::EntityType type = entity->second->getType();
-        if (type == Entity::EntityType::TYPE_PASSABLE || type == Entity::EntityType::TYPE_UI ||
-                type == Entity::EntityType::TYPE_CLIP || type == Entity::EntityType::TYPE_SOLID) {
-            entity->second->animate(frameTime);
-            ++entity;
-            continue;
-        }
-
         if (type == Entity::EntityType::TYPE_WEAPON) {
             auto weapon = std::dynamic_pointer_cast<Weapon>(entity->second);
             if (weapon->getState() == Weapon::WeaponState::STATE_PICKED) {
-                entity->second->animate(frameTime);
-                ++entity;
                 continue;
             }
         }
@@ -118,11 +109,11 @@ void Scene::update(float frameTime, float frameStep) {
             entity->second->setSpeed(entity->second->getSpeed() + this->gravityAcceleration * step);
 
             for (auto another = this->entities.begin(); another != this->entities.end(); ++another) {
-                Entity::EntityType anotherType = another->second->getType();
-                if (anotherType == Entity::EntityType::TYPE_PASSABLE || anotherType == Entity::EntityType::TYPE_UI) {
+                if (another->second->destroyed || !another->second->isCollidable()) {
                     continue;
                 }
 
+                Entity::EntityType anotherType = another->second->getType();
                 if ((anotherType == Entity::EntityType::TYPE_WEAPON || anotherType == Entity::EntityType::TYPE_PACK) &&
                         (type == Entity::EntityType::TYPE_WEAPON || type == Entity::EntityType::TYPE_PACK)) {
                     continue;
@@ -135,7 +126,7 @@ void Scene::update(float frameTime, float frameStep) {
                     }
                 }
 
-                Collider::CollideSide side = entity->second->collides(another->second);
+                Collider::CollideSide side = entity->second->getCollider()->collides(another->second->getCollider());
                 if (side != Collider::CollideSide::SIDE_NONE) {
                     entity->second->onCollision(another->second, side);
                 }
@@ -165,9 +156,15 @@ void Scene::update(float frameTime, float frameStep) {
             entity->second->setPosition(entity->second->getPosition() + entity->second->getSpeed() * step);
             step = (frameTime - totalTime > frameStep) ? frameStep : frameTime - totalTime;
         }
+    }
 
-        entity->second->animate(frameTime);
-        ++entity;
+    for (auto entity = this->entities.begin(); entity != this->entities.end(); ) {
+        if (entity->second->destroyed) {
+            this->entities.erase(entity++);
+        } else {
+            entity->second->animate(frameTime);
+            ++entity;
+        }
     }
 }
 

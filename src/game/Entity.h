@@ -24,7 +24,7 @@
 #define ENTITY_H
 
 #include "Collider.h"
-#include "Sprite.h"
+#include "Primitive.h"
 #include "RenderEffect.h"
 #include "Texture.h"
 #include "Movable.h"
@@ -40,27 +40,22 @@ namespace PolandBall {
 
 namespace Game {
 
-// NOTE: IRotateble only for animation purposes
-class Entity: public Common::Movable, public Common::Rotatable, public Common::Scalable, public Common::Transformable {
+class Entity: public Common::Movable, public Common::Rotatable, public Common::Scalable {
 public:
-    enum EntityType {   // This also defines rendering order
-        TYPE_CLIP,      // Invisible, collidable
-        TYPE_PASSABLE,  // Visible, non-collidable
-        TYPE_SOLID,     // Visible, collidable
-        TYPE_PLAYER,    // Player entity
-        TYPE_WEAPON,    // Weapon entity
-        TYPE_PACK,      // Health/armor/ammo pack entity
-        TYPE_UI         // Any UI element
+    enum EntityType {
+        TYPE_GENERIC,  // First to render
+        TYPE_PLAYER,
+        TYPE_WEAPON,
+        TYPE_PACK,
+        TYPE_WIDGET    // Last to render
     };
 
     Entity():
-            Entity(TYPE_SOLID) {
-    }
-
-    Entity(EntityType type):
-            collider(new Collider()),
-            sprite(new Opengl::Sprite()) {
-        this->type = type;
+            collider(new Collider()) {
+        this->type = EntityType::TYPE_GENERIC;
+        this->visible = true;
+        this->passive = true;
+        this->collidable = true;
         this->destroyed = false;
     }
 
@@ -69,140 +64,60 @@ public:
     using Movable::setPosition;
 
     void setPosition(const Math::Vec3& position) {
-        this->sprite->setPosition(this->origin + position);
+        this->primitive->setPosition(this->origin + position);
         this->collider->setPosition(this->origin + position);
-        this->positionChanged(position);  // Emit signal
+        this->positionChanged(position);
     }
 
     Math::Vec3 getPosition() const {
-        return this->sprite->getPosition();  // Positions are syncronized
+        return this->primitive->getPosition();
     }
 
     float getXAngle() const {
-        return this->sprite->getXAngle();
+        return this->primitive->getXAngle();
     }
 
     float getYAngle() const {
-        return this->sprite->getYAngle();
+        return this->primitive->getYAngle();
     }
 
     float getZAngle() const {
-        return this->sprite->getZAngle();
+        return this->primitive->getZAngle();
     }
 
     void rotate(const Math::Vec3& vector, float angle) {
-        this->sprite->rotate(vector, angle);
+        this->primitive->rotate(vector, angle);
     }
 
     void scaleX(float factor) {
-        this->sprite->scaleX(factor);
+        this->primitive->scaleX(factor);
         this->collider->scaleX(factor);
     }
 
     void scaleY(float factor) {
-        this->sprite->scaleY(factor);
+        this->primitive->scaleY(factor);
         this->collider->scaleY(factor);
     }
 
     void scaleZ(float factor) {
-        this->sprite->scaleZ(factor);
+        this->primitive->scaleZ(factor);
         this->collider->scaleZ(factor);
     }
 
     float getXFactor() const {
-        return this->sprite->getXFactor();  // Factors are syncronized
+        return this->primitive->getXFactor();
     }
 
     float getYFactor() const {
-        return this->sprite->getYFactor();  // Factors are syncronized
+        return this->primitive->getYFactor();
     }
 
     float getZFactor() const {
-        return this->sprite->getZFactor();  // Factors are syncronized
-    }
-
-    void replicateX(float factor) {
-        this->sprite->replicateX(factor);
-    }
-
-    void replicateY(float factor) {
-        this->sprite->replicateY(factor);
-    }
-
-    void replicateZ(float factor) {
-        this->sprite->replicateZ(factor);
-    }
-
-    float getXReplicaFactor() const {
-        return this->sprite->getXReplicaFactor();
-    }
-
-    float getYReplicaFactor() const {
-        return this->sprite->getYReplicaFactor();
-    }
-
-    float getZReplicaFactor() const {
-        return this->sprite->getZReplicaFactor();
-    }
-
-    void shearX(float slice, int totalSlices) {
-        this->sprite->shearX(slice, totalSlices);
-    }
-
-    void shearY(float slice, int totalSlices) {
-        this->sprite->shearY(slice, totalSlices);
-    }
-
-    void shearZ(float slice, int totalSlices) {
-        this->sprite->shearZ(slice, totalSlices);
-    }
-
-    void getXShearFactor(float& slice, int& totalSlices) const {
-        this->sprite->getXShearFactor(slice, totalSlices);
-    }
-
-    void getYShearFactor(float& slice, int& totalSlices) const {
-        this->sprite->getYShearFactor(slice, totalSlices);
-    }
-
-    void getZShearFactor(float& slice, int& totalSlices) const {
-        this->sprite->getZShearFactor(slice, totalSlices);
-    }
-
-    std::shared_ptr<Opengl::RenderEffect>& getEffect() {
-        return this->sprite->getEffect();
-    }
-
-    void setEffect(std::shared_ptr<Opengl::RenderEffect>& effect) {
-        this->sprite->setEffect(effect);
-    }
-
-    std::shared_ptr<Opengl::Texture>& getTexture() {
-        return this->sprite->getTexture();
-    }
-
-    void setTexture(std::shared_ptr<Opengl::Texture>& texture) {
-        this->sprite->setTexture(texture);
-    }
-
-    void render() {
-        this->sprite->render();
-    }
-
-    Collider::CollideSide collides(const std::shared_ptr<Entity>& another) {
-        return this->collider->collides(another->collider);
+        return this->primitive->getZFactor();
     }
 
     EntityType getType() const {
         return this->type;
-    }
-
-    const Math::Vec3& getSpeed() const {
-        return this->currentSpeed;
-    }
-
-    void setSpeed(const Math::Vec3& speed) {
-        this->currentSpeed = speed;
     }
 
     const Math::Vec3& getOrigin() const {
@@ -218,12 +133,48 @@ public:
         this->setPosition(this->getPosition());
     }
 
+    const std::unique_ptr<Collider>& getCollider() const {
+        return this->collider;
+    }
+
+    const std::shared_ptr<Opengl::Primitive>& getPrimitive() const {
+        return this->primitive;
+    }
+
+    const Math::Vec3& getSpeed() const {
+        return this->currentSpeed;
+    }
+
+    void setSpeed(const Math::Vec3& speed) {
+        this->currentSpeed = speed;
+    }
+
     void accelerateBy(const Math::Vec3& acceleration) {
         this->currentSpeed += acceleration;
     }
 
-    bool isDestroyed() const {
-        return this->destroyed;
+    bool isVisible() const {
+        return this->visible;
+    }
+
+    void setVisible(bool visible) {
+        this->visible = visible;
+    }
+
+    bool isPassive() const {
+        return this->passive;
+    }
+
+    void setPassive(bool passive) {
+        this->passive = passive;
+    }
+
+    bool isCollidable() const {
+        return this->collidable;
+    }
+
+    void setCollidable(bool collidable) {
+        this->collidable = collidable;
     }
 
     void destroy() {
@@ -235,16 +186,19 @@ public:
 protected:
     friend class Scene;
 
-    virtual void onCollision(const std::shared_ptr<Entity>& another, Collider::CollideSide side) {}
-    virtual void animate(float frameTime) {}
+    virtual void onCollision(const std::shared_ptr<Entity>& another, Collider::CollideSide side) = 0;
+    virtual void animate(float frameTime) = 0;
 
     std::unique_ptr<Collider> collider;
-    std::shared_ptr<Opengl::Sprite> sprite;
+    std::shared_ptr<Opengl::Primitive> primitive;
 
     Math::Vec3 currentSpeed;
     Math::Vec3 origin;
 
     EntityType type;
+    bool visible;
+    bool passive;
+    bool collidable;
     bool destroyed;
 };
 

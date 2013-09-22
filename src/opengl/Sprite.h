@@ -23,18 +23,12 @@
 #ifndef SPRITE_H
 #define SPRITE_H
 
-#include "Movable.h"
-#include "Scalable.h"
 #include "Transformable.h"
-#include "Rotatable.h"
-#include "NonCopyable.h"
 #include "Texture.h"
-#include "RenderEffect.h"
+#include "Primitive.h"
 
 #include <GL/glew.h>
-#include <Vec3.h>
 #include <Mat4.h>
-#include <Quaternion.h>
 #include <string>
 #include <memory>
 
@@ -42,78 +36,9 @@ namespace PolandBall {
 
 namespace Opengl {
 
-// NOTE: Common::Rotateble only for animation purposes
-class Sprite: public Common::Movable, public Common::Rotatable, public Common::Scalable, public Common::Transformable,
-        public Common::NonCopyable {
+class Sprite: public Primitive, public Common::Transformable {
 public:
     Sprite();
-
-    Sprite(float x, float y, float z):
-            Sprite() {
-        this->setPosition(x, y, z);
-    }
-
-    Sprite(const Math::Vec3& position):
-            Sprite() {
-        this->setPosition(position);
-    }
-
-    ~Sprite() {
-        glDeleteVertexArrays(1, &this->vao);
-        glDeleteBuffers(2, this->buffers);
-    }
-
-    using Movable::setPosition;
-
-    void setPosition(const Math::Vec3& position) {
-        this->translation.set(0, 3, position.get(Math::Vec3::X));
-        this->translation.set(1, 3, position.get(Math::Vec3::Y));
-        this->translation.set(2, 3, position.get(Math::Vec3::Z));
-    }
-
-    Math::Vec3 getPosition() const {
-        return Math::Vec3(this->translation.get(0, 3),
-                          this->translation.get(1, 3),
-                          this->translation.get(2, 3));
-    }
-
-    float getXAngle() const {
-        return this->xAngle;
-    }
-
-    float getYAngle() const {
-        return this->yAngle;
-    }
-
-    float getZAngle() const {
-        return this->zAngle;
-    }
-
-    void rotate(const Math::Vec3& vector, float angle);
-
-    void scaleX(float factor) {
-        this->scaling.set(0, 0, this->scaling.get(0, 0) * factor);
-    }
-
-    void scaleY(float factor) {
-        this->scaling.set(1, 1, this->scaling.get(1, 1) * factor);
-    }
-
-    void scaleZ(float factor) {
-        this->scaling.set(2, 2, this->scaling.get(2, 2) * factor);
-    }
-
-    float getXFactor() const {
-        return this->scaling.get(0, 0);
-    }
-
-    float getYFactor() const {
-        return this->scaling.get(1, 1);
-    }
-
-    float getZFactor() const {
-        return this->scaling.get(2, 2);
-    }
 
     void replicateX(float factor) {
         this->replication.set(0, 0, factor);
@@ -175,14 +100,6 @@ public:
         slice = this->shear.get(2, 3) / this->shear.get(2, 2);
     }
 
-    std::shared_ptr<RenderEffect>& getEffect() {
-        return this->effect;
-    }
-
-    void setEffect(std::shared_ptr<RenderEffect>& effect) {
-        this->effect = effect;
-    }
-
     std::shared_ptr<Texture>& getTexture() {
         return this->texture;
     }
@@ -191,33 +108,24 @@ public:
         this->texture = texture;
     }
 
-    void render();
-
 private:
-    enum {
-        VERTEX_BUFFER = 0,
-        ELEMENT_BUFFER = 1
-    };
+    void onRender() {
+        if (this->texture == nullptr) {
+            return;
+        }
+
+        this->texture->bind();
+        this->effect->enable();
+        this->effect->setUniform("transform", this->replication * this->shear);
+    }
 
     std::shared_ptr<Texture> texture;
-    std::shared_ptr<RenderEffect> effect;
-
-    Math::Mat4 translation;
-    Math::Mat4 rotation;
-    Math::Mat4 scaling;
 
     Math::Mat4 replication;
     Math::Mat4 shear;
 
-    float xAngle;
-    float yAngle;
-    float zAngle;
-
-    GLuint buffers[2];
-    GLuint vao;
-
-    static const float vertices[];
-    static const int indices[];
+    static const GLfloat vertices[];
+    static const GLuint indices[];
 };
 
 }  // namespace Opengl

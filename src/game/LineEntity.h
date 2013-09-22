@@ -20,76 +20,41 @@
  * SOFTWARE.
  */
 
-#ifndef LABEL_H
-#define LABEL_H
+#ifndef LINEENTITY_H
+#define LINEENTITY_H
 
-#include "Widget.h"
+#include "Entity.h"
+#include "Collider.h"
+#include "Line.h"
 
-#include <SDL2/SDL_ttf.h>
-#include <string>
 #include <memory>
 
 namespace PolandBall {
 
 namespace Game {
 
-class Label: public Widget {
+class LineEntity: public Entity {
 public:
-    Label();
-
-    Label(const std::string& text):
-            Label() {
-        this->setText(text);
+    LineEntity():
+            line(new Opengl::Line()) {
+        this->primitive = this->line;
     }
 
-    void setText(const std::string& text) {
-        if (this->text != text) {
-            this->text = text;
-            this->renderText();
-        }
+    virtual ~LineEntity() {}
+
+    const std::shared_ptr<Opengl::Line>& getLine() const {
+        return this->line;
     }
 
-    const std::string& getText() const {
-        return this->text;
-    }
+protected:
+    virtual void onCollision(const std::shared_ptr<Entity>& another, Collider::CollideSide side) {}
+    virtual void animate(float frameTime) {}
 
-    void setFont(const std::shared_ptr<TTF_Font>& font) {
-        this->font = font;
-        this->renderText();
-    }
-
-    const std::shared_ptr<TTF_Font>& getFont() const {
-        return this->font;
-    }
-
-    void setProjection(const Math::Mat4& projection) {
-        this->projection = projection;
-        this->renderText();
-    }
-
-    const Math::Mat4& getProjection() const {
-        return this->projection;
-    }
-
-    void clear() {
-        this->setText("");
-    }
-
-private:
-    void renderText();
-
-    std::shared_ptr<TTF_Font> font;
-    std::string text;
-
-    Math::Mat4 projection;
-    Math::Mat4 ndc;
-
-    float widthScaleFactor;
-    float heightScaleFactor;
+    std::shared_ptr<Opengl::Line> line;
 };
 
 }  // namespace Game
 
-}  // namespace Rubik
+}  // namespace PolandBall
 
-#endif  // LABEL_H
+#endif  // LINEENTITY_H

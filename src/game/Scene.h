@@ -21,7 +21,7 @@
  */
 
 #ifndef SCENE_H
-#define	SCENE_H
+#define SCENE_H
 
 #include "NonCopyable.h"
 #include "Camera.h"
@@ -59,7 +59,7 @@ public:
         this->camera = camera;
 
         for (auto& entity: this->entities) {
-            if (entity.first == Entity::EntityType::TYPE_UI) {
+            if (entity.first == Entity::EntityType::TYPE_WIDGET) {
                 auto label = std::dynamic_pointer_cast<Label>(entity.second);
                 if (label != nullptr) {
                     label->setProjection(this->camera.getProjection());
