@@ -261,23 +261,17 @@ void EntityFactory::loadBase(std::shared_ptr<Game::SpriteEntity> entity,
     }
 
     json_object* visible = json_object_object_get(asset.get(), "visible");
-    if (visible == nullptr || json_object_get_type(visible) != json_type_boolean) {
-        Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter `visible' is not set");
-    } else {
+    if (visible != nullptr && json_object_get_type(visible) == json_type_boolean) {
         entity->setVisible(json_object_get_boolean(visible));
     }
 
     json_object* passive = json_object_object_get(asset.get(), "passive");
-    if (passive == nullptr || json_object_get_type(passive) != json_type_boolean) {
-        Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter `passive' is not set");
-    } else {
+    if (passive != nullptr && json_object_get_type(passive) == json_type_boolean) {
         entity->setPassive(json_object_get_boolean(passive));
     }
 
     json_object* collidable = json_object_object_get(asset.get(), "collidable");
-    if (collidable == nullptr || json_object_get_type(collidable) != json_type_boolean) {
-        Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter `collidable' is not set");
-    } else {
+    if (collidable != nullptr && json_object_get_type(collidable) == json_type_boolean) {
         entity->setCollidable(json_object_get_boolean(collidable));
     }
 }
