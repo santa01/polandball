@@ -1,6 +1,4 @@
 {
-    "type": "ui",
     "texture": "textures/ui/shield_health.png",
     "effect": "shaders/sprite.shader"
 }
-

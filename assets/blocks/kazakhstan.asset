@@ -1,5 +1,4 @@
 {
-    "type": "solid",
     "texture": "textures/blocks/kazakhstan.png",
     "effect": "shaders/sprite.shader"
 }

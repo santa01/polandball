@@ -1,6 +1,4 @@
 {
-    "type": "ui",
     "texture": "textures/ui/slot_empty.png",
     "effect": "shaders/sprite.shader"
 }
-

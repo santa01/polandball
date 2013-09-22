@@ -1,7 +1,6 @@
 {
-    "type": "pack",
-    "payload": "secondary_ammo",
     "texture": "textures/items/pack_secondary_ammo.png",
     "effect": "shaders/sprite.shader",
+    "payload": "secondary_ammo",
     "value": 10
 }

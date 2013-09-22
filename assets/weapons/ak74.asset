@@ -1,8 +1,7 @@
 {
-    "type": "weapon",
-    "target_slot": "primary",
     "texture": "textures/weapons/ak74.png",
     "effect": "shaders/sprite.shader",
+    "target_slot": "primary",
     "max_ammo": 120,
     "ammo": 30,
     "grouping_angle": 1.2,

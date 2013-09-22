@@ -1,8 +1,7 @@
 {
-    "type": "weapon",
-    "target_slot": "secondary",
     "texture": "textures/weapons/beretta92.png",
     "effect": "shaders/sprite.shader",
+    "target_slot": "secondary",
     "max_ammo": 40,
     "ammo": 8,
     "grouping_angle": 2.2,

@@ -1,5 +1,4 @@
 {
-    "type": "passable",
     "texture": "textures/backgrounds/sunny_800x600.png",
     "effect": "shaders/sprite.shader"
 }

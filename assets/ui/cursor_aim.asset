@@ -1,6 +1,4 @@
 {
-    "type": "ui",
     "texture": "textures/ui/cursor_aim.png",
     "effect": "shaders/sprite.shader"
 }
-
