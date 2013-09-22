@@ -2,7 +2,7 @@
     "type": "weapon",
     "target_slot": "meele",
     "texture": "textures/weapons/wrench.png",
-    "effect": "shaders/default.shader",
+    "effect": "shaders/sprite.shader",
     "max_ammo": 999,
     "ammo": 999,
     "grouping_angle": 6.0,

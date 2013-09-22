@@ -2,7 +2,7 @@
     "type": "weapon",
     "target_slot": "primary",
     "texture": "textures/weapons/m4a1.png",
-    "effect": "shaders/default.shader",
+    "effect": "shaders/sprite.shader",
     "max_ammo": 160,
     "ammo": 20,
     "grouping_angle": 1.0,

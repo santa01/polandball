@@ -1,6 +1,6 @@
 {
     "type": "ui",
     "texture": "textures/ui/border_weapon.png",
-    "effect": "shaders/default.shader"
+    "effect": "shaders/sprite.shader"
 }
 

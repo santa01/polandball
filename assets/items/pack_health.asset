@@ -2,6 +2,6 @@
     "type": "pack",
     "payload": "health",
     "texture": "textures/items/pack_health.png",
-    "effect": "shaders/default.shader",
+    "effect": "shaders/sprite.shader",
     "value": 25
 }

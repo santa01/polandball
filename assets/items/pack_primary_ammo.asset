@@ -2,6 +2,6 @@
     "type": "pack",
     "payload": "primary_ammo",
     "texture": "textures/items/pack_primary_ammo.png",
-    "effect": "shaders/default.shader",
+    "effect": "shaders/sprite.shader",
     "value": 20
 }

@@ -1,6 +1,6 @@
 {
     "type": "ui",
     "texture": "textures/ui/shield_armor.png",
-    "effect": "shaders/default.shader"
+    "effect": "shaders/sprite.shader"
 }
 
