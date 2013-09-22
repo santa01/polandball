@@ -22,7 +22,6 @@
 
 #include "PolandBall.h"
 #include "Logger.h"
-#include "Config.h"
 #include "Sprite.h"
 #include "EntityFactory.h"
 
@@ -267,8 +266,7 @@ bool PolandBall::initScene() {
     camera.setFarPlane(2.5f);
 
     //-----------------
-    auto backgroundEntity = Game::EntityFactory::getInstance().createBlock(
-            POLANDBALL_DATADIR "/assets/backgrounds/sunny.asset");
+    auto backgroundEntity = Game::EntityFactory::getInstance().createBlock("assets/backgrounds/sunny.asset");
     if (backgroundEntity == nullptr) {
         return false;
     }
@@ -278,8 +276,7 @@ bool PolandBall::initScene() {
     this->scene->addEntity(backgroundEntity);
 
     //-----------------
-    auto bricksEntity = Game::EntityFactory::getInstance().createBlock(
-            POLANDBALL_DATADIR "/assets/blocks/kazakhstan.asset");
+    auto bricksEntity = Game::EntityFactory::getInstance().createBlock("assets/blocks/kazakhstan.asset");
     if (bricksEntity == nullptr) {
         return false;
     }
@@ -290,8 +287,7 @@ bool PolandBall::initScene() {
     this->scene->addEntity(bricksEntity);
 
     //-----------------
-    bricksEntity = Game::EntityFactory::getInstance().createBlock(
-            POLANDBALL_DATADIR "/assets/blocks/kazakhstan.asset");
+    bricksEntity = Game::EntityFactory::getInstance().createBlock("assets/blocks/kazakhstan.asset");
     if (bricksEntity == nullptr) {
         return false;
     }
@@ -301,8 +297,7 @@ bool PolandBall::initScene() {
     this->scene->addEntity(bricksEntity);
 
     //-----------------
-    this->player = Game::EntityFactory::getInstance().createPlayer(
-            POLANDBALL_DATADIR "/assets/players/turkey.asset");
+    this->player = Game::EntityFactory::getInstance().createPlayer("assets/players/turkey.asset");
     if (this->player == nullptr) {
         return false;
     }
@@ -310,8 +305,7 @@ bool PolandBall::initScene() {
     this->scene->addEntity(this->player);
 
     //-----------------
-    auto pack_primary_ammo = Game::EntityFactory::getInstance().createPack(
-            POLANDBALL_DATADIR "/assets/items/pack_primary_ammo.asset");
+    auto pack_primary_ammo = Game::EntityFactory::getInstance().createPack("assets/items/pack_primary_ammo.asset");
     if (pack_primary_ammo == nullptr) {
         return false;
     }
@@ -320,8 +314,7 @@ bool PolandBall::initScene() {
     this->scene->addEntity(pack_primary_ammo);
 
     //-----------------
-    auto pack_secondary_ammo = Game::EntityFactory::getInstance().createPack(
-            POLANDBALL_DATADIR "/assets/items/pack_secondary_ammo.asset");
+    auto pack_secondary_ammo = Game::EntityFactory::getInstance().createPack("assets/items/pack_secondary_ammo.asset");
     if (pack_secondary_ammo == nullptr) {
         return false;
     }
@@ -330,8 +323,7 @@ bool PolandBall::initScene() {
     this->scene->addEntity(pack_secondary_ammo);
 
     //-----------------
-    auto m4a1 = Game::EntityFactory::getInstance().createWeapon(
-            POLANDBALL_DATADIR "/assets/weapons/m4a1.asset");
+    auto m4a1 = Game::EntityFactory::getInstance().createWeapon("assets/weapons/m4a1.asset");
     if (m4a1 == nullptr) {
         return false;
     }
@@ -340,8 +332,7 @@ bool PolandBall::initScene() {
     this->scene->addEntity(m4a1);
 
     //-----------------
-    auto ak74 = Game::EntityFactory::getInstance().createWeapon(
-            POLANDBALL_DATADIR "/assets/weapons/ak74.asset");
+    auto ak74 = Game::EntityFactory::getInstance().createWeapon("assets/weapons/ak74.asset");
     if (ak74 == nullptr) {
         return false;
     }
@@ -350,8 +341,7 @@ bool PolandBall::initScene() {
     this->scene->addEntity(ak74);
 
     //-----------------
-    auto m1911 = Game::EntityFactory::getInstance().createWeapon(
-            POLANDBALL_DATADIR "/assets/weapons/m1911.asset");
+    auto m1911 = Game::EntityFactory::getInstance().createWeapon("assets/weapons/m1911.asset");
     if (m1911 == nullptr) {
         return false;
     }
@@ -360,8 +350,7 @@ bool PolandBall::initScene() {
     this->scene->addEntity(m1911);
 
     //-----------------
-    auto beretta92 = Game::EntityFactory::getInstance().createWeapon(
-            POLANDBALL_DATADIR "/assets/weapons/beretta92.asset");
+    auto beretta92 = Game::EntityFactory::getInstance().createWeapon("assets/weapons/beretta92.asset");
     if (beretta92 == nullptr) {
         return false;
     }
@@ -370,8 +359,7 @@ bool PolandBall::initScene() {
     this->scene->addEntity(beretta92);
 
     //-----------------
-    auto wrench = Game::EntityFactory::getInstance().createWeapon(
-            POLANDBALL_DATADIR "/assets/weapons/wrench.asset");
+    auto wrench = Game::EntityFactory::getInstance().createWeapon("assets/weapons/wrench.asset");
     if (wrench == nullptr) {
         return false;
     }
@@ -380,8 +368,7 @@ bool PolandBall::initScene() {
     this->scene->addEntity(wrench);
 
     //-----------------
-    auto knife = Game::EntityFactory::getInstance().createWeapon(
-            POLANDBALL_DATADIR "/assets/weapons/knife.asset");
+    auto knife = Game::EntityFactory::getInstance().createWeapon("assets/weapons/knife.asset");
     if (knife == nullptr) {
         return false;
     }
@@ -390,8 +377,7 @@ bool PolandBall::initScene() {
     this->scene->addEntity(knife);
 
     //-----------------
-    auto pack_health = Game::EntityFactory::getInstance().createPack(
-            POLANDBALL_DATADIR "/assets/items/pack_health.asset");
+    auto pack_health = Game::EntityFactory::getInstance().createPack("assets/items/pack_health.asset");
     if (pack_health == nullptr) {
         return false;
     }
@@ -400,8 +386,7 @@ bool PolandBall::initScene() {
     this->scene->addEntity(pack_health);
 
     //-----------------
-    auto pack_armor = Game::EntityFactory::getInstance().createPack(
-            POLANDBALL_DATADIR "/assets/items/pack_armor.asset");
+    auto pack_armor = Game::EntityFactory::getInstance().createPack("assets/items/pack_armor.asset");
     if (pack_armor == nullptr) {
         return false;
     }
@@ -431,8 +416,7 @@ bool PolandBall::initUi() {
     world.invert();
 
     //-----------------
-    this->emptySlot = Game::EntityFactory::getInstance().createWidget(
-            POLANDBALL_DATADIR "/assets/ui/slot_empty.asset");
+    this->emptySlot = Game::EntityFactory::getInstance().createWidget("assets/ui/slot_empty.asset");
     if (this->emptySlot == nullptr) {
         return false;
     }
@@ -440,14 +424,12 @@ bool PolandBall::initUi() {
     //-----------------
     auto& primaryWeapon = this->weapons[Game::Weapon::WeaponSlot::SLOT_PRIMARY];
 
-    primaryWeapon.first = Game::EntityFactory::getInstance().createWidget(
-            POLANDBALL_DATADIR "/assets/ui/slot_empty.asset");
+    primaryWeapon.first = Game::EntityFactory::getInstance().createWidget("assets/ui/slot_empty.asset");
     Math::Vec4 primaryWeaponOrigin = (world * ndc) * Math::Vec4(40.0f, 40.0f, 0.0f, 1.0f);
     primaryWeapon.first->setOrigin(primaryWeaponOrigin.extractVec3());
     this->scene->addEntity(primaryWeapon.first);
 
-    auto primaryWeaponBorder = Game::EntityFactory::getInstance().createWidget(
-            POLANDBALL_DATADIR "/assets/ui/border_weapon.asset");
+    auto primaryWeaponBorder = Game::EntityFactory::getInstance().createWidget("assets/ui/border_weapon.asset");
     if (primaryWeaponBorder == nullptr) {
         return false;
     }
@@ -463,14 +445,12 @@ bool PolandBall::initUi() {
     //-----------------
     auto& secondaryWeapon = this->weapons[Game::Weapon::WeaponSlot::SLOT_SECONDARY];
 
-    secondaryWeapon.first = Game::EntityFactory::getInstance().createWidget(
-            POLANDBALL_DATADIR "/assets/ui/slot_empty.asset");
+    secondaryWeapon.first = Game::EntityFactory::getInstance().createWidget("assets/ui/slot_empty.asset");
     Math::Vec4 secondaryWeaponOrigin = (world * ndc) * Math::Vec4(110.0f, 40.0f, 0.0f, 1.0f);
     secondaryWeapon.first->setOrigin(secondaryWeaponOrigin.extractVec3());
     this->scene->addEntity(secondaryWeapon.first);
 
-    auto secondaryWeaponBorder = Game::EntityFactory::getInstance().createWidget(
-            POLANDBALL_DATADIR "/assets/ui/border_weapon.asset");
+    auto secondaryWeaponBorder = Game::EntityFactory::getInstance().createWidget("assets/ui/border_weapon.asset");
     if (secondaryWeaponBorder == nullptr) {
         return false;
     }
@@ -486,14 +466,12 @@ bool PolandBall::initUi() {
     //-----------------
     auto& meeleWeapon = this->weapons[Game::Weapon::WeaponSlot::SLOT_MEELE];
 
-    meeleWeapon.first = Game::EntityFactory::getInstance().createWidget(
-            POLANDBALL_DATADIR "/assets/ui/slot_empty.asset");
+    meeleWeapon.first = Game::EntityFactory::getInstance().createWidget("assets/ui/slot_empty.asset");
     Math::Vec4 meeleWeaponOrigin = (world * ndc) * Math::Vec4(180.0f, 40.0f, 0.0f, 1.0f);
     meeleWeapon.first->setOrigin(meeleWeaponOrigin.extractVec3());
     this->scene->addEntity(meeleWeapon.first);
 
-    auto meeleWeaponBorder = Game::EntityFactory::getInstance().createWidget(
-            POLANDBALL_DATADIR "/assets/ui/border_weapon.asset");
+    auto meeleWeaponBorder = Game::EntityFactory::getInstance().createWidget("assets/ui/border_weapon.asset");
     if (meeleWeaponBorder == nullptr) {
         return false;
     }
@@ -507,8 +485,7 @@ bool PolandBall::initUi() {
     this->scene->addEntity(meeleWeapon.second);
 
     //-----------------
-    auto armorShield = Game::EntityFactory::getInstance().createWidget(
-            POLANDBALL_DATADIR "/assets/ui/shield_armor.asset");
+    auto armorShield = Game::EntityFactory::getInstance().createWidget("assets/ui/shield_armor.asset");
     if (armorShield == nullptr) {
         return false;
     }
@@ -523,8 +500,7 @@ bool PolandBall::initUi() {
     this->scene->addEntity(this->armor);
 
     //-----------------
-    auto healthShield = Game::EntityFactory::getInstance().createWidget(
-            POLANDBALL_DATADIR "/assets/ui/shield_health.asset");
+    auto healthShield = Game::EntityFactory::getInstance().createWidget("assets/ui/shield_health.asset");
     if (healthShield == nullptr) {
         return false;
     }
@@ -576,8 +552,7 @@ bool PolandBall::initUi() {
         this->armor, std::placeholders::_1));
 
     //-----------------
-    this->cursor = Game::EntityFactory::getInstance().createWidget(
-            POLANDBALL_DATADIR "/assets/ui/cursor_aim.asset");
+    this->cursor = Game::EntityFactory::getInstance().createWidget("assets/ui/cursor_aim.asset");
     if (this->cursor == nullptr) {
         return false;
     }

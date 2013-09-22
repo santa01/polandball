@@ -25,7 +25,6 @@
 #include "ShaderLoader.h"
 
 #include <fstream>
-#include <sstream>
 
 namespace PolandBall {
 
@@ -33,9 +32,9 @@ namespace Utils {
 
 std::shared_ptr<Opengl::Texture>& ResourceCache::loadTexture(const std::string& name) {
     if (this->textureCache.find(name) == this->textureCache.end()) {
-        Logger::getInstance().log(Logger::LOG_INFO, "Loading image `%s'", name.c_str());
+        Logger::getInstance().log(Logger::LOG_INFO, "Image `%s' not in cache, trying to load", name.c_str());
 
-        SDL_Surface* image = IMG_Load(name.c_str());
+        SDL_Surface* image = IMG_Load(this->buildPath(name).c_str());
         if (image == nullptr) {
             Logger::getInstance().log(Logger::LOG_ERROR, "IMG_Load() failed: %s", IMG_GetError());
             return this->textureCache["nullptr"];
@@ -46,6 +45,8 @@ std::shared_ptr<Opengl::Texture>& ResourceCache::loadTexture(const std::string& 
         this->textureCache.insert(std::make_pair(name, texture));
 
         SDL_FreeSurface(image);
+    } else {
+        Logger::getInstance().log(Logger::LOG_INFO, "Image `%s' picked from cache", name.c_str());
     }
 
     return this->textureCache.at(name);
@@ -53,15 +54,18 @@ std::shared_ptr<Opengl::Texture>& ResourceCache::loadTexture(const std::string& 
 
 std::shared_ptr<Opengl::RenderEffect>& ResourceCache::loadEffect(const std::string& name) {
     if (this->effectCache.find(name) == this->effectCache.end()) {
-        Logger::getInstance().log(Logger::LOG_INFO, "Loading shader `%s'", name.c_str());
+        Logger::getInstance().log(Logger::LOG_INFO, "Shader `%s' not in cache, trying to load", name.c_str());
 
-        auto shaderSource = this->loadSource(name);
+        std::string fullPath(this->buildPath(name).c_str());
+        auto shaderSource = this->loadSource(fullPath.c_str());
         if (shaderSource == nullptr) {
-            Logger::getInstance().log(Logger::LOG_ERROR, "Cannot open `%s'", name.c_str());
+            Logger::getInstance().log(Logger::LOG_ERROR, "Failed to open `%s'", fullPath.c_str());
             return this->effectCache["nullptr"];
         }
 
         this->insertEffect(name, shaderSource.get());
+    } else {
+        Logger::getInstance().log(Logger::LOG_INFO, "Shader `%s' picked from cache", name.c_str());
     }
 
     return this->effectCache.at(name);
@@ -71,11 +75,12 @@ std::shared_ptr<json_object>& ResourceCache::loadAsset(const std::string& name) 
     std::shared_ptr<json_object> object;
 
     if (this->assetCache.find(name) == this->assetCache.end()) {
-        Logger::getInstance().log(Logger::LOG_INFO, "Loading entity `%s'", name.c_str());
+        Logger::getInstance().log(Logger::LOG_INFO, "Asset `%s' not in cache, trying to load", name.c_str());
 
-        auto entitySource = this->loadSource(name);
+        std::string fullPath(this->buildPath(name).c_str());
+        auto entitySource = this->loadSource(fullPath.c_str());
         if (entitySource == nullptr) {
-            Logger::getInstance().log(Logger::LOG_ERROR, "Cannot open `%s'", name.c_str());
+            Logger::getInstance().log(Logger::LOG_ERROR, "Failed to open `%s'", fullPath.c_str());
             return this->assetCache["nullptr"];
         }
 
@@ -83,12 +88,14 @@ std::shared_ptr<json_object>& ResourceCache::loadAsset(const std::string& name) 
         object = std::shared_ptr<json_object>(
                 json_tokener_parse_verbose(entitySource.get(), &parseError), json_object_put);
         if (object == nullptr) {
-            Logger::getInstance().log(Logger::LOG_ERROR, "Cannot parse `%s': %s",
-                    name.c_str(), json_tokener_error_desc(parseError));
+            Logger::getInstance().log(Logger::LOG_ERROR, "Failed to parse `%s': %s",
+                    fullPath.c_str(), json_tokener_error_desc(parseError));
             return this->assetCache["nullptr"];
         }
 
         this->assetCache.insert(std::make_pair(name, object));
+    } else {
+        Logger::getInstance().log(Logger::LOG_INFO, "Asset `%s' picked from cache", name.c_str());
     }
 
     return this->assetCache.at(name);
@@ -96,15 +103,19 @@ std::shared_ptr<json_object>& ResourceCache::loadAsset(const std::string& name) 
 
 std::shared_ptr<TTF_Font>& ResourceCache::loadFont(const std::string& name, unsigned int size) {
     if (this->fontCache[name].find(size) == this->fontCache[name].end()) {
-        Logger::getInstance().log(Logger::LOG_INFO, "Loading font `%s' (%dpt)", name.c_str(), size);
+        Logger::getInstance().log(Logger::LOG_INFO,
+                "Font `%s' (%dpt) not in cache, trying to load", name.c_str(), size);
 
-        std::shared_ptr<TTF_Font> font(TTF_OpenFont(name.c_str(), size), TTF_CloseFont);
+        std::shared_ptr<TTF_Font> font(TTF_OpenFont(this->buildPath(name).c_str(), size), TTF_CloseFont);
         if (font == nullptr) {
             Logger::getInstance().log(Logger::LOG_ERROR, "TTF_OpenFont() failed: %s", TTF_GetError());
             return this->fontCache[name][-1];
         }
 
         this->fontCache[name].insert(std::make_pair(size, font));
+    } else {
+        Logger::getInstance().log(Logger::LOG_INFO,
+                "Font `%s' (%dpt) picked from cache", name.c_str(), size);
     }
 
     return this->fontCache[name][size];

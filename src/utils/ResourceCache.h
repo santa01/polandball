@@ -24,6 +24,7 @@
 #define RESOURCECACHE_H
 
 #include "Texture.h"
+#include "Config.h"
 #include "RenderEffect.h"
 #include "NonCopyable.h"
 
@@ -33,6 +34,7 @@
 #include <unordered_map>
 #include <string>
 #include <memory>
+#include <sstream>
 
 namespace PolandBall {
 
@@ -55,6 +57,13 @@ private:
     }
 
     void insertEffect(const std::string& name, const std::string& source);
+
+    const std::string buildPath(const std::string& name) const {
+        std::stringstream fullPath;
+        fullPath << POLANDBALL_DATADIR << "/" << name;
+        return fullPath.str();
+    }
+
     std::unique_ptr<char[]> loadSource(const std::string& name) const;
 
     std::unordered_map<std::string, std::shared_ptr<Opengl::Texture>> textureCache;
