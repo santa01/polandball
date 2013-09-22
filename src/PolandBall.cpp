@@ -29,6 +29,7 @@
 #include <GL/glew.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <cstdlib>
 #include <Vec3.h>
 #include <Vec4.h>
 #include <Mat4.h>
@@ -153,7 +154,7 @@ bool PolandBall::parseCLI() {
     this->arguments.addArgument('v', "vsync", "vertical sync",
             Utils::ArgumentParser::ArgumentType::TYPE_BOOL);
     this->arguments.addArgument('F', "fps", "maximum fps limit",
-            Utils::ArgumentParser::ArgumentType::TYPE_INT);
+            Utils::ArgumentParser::ArgumentType::TYPE_FLOAT);
     this->arguments.addArgument('h', "height", "viewport height",
             Utils::ArgumentParser::ArgumentType::TYPE_INT);
     this->arguments.addArgument('w', "width", "viewport width",
@@ -167,9 +168,9 @@ bool PolandBall::parseCLI() {
     }
 
     this->vsync = this->arguments.isSet("vsync");
-    this->maxFps = this->arguments.isSet("fps") ? std::stof(this->arguments.getOption("fps")) : 100.0f;
-    this->height = this->arguments.isSet("height") ? std::stoi(this->arguments.getOption("height")) : 600;
-    this->width = this->arguments.isSet("width") ? std::stoi(this->arguments.getOption("width")) : 800;
+    this->maxFps = this->arguments.isSet("fps") ? atof(this->arguments.getOption("fps").c_str()) : 100.0f;
+    this->height = this->arguments.isSet("height") ? atoi(this->arguments.getOption("height").c_str()) : 600;
+    this->width = this->arguments.isSet("width") ? atoi(this->arguments.getOption("width").c_str()) : 800;
 
     return true;
 }
