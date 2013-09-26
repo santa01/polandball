@@ -35,13 +35,13 @@ void Line::initialize() {
 
     data.vertexDataSize = sizeof(float) * 6;
     data.vertexData = std::unique_ptr<GLfloat[]>(new GLfloat[6]);
-    memcmp(data.vertexData.get(), this->from.data(), data.vertexDataSize / 2);
-    memcmp(data.vertexData.get() + 3, this->to.data(), data.vertexDataSize / 2);
+    memcpy(data.vertexData.get(), this->from.data(), data.vertexDataSize / 2);
+    memcpy(data.vertexData.get() + 3, this->to.data(), data.vertexDataSize / 2);
 
     const GLuint indices[] = { 0, 1 };
     data.indexDataSize = sizeof(int) * 2;
     data.indexData = std::unique_ptr<GLuint[]>(new GLuint[2]);
-    memcmp(data.indexData.get(), indices, data.indexDataSize);
+    memcpy(data.indexData.get(), indices, data.indexDataSize);
 
     PrimitiveData::VertexAttribute coordinate = { 3, GL_FLOAT, 0 };
     data.vertexAttributes.push_back(coordinate);
