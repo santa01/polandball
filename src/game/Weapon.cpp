@@ -29,7 +29,7 @@ namespace Game {
 Weapon::Weapon(WeaponSlot slot):
         target(Math::Vec3::UNIT_X) {
     this->targetSlot = slot;
-    this->state = STATE_AVAILABLE;
+    this->state = WeaponState::STATE_AVAILABLE;
 
     this->viewAngle = 0.0f;
     this->bounce = 0.0f;

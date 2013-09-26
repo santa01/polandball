@@ -46,7 +46,7 @@ Player::Player():
 
     this->activeSlot = -1;
     this->weaponHandle = -1;
-    this->state = STATE_IDLE;
+    this->state = PlayerState::STATE_IDLE;
     this->previousState = this->state;
 
     this->passive = false;
@@ -189,7 +189,8 @@ void Player::animate(float frameTime) {
     float playerMoveSpeed = this->currentSpeed.get(Math::Vec3::X);
     float playerJumpSpeed = this->currentSpeed.get(Math::Vec3::Y);
 
-    if ((this->state & STATE_JUMP) && !(this->jumpTime == 0.0f && (this->previousState & STATE_JUMP))) {
+    if ((this->state & PlayerState::STATE_JUMP) &&
+            !(this->jumpTime == 0.0f && (this->previousState & PlayerState::STATE_JUMP))) {
         if (this->jumpTime < this->maxJumpTime && playerJumpSpeed >= 0.0f) {
             if (playerJumpSpeed < this->maxJumpSpeed) {
                 this->accelerateBy(Math::Vec3::UNIT_Y * (this->maxJumpSpeed - playerJumpSpeed));
@@ -200,8 +201,8 @@ void Player::animate(float frameTime) {
         this->jumpTime = FLT_MAX;
     }
 
-    if ((this->state & STATE_DROP_WEAPON)) {
-        if (!(this->dropTime != 0.0f && (this->previousState & STATE_DROP_WEAPON))) {
+    if ((this->state & PlayerState::STATE_DROP_WEAPON)) {
+        if (!(this->dropTime != 0.0f && (this->previousState & PlayerState::STATE_DROP_WEAPON))) {
             this->dropWeapon();
         }
 
@@ -217,12 +218,12 @@ void Player::animate(float frameTime) {
     Math::Vec3 moveAcceleration = Math::Vec3::UNIT_X * moveSpeedDelta;
     float signCorrection = 0.0f;
 
-    if (this->state & STATE_LEFT_STEP && !(this->state & STATE_RIGHT_STEP)) {
+    if (this->state & PlayerState::STATE_LEFT_STEP && !(this->state & PlayerState::STATE_RIGHT_STEP)) {
         if (playerMoveSpeed < 0.0f && moveSpeedDelta - playerMoveSpeed > this->maxMoveSpeed) {
             moveAcceleration = Math::Vec3::UNIT_X * (this->maxMoveSpeed + playerMoveSpeed);
         }
         signCorrection = -1.0f;
-    } else if (this->state & STATE_RIGHT_STEP && !(this->state & STATE_LEFT_STEP)) {
+    } else if (this->state & PlayerState::STATE_RIGHT_STEP && !(this->state & PlayerState::STATE_LEFT_STEP)) {
         if (playerMoveSpeed > 0.0f && moveSpeedDelta + playerMoveSpeed > this->maxMoveSpeed) {
             moveAcceleration = Math::Vec3::UNIT_X * (this->maxMoveSpeed - playerMoveSpeed);
         }
@@ -239,7 +240,7 @@ void Player::animate(float frameTime) {
 
     this->accelerateBy(moveAcceleration * signCorrection);
     this->previousState = this->state;
-    this->state = STATE_IDLE;
+    this->state = PlayerState::STATE_IDLE;
 }
 
 void Player::dropWeapon() {

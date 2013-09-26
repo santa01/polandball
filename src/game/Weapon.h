@@ -106,10 +106,10 @@ public:
 
 private:
     void onCollision(const std::shared_ptr<Entity>& another, Collider::CollideSide side) {
-        if (this->state == STATE_THROWN) {
+        if (this->state == WeaponState::STATE_THROWN) {
             if (side == Collider::CollideSide::SIDE_BOTTOM && another->isCollidable()) {
                 this->setSpeed(Math::Vec3::ZERO);
-                this->state = STATE_AVAILABLE;
+                this->state = WeaponState::STATE_AVAILABLE;
             }
         }
     }
