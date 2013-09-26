@@ -50,9 +50,7 @@ void Weapon::aimAt(const Math::Vec3& target) {
     }
 
     Math::Vec3 newTarget(target);
-    newTarget.normalize();
-
-    if (newTarget == this->target) {
+    if (newTarget.normalize() == this->target.normalize()) {
         return;
     }
 
@@ -73,7 +71,7 @@ void Weapon::aimAt(const Math::Vec3& target) {
     this->sprite->shearX(shear, 2);
     this->sprite->shearY(-0.15f * targetSignCorrection, 1);
 
-    this->target = newTarget;
+    this->target = target;
 }
 
 void Weapon::shoot() {

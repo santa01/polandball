@@ -94,7 +94,7 @@ void Player::aimAt(const Math::Vec3& target) {
     }
 
     Math::Vec3 newTarget(target);
-    if (newTarget.normalize() == this->target) {
+    if (newTarget.normalize() == this->target.normalize()) {
         return;
     }
 
@@ -117,7 +117,7 @@ void Player::aimAt(const Math::Vec3& target) {
         this->weapons[this->activeSlot]->aimAt(newTarget);
     }
 
-    this->target = newTarget;
+    this->target = target;
 }
 
 void Player::onCollision(const std::shared_ptr<Entity>& another, Collider::CollideSide side) {
