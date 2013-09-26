@@ -249,9 +249,11 @@ bool PolandBall::initOpenGL() {
 
     glEnable(GL_CULL_FACE);
     glEnable(GL_BLEND);
+    glEnable(GL_LINE_SMOOTH);
 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glViewport(0, 0, this->width, this->height);
+    glLineWidth(0.5f);
 
     return true;
 }
