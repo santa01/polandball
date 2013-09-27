@@ -27,7 +27,6 @@
 #include "Camera.h"
 #include "Entity.h"
 #include "RenderEffect.h"
-#include "Logger.h"
 
 #include <Vec3.h>
 #include <Label.h>

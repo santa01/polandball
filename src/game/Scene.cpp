@@ -23,6 +23,7 @@
 #include "Scene.h"
 #include "Weapon.h"
 #include "Player.h"
+#include "Logger.h"
 
 #include <GL/glew.h>
 
@@ -161,6 +162,7 @@ void Scene::update(float frameTime, float frameStep) {
 
     for (auto entity = this->entities.begin(); entity != this->entities.end(); ) {
         if (entity->second->destroyed) {
+            Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Entity %p destroyed", entity->second.get());
             entity->second->scene.reset();
             this->entities.erase(entity++);
         } else {
