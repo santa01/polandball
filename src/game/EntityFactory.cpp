@@ -214,6 +214,18 @@ std::shared_ptr<Game::Widget> EntityFactory::createWidget(const std::string& nam
     return widget;
 }
 
+std::shared_ptr<Game::ShotTrace> EntityFactory::createTrace(const Math::Vec3& from, const Math::Vec3& to) const {
+    Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Building ShotTrace from (%.3f; %.3f) to (%.3f; %.3f)",
+            from.get(Math::Vec3::X), from.get(Math::Vec3::Y), to.get(Math::Vec3::X), to.get(Math::Vec3::Y));
+
+    auto effect = this->resourceCache->loadEffect("shaders/trace.shader");
+
+    std::shared_ptr<Game::ShotTrace> trace(new Game::ShotTrace(from, to));
+    trace->getLine()->setEffect(effect);
+
+    return trace;
+}
+
 std::shared_ptr<Game::Label> EntityFactory::createLabel(const std::string& fontName, unsigned int size) const {
     Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO,
             "Building Label with `%s' (%dpt) font", fontName.c_str(), size);

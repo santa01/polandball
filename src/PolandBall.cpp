@@ -618,6 +618,12 @@ void PolandBall::onIdle() {
         this->player->activateSlot(Game::Weapon::WeaponSlot::SLOT_MEELE);
     }
 
+    Uint32 mouseState = SDL_GetMouseState(nullptr, nullptr);
+
+    if ((mouseState & SDL_BUTTON_LMASK) > 0) {
+        this->player->shoot();
+    }
+
     std::stringstream text;
     int weaponAmmo = 0;
 

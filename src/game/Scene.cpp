@@ -33,6 +33,7 @@ namespace Game {
 void Scene::addEntity(const std::shared_ptr<Entity>& entity) {
     if (entity != nullptr) {
         this->entities.insert(std::make_pair(entity->getType(), entity));
+        entity->scene = this->shared_from_this();
 
         auto effect = entity->getPrimitive()->getEffect();
         if (effect != nullptr) {
@@ -160,6 +161,7 @@ void Scene::update(float frameTime, float frameStep) {
 
     for (auto entity = this->entities.begin(); entity != this->entities.end(); ) {
         if (entity->second->destroyed) {
+            entity->second->scene.reset();
             this->entities.erase(entity++);
         } else {
             entity->second->animate(frameTime);

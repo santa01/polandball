@@ -125,7 +125,7 @@ public:
     void aimAt(const Math::Vec3& target);
     void shoot() {
         if (this->activeSlot != -1) {
-            this->weapons[this->activeSlot]->shoot();
+            this->weapons[this->activeSlot]->fire();
         }
     }
 

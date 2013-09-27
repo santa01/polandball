@@ -41,7 +41,7 @@ namespace PolandBall {
 
 namespace Game {
 
-class Scene: public Common::NonCopyable {
+class Scene: public std::enable_shared_from_this<Scene>, public Common::NonCopyable {
 public:
     Scene():
             gravityAcceleration(0.0f, -35.0f, 0.0f) {

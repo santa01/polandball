@@ -191,6 +191,7 @@ protected:
 
     std::unique_ptr<Collider> collider;
     std::shared_ptr<Opengl::Primitive> primitive;
+    std::weak_ptr<class Scene> scene;
 
     Math::Vec3 currentSpeed;
     Math::Vec3 origin;

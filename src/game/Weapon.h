@@ -23,10 +23,11 @@
 #ifndef WEAPON_H
 #define WEAPON_H
 
+#include "Entity.h"
 #include "SpriteEntity.h"
+#include "Collider.h"
 
 #include <Vec3.h>
-#include <cmath>
 #include <memory>
 
 namespace PolandBall {
@@ -101,8 +102,11 @@ public:
         return this->state;
     }
 
+    void fire() {
+        this->firing = true;
+    }
+
     void aimAt(const Math::Vec3& target);
-    void shoot();
 
 private:
     void onCollision(const std::shared_ptr<Entity>& another, Collider::CollideSide side) {
@@ -114,19 +118,10 @@ private:
         }
     }
 
-    void animate(float frameTime) {
-        float targetSignCorrection = (this->target.get(Math::Vec3::X) < 0.0f) ? -1.0f : 1.0f;
-
-        if (this->state == STATE_AVAILABLE) {
-            this->sprite->shearY(sinf(this->bounce) / 13.33f - 0.075f * targetSignCorrection, 1);
-            this->bounce += frameTime * 6.0f;
-        } else {
-            this->sprite->shearY(-0.15f * targetSignCorrection, 1);
-            this->bounce = 0.0f;
-        }
-    }
+    void animate(float frameTime);
 
     Math::Vec3 target;
+    bool firing;
 
     float groupingAngle;
     float firingSpeed;  // Shots per second
@@ -137,6 +132,7 @@ private:
     WeaponState state;
     float viewAngle;
     float bounce;
+    float relaxTime;
 };
 
 }  // namespace Game

@@ -21,6 +21,11 @@
  */
 
 #include "Weapon.h"
+#include "Scene.h"
+#include "EntityFactory.h"
+
+#include <Quaternion.h>
+#include <cmath>
 
 namespace PolandBall {
 
@@ -33,6 +38,9 @@ Weapon::Weapon(WeaponSlot slot):
 
     this->viewAngle = 0.0f;
     this->bounce = 0.0f;
+    this->relaxTime = 0.0f;
+    this->firing = false;
+
     this->groupingAngle = 1.0f;
     this->firingSpeed = 3.0f;
     this->maxAmmo = 100;
@@ -74,7 +82,46 @@ void Weapon::aimAt(const Math::Vec3& target) {
     this->target = target;
 }
 
-void Weapon::shoot() {
+void Weapon::animate(float frameTime) {
+    float targetSignCorrection = (this->target.get(Math::Vec3::X) < 0.0f) ? -1.0f : 1.0f;
+
+    if (this->state == WeaponState::STATE_AVAILABLE) {
+        this->sprite->shearY(sinf(this->bounce) / 13.33f - 0.075f * targetSignCorrection, 1);
+        this->bounce += frameTime * 6.0f;
+    } else {
+        this->sprite->shearY(-0.15f * targetSignCorrection, 1);
+        this->bounce = 0.0f;
+    }
+
+    if (this->state == WeaponState::STATE_PICKED) {
+        if (this->firing) {
+            if (this->relaxTime == 0.0f && this->ammo > 0) {
+                float shotAngle = (rand() / static_cast<float>(RAND_MAX)) * this->groupingAngle;
+                float signCorrection = (rand() % 2 == 0) ? 1.0f : -1.0f;
+
+                Math::Vec3 position(this->getPosition());
+                Math::Vec3 shotTarget(this->target);
+                shotTarget.normalize();
+                shotTarget *= 10.0f;
+
+                Math::Quaternion q(Math::Vec3::UNIT_Z, shotAngle * signCorrection * M_PI / 180.0f);
+                shotTarget = q.extractMat4().extractMat3() * shotTarget;
+
+                auto parent = std::shared_ptr<Scene>(this->scene);
+                parent->addEntity(EntityFactory::getInstance().createTrace(position, position + shotTarget));
+                this->ammo--;
+            }
+
+            this->relaxTime += frameTime;
+        } else if (this->relaxTime > 0.0f) {
+            this->relaxTime += frameTime;
+        }
+
+        if (this->relaxTime >= 1.0f / this->firingSpeed) {
+            this->relaxTime = 0.0f;
+            this->firing = false;
+        }
+    }
 }
 
 }  // namespace Game

@@ -28,11 +28,13 @@
 #include "Weapon.h"
 #include "Widget.h"
 #include "Label.h"
+#include "ShotTrace.h"
 #include "SpriteEntity.h"
 #include "ResourceCache.h"
 #include "NonCopyable.h"
 
 #include <json-c/json.h>
+#include <Vec3.h>
 #include <string>
 #include <memory>
 
@@ -59,6 +61,7 @@ public:
     std::shared_ptr<Game::Player> createPlayer(const std::string& name) const;
     std::shared_ptr<Game::Weapon> createWeapon(const std::string& name) const;
     std::shared_ptr<Game::Widget> createWidget(const std::string& name) const;
+    std::shared_ptr<Game::ShotTrace> createTrace(const Math::Vec3& from, const Math::Vec3& to) const;
     std::shared_ptr<Game::Label> createLabel(const std::string& fontName, unsigned int size) const;
     std::shared_ptr<Game::SpriteEntity> createBlock(const std::string& name) const;
 
