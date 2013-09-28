@@ -109,7 +109,7 @@ public:
     }
 
 private:
-    void onRender() {
+    void beforeRender() {
         if (this->texture == nullptr) {
             return;
         }
@@ -117,6 +117,14 @@ private:
         this->texture->bind();
         this->effect->enable();
         this->effect->setUniform("transform", this->replication * this->shear);
+    }
+
+    void afterRender() {
+        if (this->texture == nullptr) {
+            return;
+        }
+
+        this->texture->unbind();
     }
 
     std::shared_ptr<Texture> texture;

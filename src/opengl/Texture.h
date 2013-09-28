@@ -54,6 +54,11 @@ public:
         glBindTexture(GL_TEXTURE_2D, this->texture);
     }
 
+    void unbind() {
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
 private:
     SDL_Surface* convertToRGBA(SDL_Surface* image);
 

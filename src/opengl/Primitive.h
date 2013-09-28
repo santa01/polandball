@@ -154,7 +154,8 @@ protected:
         GLenum renderMode;
     } PrimitiveData;
 
-    virtual void onRender() {}
+    virtual void beforeRender() {}
+    virtual void afterRender() {}
     void load(const PrimitiveData& data);
 
     std::shared_ptr<RenderEffect> effect;

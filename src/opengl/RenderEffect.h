@@ -113,6 +113,10 @@ public:
         glUseProgram(this->program);
     }
 
+    void disable() {
+        glUseProgram(0);
+    }
+
 private:
     GLint checkoutUniform(const std::string& name) {
         this->enable();

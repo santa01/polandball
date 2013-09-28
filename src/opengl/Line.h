@@ -69,7 +69,7 @@ public:
 private:
     void initialize();
 
-    void onRender() {
+    void beforeRender() {
         this->effect->enable();
         this->effect->setUniform("color", this->color);
     }

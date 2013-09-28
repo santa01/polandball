@@ -54,11 +54,14 @@ void Primitive::render() {
 
     this->effect->enable();
     this->effect->setUniform("lw", this->translation * this->rotation * this->scaling);
-    this->onRender();
+    this->beforeRender();
 
     glBindVertexArray(this->vao);
     glDrawElements(this->renderMode, this->vertexCount, GL_UNSIGNED_INT, (GLvoid*)0);
     glBindVertexArray(0);
+
+    this->afterRender();
+    this->effect->disable();
 }
 
 void Primitive::load(const PrimitiveData& data) {
