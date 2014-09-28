@@ -47,8 +47,8 @@ public:
     }
 
 protected:
-    virtual void onCollision(const std::shared_ptr<Entity>& another, Collider::CollideSide side) {}
-    virtual void animate(float frameTime) {}
+    virtual void onCollision(const std::shared_ptr<Entity>& /*another*/, Collider::CollideSide /*side*/) {}
+    virtual void animate(float /*frameTime*/) {}
 
     std::shared_ptr<Opengl::Line> line;
 };

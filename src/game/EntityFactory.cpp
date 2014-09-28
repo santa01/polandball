@@ -40,8 +40,9 @@ std::shared_ptr<Pack> EntityFactory::createPack(const std::string& name) const {
     std::shared_ptr<Game::Pack> pack(new Game::Pack());
     this->loadBase(pack, asset);
 
-    json_object* payload = json_object_object_get(asset.get(), "payload");
-    if (payload == nullptr || json_object_get_type(payload) != json_type_string) {
+    json_object* payload = nullptr;
+    if (!json_object_object_get_ex(asset.get(), "payload", &payload) ||
+            json_object_get_type(payload) != json_type_string) {
         Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter `payload' is not set");
     } else {
         std::string payloadValue(json_object_get_string(payload));
@@ -63,8 +64,8 @@ std::shared_ptr<Pack> EntityFactory::createPack(const std::string& name) const {
         pack->setPayloadType(payloadType);
     }
 
-    json_object* value = json_object_object_get(asset.get(), "value");
-    if (value == nullptr || json_object_get_type(value) != json_type_int) {
+    json_object* value = nullptr;
+    if (!json_object_object_get_ex(asset.get(), "value", &value) || json_object_get_type(value) != json_type_int) {
         Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter `value' is not set");
     } else {
         pack->setValue(json_object_get_int(value));
@@ -84,50 +85,55 @@ std::shared_ptr<Player> EntityFactory::createPlayer(const std::string& name) con
     std::shared_ptr<Game::Player> player(new Game::Player());
     this->loadBase(player, asset);
 
-    json_object* maxMoveSpeed = json_object_object_get(asset.get(), "max_move_speed");
-    if (maxMoveSpeed == nullptr || json_object_get_type(maxMoveSpeed) != json_type_double) {
+    json_object* maxMoveSpeed = nullptr;
+    if (!json_object_object_get_ex(asset.get(), "max_move_speed", &maxMoveSpeed) ||
+            json_object_get_type(maxMoveSpeed) != json_type_double) {
         Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter `max_move_speed' is not set");
     } else {
         player->setMaxMoveSpeed(json_object_get_double(maxMoveSpeed));
     }
 
-    json_object* maxJumpSpeed = json_object_object_get(asset.get(), "max_jump_speed");
-    if (maxJumpSpeed == nullptr || json_object_get_type(maxJumpSpeed) != json_type_double) {
+    json_object* maxJumpSpeed = nullptr;
+    if (!json_object_object_get_ex(asset.get(), "max_jump_speed", &maxJumpSpeed) ||
+            json_object_get_type(maxJumpSpeed) != json_type_double) {
         Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter `max_jump_speed' is not set");
     } else {
         player->setMaxJumpSpeed(json_object_get_double(maxJumpSpeed));
     }
 
-    json_object* maxJumpTime = json_object_object_get(asset.get(), "max_jump_time");
-    if (maxJumpTime == nullptr || json_object_get_type(maxJumpTime) != json_type_double) {
+    json_object* maxJumpTime = nullptr;
+    if (!json_object_object_get_ex(asset.get(), "max_jump_time", &maxJumpTime) ||
+            json_object_get_type(maxJumpTime) != json_type_double) {
         Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter `max_jump_time' is not set");
     } else {
         player->setMaxJumpTime(json_object_get_double(maxJumpTime));
     }
 
-    json_object* maxHealth = json_object_object_get(asset.get(), "max_health");
-    if (maxHealth == nullptr || json_object_get_type(maxHealth) != json_type_int) {
+    json_object* maxHealth = nullptr;
+    if (!json_object_object_get_ex(asset.get(), "max_health", &maxHealth) ||
+            json_object_get_type(maxHealth) != json_type_int) {
         Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter `max_health' is not set");
     } else {
         player->setMaxHealth(json_object_get_int(maxHealth));
     }
 
-    json_object* maxArmor = json_object_object_get(asset.get(), "max_armor");
-    if (maxArmor == nullptr || json_object_get_type(maxArmor) != json_type_int) {
+    json_object* maxArmor = nullptr;
+    if (!json_object_object_get_ex(asset.get(), "max_armor", &maxArmor) ||
+            json_object_get_type(maxArmor) != json_type_int) {
         Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter `max_armor' is not set");
     } else {
         player->setMaxArmor(json_object_get_int(maxArmor));
     }
 
-    json_object* health = json_object_object_get(asset.get(), "health");
-    if (health == nullptr || json_object_get_type(health) != json_type_int) {
+    json_object* health = nullptr;
+    if (!json_object_object_get_ex(asset.get(), "health", &health) || json_object_get_type(health) != json_type_int) {
         Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter `health' is not set");
     } else {
         player->setHealth(json_object_get_int(health));
     }
 
-    json_object* armor = json_object_object_get(asset.get(), "armor");
-    if (armor == nullptr || json_object_get_type(armor) != json_type_int) {
+    json_object* armor = nullptr;
+    if (!json_object_object_get_ex(asset.get(), "armor", &armor) || json_object_get_type(armor) != json_type_int) {
         Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter `armor' is not set");
     } else {
         player->setArmor(json_object_get_int(armor));
@@ -147,8 +153,9 @@ std::shared_ptr<Weapon> EntityFactory::createWeapon(const std::string& name) con
     std::shared_ptr<Game::Weapon> weapon(new Game::Weapon());
     this->loadBase(weapon, asset);
 
-    json_object* slot = json_object_object_get(asset.get(), "target_slot");
-    if (slot == nullptr || json_object_get_type(slot) != json_type_string) {
+    json_object* slot = nullptr;
+    if (!json_object_object_get_ex(asset.get(), "target_slot", &slot) ||
+            json_object_get_type(slot) != json_type_string) {
         Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter `target_slot' is not set");
     } else {
         std::string slotValue(json_object_get_string(slot));
@@ -168,29 +175,32 @@ std::shared_ptr<Weapon> EntityFactory::createWeapon(const std::string& name) con
         weapon->setTargetSlot(targetSlot);
     }
 
-    json_object* maxAmmo = json_object_object_get(asset.get(), "max_ammo");
-    if (maxAmmo == nullptr || json_object_get_type(maxAmmo) != json_type_int) {
+    json_object* maxAmmo = nullptr;
+    if (!json_object_object_get_ex(asset.get(), "max_ammo", &maxAmmo) ||
+            json_object_get_type(maxAmmo) != json_type_int) {
         Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter `max_ammo' is not set");
     } else {
         weapon->setMaxAmmo(json_object_get_int(maxAmmo));
     }
 
-    json_object* ammo = json_object_object_get(asset.get(), "ammo");
-    if (ammo == nullptr || json_object_get_type(ammo) != json_type_int) {
+    json_object* ammo = nullptr;
+    if (!json_object_object_get_ex(asset.get(), "ammo", &ammo) || json_object_get_type(ammo) != json_type_int) {
         Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter `ammo' is not set");
     } else {
         weapon->setAmmo(json_object_get_int(ammo));
     }
 
-    json_object* groupingAngle = json_object_object_get(asset.get(), "grouping_angle");
-    if (groupingAngle == nullptr || json_object_get_type(groupingAngle) != json_type_double) {
+    json_object* groupingAngle = nullptr;
+    if (!json_object_object_get_ex(asset.get(), "grouping_angle", &groupingAngle) ||
+            json_object_get_type(groupingAngle) != json_type_double) {
         Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter `grouping_angle' is not set");
     } else {
         weapon->setGroupingAngle(json_object_get_double(groupingAngle));
     }
 
-    json_object* firingSpeed = json_object_object_get(asset.get(), "firing_speed");
-    if (firingSpeed == nullptr || json_object_get_type(firingSpeed) != json_type_double) {
+    json_object* firingSpeed = nullptr;
+    if (!json_object_object_get_ex(asset.get(), "firing_speed", &firingSpeed) ||
+            json_object_get_type(firingSpeed) != json_type_double) {
         Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter `firing_speed' is not set");
     } else {
         weapon->setFiringSpeed(json_object_get_double(firingSpeed));
@@ -258,32 +268,37 @@ std::shared_ptr<SpriteEntity> EntityFactory::createBlock(const std::string& name
 
 void EntityFactory::loadBase(std::shared_ptr<Game::SpriteEntity> entity,
         const std::shared_ptr<json_object> asset) const {
-    json_object* texture = json_object_object_get(asset.get(), "texture");
-    if (texture == nullptr || json_object_get_type(texture) != json_type_string) {
+    json_object* texture = nullptr;
+    if (!json_object_object_get_ex(asset.get(), "texture", &texture) ||
+            json_object_get_type(texture) != json_type_string) {
         Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter `texture' is not set");
     } else {
         entity->getSprite()->setTexture(this->resourceCache->loadTexture(json_object_get_string(texture)));
     }
 
-    json_object* effect = json_object_object_get(asset.get(), "effect");
-    if (effect == nullptr || json_object_get_type(effect) != json_type_string) {
+    json_object* effect = nullptr;
+    if (!json_object_object_get_ex(asset.get(), "effect", &effect) ||
+            json_object_get_type(effect) != json_type_string) {
         Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter `effect' is not set");
     } else {
         entity->getSprite()->setEffect(this->resourceCache->loadEffect(json_object_get_string(effect)));
     }
 
-    json_object* visible = json_object_object_get(asset.get(), "visible");
-    if (visible != nullptr && json_object_get_type(visible) == json_type_boolean) {
+    json_object* visible = nullptr;
+    if (json_object_object_get_ex(asset.get(), "visible", &visible) &&
+            json_object_get_type(visible) == json_type_boolean) {
         entity->setVisible(json_object_get_boolean(visible));
     }
 
-    json_object* passive = json_object_object_get(asset.get(), "passive");
-    if (passive != nullptr && json_object_get_type(passive) == json_type_boolean) {
+    json_object* passive = nullptr;
+    if (json_object_object_get_ex(asset.get(), "passive", &passive) &&
+            json_object_get_type(passive) == json_type_boolean) {
         entity->setPassive(json_object_get_boolean(passive));
     }
 
-    json_object* collidable = json_object_object_get(asset.get(), "collidable");
-    if (collidable != nullptr && json_object_get_type(collidable) == json_type_boolean) {
+    json_object* collidable = nullptr;
+    if (json_object_object_get_ex(asset.get(), "collidable", &collidable) &&
+            json_object_get_type(collidable) == json_type_boolean) {
         entity->setCollidable(json_object_get_boolean(collidable));
     }
 }
