@@ -20,15 +20,9 @@
  * SOFTWARE.
  */
 
-#include "PolandBall.h"
-#include "Logger.h"
-#include "Sprite.h"
-#include "EntityFactory.h"
-
-#include <GL/glew.h>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <cstdlib>
+#include <PolandBall.h>
+#include <Sprite.h>
+#include <EntityFactory.h>
 #include <Vec3.h>
 #include <Vec4.h>
 #include <Mat4.h>
@@ -36,229 +30,41 @@
 
 namespace PolandBall {
 
-PolandBall::PolandBall(int argc, char** argv) {
-    this->window = nullptr;
-    this->context = nullptr;
-    this->argc = argc;
-    this->argv = argv;
+void PolandBall::onMouseMotion(int x, int y) {
+    Math::Mat4 ndc;
+    ndc.set(0, 0, 2.0f / (this->width / 1.0f));
+    ndc.set(0, 3, -1.0f);
+    ndc.set(1, 1, -2.0f / (this->height / 1.0f));
+    ndc.set(1, 3, 1.0f);
 
-    this->running = true;
-    this->frameTime = 0.0f;
-    this->frameStep = 0.001f;
+    Math::Mat4 world(this->scene->getCamera().getProjection());
+    world.invert();
+
+    Math::Vec4 cursorPosition = (world * ndc) * Math::Vec4(x, y, 0.0f, 1.0f);
+    this->cursor->setOrigin(cursorPosition.extractVec3());
+    this->player->aimAt(cursorPosition.extractVec3());
 }
 
-int PolandBall::exec() {
-    if (!this->parseCLI()) {
-        return ERROR_SETUP;
+void PolandBall::onMouseButton(Graphene::MouseButton button, bool state) {
+    if (button == Graphene::MouseButton::BUTTON_LEFT && state) {
+        this->player->shoot();
     }
-
-    if (this->arguments.isSet("help") || this->arguments.isSet("version")) {
-        return ERROR_OK;
-    }
-
-    if (!this->initialize()) {
-        this->shutdown();
-        return ERROR_SETUP;
-    }
-
-    SDL_Event event;
-    while (this->running) {
-        unsigned int beginFrame = SDL_GetTicks();
-
-        while (SDL_PollEvent(&event)) {
-            switch (event.type) {
-                case SDL_QUIT:
-                    this->running = false;
-                    break;
-
-                case SDL_MOUSEMOTION:
-                    this->onMouseMotion(event.motion);
-                    break;
-
-                case SDL_MOUSEBUTTONDOWN:
-                    this->onMouseButton(event.button);
-                    break;
-            }
-        }
-
-        this->onIdle();
-
-        this->frameTime = (SDL_GetTicks() - beginFrame) / 1000.0f;
-        float maxFrameTime = 1.0f / this->maxFps;
-
-        if (this->frameTime < maxFrameTime) {
-            SDL_Delay((maxFrameTime - this->frameTime) * 1000);
-            this->frameTime = maxFrameTime;
-        }
-
-        SDL_GL_SwapWindow(this->window);
-    }
-
-    this->shutdown();
-    return ERROR_OK;
 }
 
-bool PolandBall::initialize() {
-    Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Initializing...");
-
-    if (!this->initSDL() || !this->initOpenGL()) {
-        return false;
-    }
-
-    if (!this->initScene() || !this->initUi()) {
-        return false;
-    }
-
-    return true;
-}
-
-void PolandBall::shutdown() {
-    this->scene->getCamera().positionChanged.disconnectAll();
-    if (this->player != nullptr) {
-        this->player->positionChanged.disconnectAll();
-    }
-
-    this->player.reset();
-    this->cursor.reset();
-    this->scene.reset();
-
-    for (auto& weapon: this->weapons) {
-        weapon.first.reset();
-        weapon.second.reset();
-    }
-
-    this->emptySlot.reset();
-    this->armor.reset();
-    this->health.reset();
-
-    Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Cleaning caches...");
-    Game::EntityFactory::getInstance().getResourceCache()->purge();
-
-    if (this->context) {
-        SDL_GL_DeleteContext(this->context);
-    }
-
-    if (this->window) {
-        SDL_DestroyWindow(this->window);
-    }
-
-    IMG_Quit();
-    TTF_Quit();
-    SDL_Quit();
-
-    Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Shutting down...");
-}
-
-bool PolandBall::parseCLI() {
-    this->arguments.addArgument('v', "vsync", "vertical sync",
-            Utils::ArgumentParser::ArgumentType::TYPE_BOOL);
-    this->arguments.addArgument('F', "fps", "maximum fps limit",
-            Utils::ArgumentParser::ArgumentType::TYPE_FLOAT);
-    this->arguments.addArgument('h', "height", "viewport height",
-            Utils::ArgumentParser::ArgumentType::TYPE_INT);
-    this->arguments.addArgument('w', "width", "viewport width",
-            Utils::ArgumentParser::ArgumentType::TYPE_INT);
-
-    this->arguments.setDescription(POLANDBALL_DESCRIPTION);
-    this->arguments.setVersion(POLANDBALL_VERSION);
-
-    if (!this->arguments.parse(this->argc, this->argv)) {
-        return false;
-    }
-
-    this->vsync = this->arguments.isSet("vsync");
-    this->maxFps = this->arguments.isSet("fps") ? atof(this->arguments.getOption("fps").c_str()) : 100.0f;
-    this->height = this->arguments.isSet("height") ? atoi(this->arguments.getOption("height").c_str()) : 600;
-    this->width = this->arguments.isSet("width") ? atoi(this->arguments.getOption("width").c_str()) : 800;
-
-    return true;
-}
-
-bool PolandBall::initSDL() {
-    if (SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE)) {
-        Utils::Logger::getInstance().log(Utils::Logger::LOG_ERROR, "SDL_Init() failed: %s", SDL_GetError());
-        return false;
-    }
-
-    if (TTF_Init()) {
-        Utils::Logger::getInstance().log(Utils::Logger::LOG_ERROR, "TTF_Init() failed: %s", TTF_GetError());
-        return false;
-    }
-
-    if (!IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG)) {
-        Utils::Logger::getInstance().log(Utils::Logger::LOG_ERROR, "IMG_Init() failed: %s", IMG_GetError());
-        return false;
-    }
-
-    SDL_version sdlVersion;
-    SDL_GetVersion(&sdlVersion);
-    Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "SDL version: %d.%d.%d",
-            sdlVersion.major, sdlVersion.minor, sdlVersion.patch);
-
-    const SDL_version *sdlTtfVersion = TTF_Linked_Version();
-    Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "SDL_ttf version: %d.%d.%d",
-            sdlTtfVersion->major, sdlTtfVersion->minor, sdlTtfVersion->patch);
-
-    const SDL_version *sdlImageVersion = IMG_Linked_Version();
-    Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "SDL_image version: %d.%d.%d",
-            sdlImageVersion->major, sdlImageVersion->minor, sdlImageVersion->patch);
-
-    SDL_ShowCursor(0);
-    return true;
-}
-
-bool PolandBall::initOpenGL() {
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
-
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-
-    Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Initializing %d x %d viewport", this->width, this->height);
-    this->window = SDL_CreateWindow("Polandball The Gaem", 0, 0, this->width, this->height,
-            SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
-    if (this->window == nullptr) {
-        Utils::Logger::getInstance().log(Utils::Logger::LOG_ERROR, "SDL_CreateWindow() failed: %s", SDL_GetError());
-        return false;
-    }
-
-    this->context = SDL_GL_CreateContext(this->window);
-    if (this->context == nullptr) {
-        Utils::Logger::getInstance().log(Utils::Logger::LOG_ERROR, "SDL_GL_CreateContext() failed: %s", SDL_GetError());
-        return false;
-    }
-
-    Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "OpenGL vendor: %s", glGetString(GL_VENDOR));
-    Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "OpenGL version: %s", glGetString(GL_VERSION));
-
-    glewExperimental = GL_TRUE;
-    GLenum glewError = glewInit();
-    if (glewError != GLEW_OK) {
-        Utils::Logger::getInstance().log(Utils::Logger::LOG_ERROR, "glewInit() failed: %s",
-                glewGetErrorString(glewError));
-        return false;
-    }
-
-    Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "GLEW version: %s", glewGetString(GLEW_VERSION));
-
-    if (this->vsync && SDL_GL_SetSwapInterval(1)) {
-        Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "SDL_GL_SetSwapInterval() failed: %s",
-                SDL_GetError());
-    }
-
-    glEnable(GL_CULL_FACE);
-    glEnable(GL_BLEND);
+void PolandBall::onSetup() {
     glEnable(GL_LINE_SMOOTH);
-
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glViewport(0, 0, this->width, this->height);
     glLineWidth(0.5f);
 
-    return true;
+    this->setupScene();
+    this->setupUI();
 }
 
-bool PolandBall::initScene() {
+void PolandBall::onIdle() {
+    this->updateScene();
+    this->updateUI();
+}
+
+bool PolandBall::setupScene() {
     this->scene = std::shared_ptr<Game::Scene>(new Game::Scene());
 
     Game::Camera& camera = this->scene->getCamera();
@@ -407,7 +213,7 @@ bool PolandBall::initScene() {
     return true;
 }
 
-bool PolandBall::initUi() {
+bool PolandBall::setupUI() {
     Math::Mat4 ndc;
     ndc.set(0, 0, 2.0f / (this->width / 1.0f));
     ndc.set(0, 3, -1.0f);
@@ -569,61 +375,42 @@ bool PolandBall::initUi() {
     return true;
 }
 
-void PolandBall::onMouseMotion(SDL_MouseMotionEvent& event) {
-    Math::Mat4 ndc;
-    ndc.set(0, 0, 2.0f / (this->width / 1.0f));
-    ndc.set(0, 3, -1.0f);
-    ndc.set(1, 1, -2.0f / (this->height / 1.0f));
-    ndc.set(1, 3, 1.0f);
+void PolandBall::updateScene() {
+    const Graphene::KeyboardState& keyboardState = this->getWindow()->getKeyboardState();
 
-    Math::Mat4 world(this->scene->getCamera().getProjection());
-    world.invert();
-
-    Math::Vec4 cursorPosition = (world * ndc) * Math::Vec4(event.x, event.y, 0.0f, 1.0f);
-    this->cursor->setOrigin(cursorPosition.extractVec3());
-    this->player->aimAt(cursorPosition.extractVec3());
-}
-
-void PolandBall::onMouseButton(SDL_MouseButtonEvent& event) {
-    if (event.button == 0 && event.state == SDL_PRESSED) {
-        this->player->shoot();
+    if (keyboardState[Graphene::KeyboardKey::KEY_ESCAPE]) {
+        this->exit(0);
     }
-}
-
-void PolandBall::onIdle() {
-    const Uint8* keyStates = SDL_GetKeyboardState(nullptr);
-
-    if (keyStates[SDL_SCANCODE_ESCAPE] > 0) {
-        this->running = false;
-    }
-    if (keyStates[SDL_SCANCODE_RIGHT] > 0) {
+    if (keyboardState[Graphene::KeyboardKey::KEY_RIGHT]) {
         this->player->setState(Game::Player::PlayerState::STATE_RIGHT_STEP);
     }
-    if (keyStates[SDL_SCANCODE_LEFT] > 0) {
+    if (keyboardState[Graphene::KeyboardKey::KEY_LEFT]) {
         this->player->setState(Game::Player::PlayerState::STATE_LEFT_STEP);
     }
-    if (keyStates[SDL_SCANCODE_UP] > 0) {
+    if (keyboardState[Graphene::KeyboardKey::KEY_UP]) {
         this->player->setState(Game::Player::PlayerState::STATE_JUMP);
     }
-    if (keyStates[SDL_SCANCODE_RETURN] > 0) {
+    if (keyboardState[Graphene::KeyboardKey::KEY_ENTER]) {
         this->player->setState(Game::Player::PlayerState::STATE_DROP_WEAPON);
     }
-    if (keyStates[SDL_SCANCODE_1] > 0) {
+    if (keyboardState[Graphene::KeyboardKey::KEY_1]) {
         this->player->activateSlot(Game::Weapon::WeaponSlot::SLOT_PRIMARY);
     }
-    if (keyStates[SDL_SCANCODE_2] > 0) {
+    if (keyboardState[Graphene::KeyboardKey::KEY_2]) {
         this->player->activateSlot(Game::Weapon::WeaponSlot::SLOT_SECONDARY);
     }
-    if (keyStates[SDL_SCANCODE_3] > 0) {
+    if (keyboardState[Graphene::KeyboardKey::KEY_3]) {
         this->player->activateSlot(Game::Weapon::WeaponSlot::SLOT_MEELE);
     }
 
-    Uint32 mouseState = SDL_GetMouseState(nullptr, nullptr);
+    const Graphene::MouseState& mouseState = this->getWindow()->getMouseState();
 
-    if ((mouseState & SDL_BUTTON_LMASK) > 0) {
+    if (mouseState[Graphene::MouseButton::BUTTON_LEFT]) {
         this->player->shoot();
     }
+}
 
+void PolandBall::updateUI() {
     std::stringstream text;
     int weaponAmmo = 0;
 

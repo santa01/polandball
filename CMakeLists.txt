@@ -50,7 +50,7 @@ set (POLANDBALL_EXECUTABLE polandball)
 set (POLANDBALL_RESOURCE_DIRS assets fonts shaders sounds textures)
 
 file (GLOB_RECURSE POLANDBALL_SOURCES src/*.cpp)
-include_directories (src src/common src/game src/opengl src/utils ${PROJECT_BINARY_DIR} ${GRAPHENE_INCLUDE_DIRS} ${MATH_INCLUDE_DIRS} ${SIGNALS_INCLUDE_DIRS})
+include_directories (src src/game src/opengl src/utils ${PROJECT_BINARY_DIR} ${GRAPHENE_INCLUDE_DIRS} ${MATH_INCLUDE_DIRS} ${SIGNALS_INCLUDE_DIRS})
 
 add_executable (${POLANDBALL_EXECUTABLE} ${POLANDBALL_SOURCES})
 set_target_properties (${POLANDBALL_EXECUTABLE} PROPERTIES

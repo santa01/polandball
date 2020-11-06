@@ -23,46 +23,27 @@
 #ifndef POLANDBALL_H
 #define POLANDBALL_H
 
-#include "Entity.h"
-#include "Label.h"
-#include "Player.h"
-#include "Scene.h"
-#include "NonCopyable.h"
-#include "ArgumentParser.h"
-
-#include <SDL2/SDL_events.h>
+#include <Engine.h>
+#include <Entity.h>
+#include <Label.h>
+#include <Player.h>
+#include <Scene.h>
 #include <memory>
 #include <utility>
 
 namespace PolandBall {
 
-class PolandBall: public Common::NonCopyable {
-public:
-    enum {
-        ERROR_OK,
-        ERROR_SETUP
-    };
-
-    PolandBall(int argc, char** argv);
-    int exec();
-
+class PolandBall: public Graphene::Engine {
 private:
-    bool initialize();
-    void shutdown();
+    void onMouseMotion(int x, int y) override;
+    void onMouseButton(Graphene::MouseButton button, bool state) override;
+    void onSetup() override;
+    void onIdle() override;
 
-    bool parseCLI();
-    bool initSDL();
-    bool initOpenGL();
-    bool initScene();
-    bool initUi();
-
-    void onMouseMotion(SDL_MouseMotionEvent& event);
-    void onMouseButton(SDL_MouseButtonEvent& event);
-    void onIdle();
-
-    SDL_Window* window;
-    SDL_GLContext context;
-    Utils::ArgumentParser arguments;
+    bool setupScene();
+    bool setupUI();
+    void updateScene();
+    void updateUI();
 
     std::shared_ptr<Game::Scene> scene;
     std::shared_ptr<Game::Player> player;
@@ -73,18 +54,6 @@ private:
     std::shared_ptr<Game::Entity> emptySlot;
     std::shared_ptr<Game::Label> health;
     std::shared_ptr<Game::Label> armor;
-
-    int argc;
-    char** argv;
-
-    int width;
-    int height;
-    float maxFps;
-    bool vsync;
-
-    bool running;
-    float frameTime;
-    float frameStep;
 };
 
 }  // namespace PolandBall
