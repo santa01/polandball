@@ -20,66 +20,53 @@
 # SOFTWARE.
 #
 
-cmake_minimum_required (VERSION 2.6)
+cmake_minimum_required (VERSION 3.12)
 project (POLANDBALL)
 
-if (CMAKE_COMPILER_IS_GNUCC)
-    execute_process (COMMAND ${CMAKE_CXX_COMPILER} -dumpversion
-                     OUTPUT_VARIABLE GCC_VERSION)
-    string (STRIP ${GCC_VERSION} GCC_VERSION)
+find_path (GRAPHENE_INCLUDE_DIRS NAMES GrapheneApi.h HINTS ENV GRAPHENE_DIR PATH_SUFFIXES include)
+find_library (GRAPHENE_LIBRARIES NAMES graphene graphene-shared HINTS ENV GRAPHENE_DIR PATH_SUFFIXES lib)
+if (NOT GRAPHENE_INCLUDE_DIRS OR NOT GRAPHENE_LIBRARIES)
+    message (FATAL_ERROR "Could NOT find Graphene")
 endif ()
 
-if (DEFINED GCC_VERSION AND GCC_VERSION VERSION_GREATER 4.7.0)
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -std=gnu++11")
-    set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")
-    set (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
-    set (CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} -Os")
-    set (CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -g -O3")
-else ()
-    message (FATAL_ERROR "GCC 4.7.0 or higher is required!")
+find_path (MATH_INCLUDE_DIRS NAMES MathApi.h HINTS ENV MATH_DIR PATH_SUFFIXES include)
+find_library (MATH_LIBRARIES NAMES math math-shared HINTS ENV MATH_DIR PATH_SUFFIXES lib)
+if (NOT MATH_INCLUDE_DIRS OR NOT MATH_LIBRARIES)
+    message (FATAL_ERROR "Could NOT find Math")
 endif ()
 
-find_package (OpenGL REQUIRED)
-find_package (GLEW REQUIRED)
-
-include (FindPkgConfig)
-pkg_search_module (SDL2 REQUIRED sdl2)
-pkg_search_module (SDL2_TTF REQUIRED SDL2_ttf)
-pkg_search_module (SDL2_IMAGE REQUIRED SDL2_image)
-pkg_search_module (JSON_C REQUIRED json-c)
-pkg_search_module (MATH REQUIRED math)
-
-include (CheckIncludeFileCXX)
-CHECK_INCLUDE_FILE_CXX (Signals.h HAVE_SIGNALS_H)
-if (NOT HAVE_SIGNALS_H)
-    message (FATAL_ERROR "Header Signals.h not found!")
+find_path (SIGNALS_INCLUDE_DIRS NAMES Signals.h HINTS ENV SIGNALS_DIR PATH_SUFFIXES include)
+if (NOT SIGNALS_INCLUDE_DIRS)
+    message (FATAL_ERROR "Could NOT find Signals")
 endif ()
-
-set (POLANDBALL_DATADIR ${CMAKE_INSTALL_PREFIX}/share/rubik
-     CACHE PATH "Data directory")
-set (POLANDBALL_RESOURCES assets fonts shaders sounds textures)
-set (POLANDBALL_INCLUDE src src/common src/game src/opengl src/utils)
-
-file (GLOB_RECURSE POLANDBALL_SOURCES src/*.cpp)
-include_directories (${POLANDBALL_INCLUDE} ${MATH_INCLUDE_DIRS}
-                     ${PROJECT_BINARY_DIR})
 
 set (POLANDBALL_NAME PolandBall)
 set (POLANDBALL_DESCRIPTION "PolandBall the Gaem")
 set (POLANDBALL_VERSION 0.0.1)
 
-configure_file (Config.h.in Config.h @ONLY)
+set (POLANDBALL_DATADIR ${CMAKE_INSTALL_PREFIX}/$<IF:$<BOOL:UNIX>,share/polandball,data> CACHE PATH "Data directory")
 
 set (POLANDBALL_EXECUTABLE polandball)
-add_executable (${POLANDBALL_EXECUTABLE} ${POLANDBALL_SOURCES})
+set (POLANDBALL_RESOURCE_DIRS assets fonts shaders sounds textures)
 
-target_link_libraries (${POLANDBALL_EXECUTABLE} ${OPENGL_LIBRARIES})
-target_link_libraries (${POLANDBALL_EXECUTABLE} ${SDL2_LIBRARIES})
-target_link_libraries (${POLANDBALL_EXECUTABLE} ${SDL2_TTF_LIBRARIES})
-target_link_libraries (${POLANDBALL_EXECUTABLE} ${SDL2_IMAGE_LIBRARIES})
-target_link_libraries (${POLANDBALL_EXECUTABLE} ${JSON_C_LIBRARIES})
-target_link_libraries (${POLANDBALL_EXECUTABLE} ${GLEW_LIBRARIES})
-target_link_libraries (${POLANDBALL_EXECUTABLE} ${MATH_LIBRARIES})
+file (GLOB_RECURSE POLANDBALL_SOURCES src/*.cpp)
+include_directories (src src/common src/game src/opengl src/utils ${PROJECT_BINARY_DIR} ${GRAPHENE_INCLUDE_DIRS} ${MATH_INCLUDE_DIRS} ${SIGNALS_INCLUDE_DIRS})
+
+add_executable (${POLANDBALL_EXECUTABLE} ${POLANDBALL_SOURCES})
+set_target_properties (${POLANDBALL_EXECUTABLE} PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    CXX_EXTENSIONS NO
+)
+target_compile_options (${POLANDBALL_EXECUTABLE} PUBLIC
+    $<$<CXX_COMPILER_ID:GNU>:-Wall -Wextra -Werror -pedantic>
+    $<$<CXX_COMPILER_ID:MSVC>:/WX>
+)
+
+set (POLANDBALL_LINK_LIBRARIES ${GRAPHENE_LIBRARIES} ${MATH_LIBRARIES})
+target_link_libraries (${POLANDBALL_EXECUTABLE} ${POLANDBALL_LINK_LIBRARIES})
+
+configure_file (Config.h.in Config.h @ONLY)
 
 install (TARGETS ${POLANDBALL_EXECUTABLE} DESTINATION bin)
-install (DIRECTORY ${POLANDBALL_RESOURCES} DESTINATION ${POLANDBALL_DATADIR})
+install (DIRECTORY ${POLANDBALL_RESOURCE_DIRS} DESTINATION ${POLANDBALL_DATADIR})
