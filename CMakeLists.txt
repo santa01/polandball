@@ -40,6 +40,12 @@ if (NOT SIGNALS_INCLUDE_DIRS)
     message (FATAL_ERROR "Could NOT find Signals")
 endif ()
 
+find_path (JSON_C_INCLUDE_DIRS NAMES json-c/json.h HINTS ENV JSON_C_DIR PATH_SUFFIXES include)
+find_library (JSON_C_LIBRARIES NAMES json-c HINTS ENV JSON_C_DIR PATH_SUFFIXES lib)
+if (NOT JSON_C_INCLUDE_DIRS OR NOT JSON_C_LIBRARIES)
+    message (FATAL_ERROR "Could NOT find json-c")
+endif ()
+
 set (POLANDBALL_NAME PolandBall)
 set (POLANDBALL_DESCRIPTION "PolandBall the Gaem")
 set (POLANDBALL_VERSION 0.0.1)
@@ -49,8 +55,27 @@ set (POLANDBALL_DATADIR ${CMAKE_INSTALL_PREFIX}/$<IF:$<BOOL:UNIX>,share/polandba
 set (POLANDBALL_EXECUTABLE polandball)
 set (POLANDBALL_RESOURCE_DIRS assets fonts shaders sounds textures)
 
-file (GLOB_RECURSE POLANDBALL_SOURCES src/*.cpp)
-include_directories (src src/game src/opengl src/utils ${PROJECT_BINARY_DIR} ${GRAPHENE_INCLUDE_DIRS} ${MATH_INCLUDE_DIRS} ${SIGNALS_INCLUDE_DIRS})
+# file (GLOB_RECURSE POLANDBALL_SOURCES src/*.cpp)
+set (POLANDBALL_SOURCES src/main.cpp
+                        src/ArgumentParser.cpp
+                        src/PolandBall.cpp
+                        # src/game/Collider.cpp
+                        src/game/BaseEntity.cpp
+                        src/game/EntityFactory.cpp
+                        src/game/SpriteEntity.cpp
+                        # src/game/Pack.cpp
+                        # src/game/Player.cpp
+                        # src/game/Weapon.cpp
+                        # src/game/LineEntity.cpp
+                        # src/game/ShotTrace.cpp
+                        # src/game/Scene.cpp
+                        # src/opengl/Line.cpp
+                        # src/opengl/RenderEffect.cpp
+                        # src/opengl/ShaderLoader.cpp
+                        src/utils/ResourceCache.cpp
+)
+# include_directories (src src/game src/opengl src/utils ${PROJECT_BINARY_DIR} ${GRAPHENE_INCLUDE_DIRS} ${MATH_INCLUDE_DIRS} ${SIGNALS_INCLUDE_DIRS} ${JSON_C_INCLUDE_DIRS})
+include_directories (src src/game src/utils ${PROJECT_BINARY_DIR} ${GRAPHENE_INCLUDE_DIRS} ${MATH_INCLUDE_DIRS} ${SIGNALS_INCLUDE_DIRS} ${JSON_C_INCLUDE_DIRS})
 
 add_executable (${POLANDBALL_EXECUTABLE} ${POLANDBALL_SOURCES})
 set_target_properties (${POLANDBALL_EXECUTABLE} PROPERTIES
@@ -63,7 +88,7 @@ target_compile_options (${POLANDBALL_EXECUTABLE} PUBLIC
     $<$<CXX_COMPILER_ID:MSVC>:/WX>
 )
 
-set (POLANDBALL_LINK_LIBRARIES ${GRAPHENE_LIBRARIES} ${MATH_LIBRARIES})
+set (POLANDBALL_LINK_LIBRARIES ${GRAPHENE_LIBRARIES} ${MATH_LIBRARIES} ${JSON_C_LIBRARIES})
 target_link_libraries (${POLANDBALL_EXECUTABLE} ${POLANDBALL_LINK_LIBRARIES})
 
 configure_file (Config.h.in Config.h @ONLY)
