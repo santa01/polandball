@@ -23,34 +23,21 @@
 #ifndef SPRITEENTITY_H
 #define SPRITEENTITY_H
 
-#include "Entity.h"
-#include "Collider.h"
-#include "Sprite.h"
-
+#include <BaseEntity.h>
+// #include <Collider.h>
 #include <memory>
 
 namespace PolandBall {
 
 namespace Game {
 
-class SpriteEntity: public Entity {
+class SpriteEntity: public BaseEntity {
 public:
-    SpriteEntity():
-            sprite(new Opengl::Sprite()) {
-        this->primitive = this->sprite;
-    }
-
-    virtual ~SpriteEntity() {}
-
-    const std::shared_ptr<Opengl::Sprite>& getSprite() const {
-        return this->sprite;
-    }
+    virtual ~SpriteEntity() = default;
 
 protected:
-    virtual void onCollision(const std::shared_ptr<Entity>& /*another*/, Collider::CollideSide /*side*/) {}
-    virtual void animate(float /*frameTime*/) {}
-
-    std::shared_ptr<Opengl::Sprite> sprite;
+    // virtual void onCollision(const std::shared_ptr<Entity>& /*another*/, Collider::CollideSide /*side*/) override {}
+    virtual void animate(float /*frameTime*/) override {}
 };
 
 }  // namespace Game

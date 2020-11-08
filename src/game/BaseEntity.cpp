@@ -20,11 +20,59 @@
  * SOFTWARE.
  */
 
-#include "Entity.h"
+#include <BaseEntity.h>
 
 namespace PolandBall {
 
 namespace Game {
+
+BaseEntity::BaseEntity() {
+        // collider(std::make_shared<Collider>()) {
+}
+
+EntityType BaseEntity::getType() const {
+    return this->type;
+}
+
+const Math::Vec3& BaseEntity::getSpeed() const {
+    return this->speed;
+}
+
+void BaseEntity::setSpeed(const Math::Vec3& speed) {
+    this->speed = speed;
+}
+
+void BaseEntity::accelerateBy(const Math::Vec3& acceleration) {
+    this->speed += acceleration;
+}
+
+bool BaseEntity::isPassive() const {
+    return this->passive;
+}
+
+void BaseEntity::setPassive(bool passive) {
+    this->passive = passive;
+}
+
+bool BaseEntity::isCollidable() const {
+    return this->collidable;
+}
+
+void BaseEntity::setCollidable(bool collidable) {
+    this->collidable = collidable;
+}
+
+void BaseEntity::destroy() {
+    this->destroyed = true;
+}
+
+// const std::shared_ptr<Collider>& BaseEntity::getCollider() const {
+//     return this->collider;
+// }
+
+// void BaseEntity::setCollider(const std::shared_ptr<Collider>& collider) {
+//     this->collider = collider;
+// }
 
 }  // namespace Game
 

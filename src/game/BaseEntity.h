@@ -20,19 +20,12 @@
  * SOFTWARE.
  */
 
-#ifndef ENTITY_H
-#define ENTITY_H
+#ifndef BASEENTITY_H
+#define BASEENTITY_H
 
-#include "Collider.h"
-#include "Primitive.h"
-#include "RenderEffect.h"
-#include "Texture.h"
-#include "Movable.h"
-#include "Scalable.h"
-#include "Transformable.h"
-
+#include <Entity.h>
+// #include <Collider.h>
 #include <Vec3.h>
-#include <Signals.h>
 #include <memory>
 #include <utility>
 
@@ -40,171 +33,47 @@ namespace PolandBall {
 
 namespace Game {
 
-class Entity: public Common::Movable, public Common::Rotatable, public Common::Scalable {
+enum class EntityType { GENERIC, PLAYER, WEAPON, PACK };
+
+class BaseEntity: public Graphene::Entity {
 public:
-    enum EntityType {
-        TYPE_GENERIC,  // First to render
-        TYPE_PLAYER,
-        TYPE_WEAPON,
-        TYPE_PACK,
-        TYPE_WIDGET    // Last to render
-    };
+    BaseEntity();
+    virtual ~BaseEntity() = default;
 
-    Entity():
-            collider(new Collider()) {
-        this->type = EntityType::TYPE_GENERIC;
-        this->visible = true;
-        this->passive = true;
-        this->collidable = true;
-        this->destroyed = false;
-    }
+    EntityType getType() const;
 
-    virtual ~Entity() {}
+    const Math::Vec3& getSpeed() const;
+    void setSpeed(const Math::Vec3& speed);
+    void accelerateBy(const Math::Vec3& acceleration);
 
-    using Movable::setPosition;
+    bool isPassive() const;
+    void setPassive(bool passive);
 
-    void setPosition(const Math::Vec3& position) {
-        this->primitive->setPosition(this->origin + position);
-        this->collider->setPosition(this->origin + position);
-        this->positionChanged(position);
-    }
+    bool isCollidable() const;
+    void setCollidable(bool collidable);
 
-    Math::Vec3 getPosition() const {
-        return this->primitive->getPosition();
-    }
+    void destroy();
 
-    float getXAngle() const {
-        return this->primitive->getXAngle();
-    }
-
-    float getYAngle() const {
-        return this->primitive->getYAngle();
-    }
-
-    float getZAngle() const {
-        return this->primitive->getZAngle();
-    }
-
-    void rotate(const Math::Vec3& vector, float angle) {
-        this->primitive->rotate(vector, angle);
-    }
-
-    void scaleX(float factor) {
-        this->primitive->scaleX(factor);
-        this->collider->scaleX(factor);
-    }
-
-    void scaleY(float factor) {
-        this->primitive->scaleY(factor);
-        this->collider->scaleY(factor);
-    }
-
-    void scaleZ(float factor) {
-        this->primitive->scaleZ(factor);
-        this->collider->scaleZ(factor);
-    }
-
-    float getXFactor() const {
-        return this->primitive->getXFactor();
-    }
-
-    float getYFactor() const {
-        return this->primitive->getYFactor();
-    }
-
-    float getZFactor() const {
-        return this->primitive->getZFactor();
-    }
-
-    EntityType getType() const {
-        return this->type;
-    }
-
-    const Math::Vec3& getOrigin() const {
-        return this->origin;
-    }
-
-    void setOrigin(float x, float y, float z) {
-        this->setOrigin(Math::Vec3(x, y, z));
-    }
-
-    void setOrigin(const Math::Vec3& origin) {
-        this->origin = origin;
-        this->setPosition(this->getPosition());
-    }
-
-    const std::unique_ptr<Collider>& getCollider() const {
-        return this->collider;
-    }
-
-    const std::shared_ptr<Opengl::Primitive>& getPrimitive() const {
-        return this->primitive;
-    }
-
-    const Math::Vec3& getSpeed() const {
-        return this->currentSpeed;
-    }
-
-    void setSpeed(const Math::Vec3& speed) {
-        this->currentSpeed = speed;
-    }
-
-    void accelerateBy(const Math::Vec3& acceleration) {
-        this->currentSpeed += acceleration;
-    }
-
-    bool isVisible() const {
-        return this->visible;
-    }
-
-    void setVisible(bool visible) {
-        this->visible = visible;
-    }
-
-    bool isPassive() const {
-        return this->passive;
-    }
-
-    void setPassive(bool passive) {
-        this->passive = passive;
-    }
-
-    bool isCollidable() const {
-        return this->collidable;
-    }
-
-    void setCollidable(bool collidable) {
-        this->collidable = collidable;
-    }
-
-    void destroy() {
-        this->destroyed = true;
-    }
-
-    Signals::Signal<Math::Vec3> positionChanged;
+    // const std::shared_ptr<Collider>& getCollider() const;
+    // void setCollider(const std::shared_ptr<Collider>& collider);
 
 protected:
-    friend class Scene;
-
-    virtual void onCollision(const std::shared_ptr<Entity>& another, Collider::CollideSide side) = 0;
+    // virtual void onCollision(const std::shared_ptr<BaseEntity>& another, Collider::CollideSide side) = 0;
     virtual void animate(float frameTime) = 0;
 
-    std::unique_ptr<Collider> collider;
-    std::shared_ptr<Opengl::Primitive> primitive;
-    std::weak_ptr<class Scene> scene;
+    EntityType type = EntityType::GENERIC;
+    Math::Vec3 speed;
 
-    Math::Vec3 currentSpeed;
-    Math::Vec3 origin;
+    bool passive = true;
+    bool collidable = true;
+    bool destroyed = false;
 
-    EntityType type;
-    bool visible;
-    bool passive;
-    bool collidable;
-    bool destroyed;
+    // std::shared_ptr<Collider> collider;
+
 };
 
 }  // namespace Game
 
 }  // namespace PolandBall
 
-#endif  // ENTITY_H
+#endif  // BASEENTITY_H

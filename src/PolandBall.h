@@ -24,10 +24,9 @@
 #define POLANDBALL_H
 
 #include <Engine.h>
-#include <Entity.h>
+#include <BaseEntity.h>
 #include <Label.h>
-#include <Player.h>
-#include <Scene.h>
+// #include <Player.h>
 #include <memory>
 #include <utility>
 
@@ -40,20 +39,19 @@ private:
     void onSetup() override;
     void onIdle() override;
 
-    bool setupScene();
-    bool setupUI();
+    void setupScene();
+    void setupUI();
     void updateScene();
     void updateUI();
 
-    std::shared_ptr<Game::Scene> scene;
-    std::shared_ptr<Game::Player> player;
-    std::shared_ptr<Game::Entity> cursor;
+    // std::shared_ptr<Game::Player> player;
+    std::shared_ptr<Game::BaseEntity> cursor;
 
     // Requires sync if Weapon::WeaponSlot is updated
-    std::pair<std::shared_ptr<Game::Entity>, std::shared_ptr<Game::Label>> weapons[3];
-    std::shared_ptr<Game::Entity> emptySlot;
-    std::shared_ptr<Game::Label> health;
-    std::shared_ptr<Game::Label> armor;
+    std::pair<std::shared_ptr<Game::BaseEntity>, std::shared_ptr<Graphene::Label>> weapons[3];
+    std::shared_ptr<Game::BaseEntity> emptySlot;
+    std::shared_ptr<Graphene::Label> health;
+    std::shared_ptr<Graphene::Label> armor;
 };
 
 }  // namespace PolandBall

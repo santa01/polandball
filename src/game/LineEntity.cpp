@@ -20,11 +20,23 @@
  * SOFTWARE.
  */
 
-#include "LineEntity.h"
+#include <LineEntity.h>
 
 namespace PolandBall {
 
 namespace Game {
+
+LineEntity::LineEntity():
+        line(std::make_shared<Opengl::Line>()) {
+}
+
+const std::shared_ptr<Opengl::Line>& LineEntity::getLine() const {
+    return this->line;
+}
+
+void LineEntity::setLine(const std::shared_ptr<Opengl::Line>& line) {
+    this->line = line;
+}
 
 }  // namespace Game
 

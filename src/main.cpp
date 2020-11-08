@@ -30,14 +30,14 @@ int main(int argc, char** argv) {
     arguments.setDescription(POLANDBALL_DESCRIPTION);
     arguments.setVersion(POLANDBALL_VERSION);
 
-    arguments.addArgument('f', "fov", "camera field of view", Rubik::ValueType::FLOAT);
-    arguments.addArgument('h', "height", "viewport height", Rubik::ValueType::INT);
-    arguments.addArgument('w', "width", "viewport width", Rubik::ValueType::INT);
-    arguments.addArgument('s', "samples", "MSAA samples", Rubik::ValueType::INT);
-    arguments.addArgument('F', "fps", "maximum fps limit", Rubik::ValueType::FLOAT);
-    arguments.addArgument('v', "vsync", "vertical sync", Rubik::ValueType::BOOL);
-    arguments.addArgument('d', "debug", "debug logging", Rubik::ValueType::BOOL);
-    arguments.addArgument('D', "data", "game data directory", Rubik::ValueType::STRING);
+    arguments.addArgument('f', "fov", "camera field of view", PolandBall::ValueType::FLOAT);
+    arguments.addArgument('h', "height", "viewport height", PolandBall::ValueType::INT);
+    arguments.addArgument('w', "width", "viewport width", PolandBall::ValueType::INT);
+    arguments.addArgument('s', "samples", "MSAA samples", PolandBall::ValueType::INT);
+    arguments.addArgument('F', "fps", "maximum fps limit", PolandBall::ValueType::FLOAT);
+    arguments.addArgument('v', "vsync", "vertical sync", PolandBall::ValueType::BOOL);
+    arguments.addArgument('d', "debug", "debug logging", PolandBall::ValueType::BOOL);
+    arguments.addArgument('D', "data", "game data directory", PolandBall::ValueType::STRING);
 
     if (!arguments.parse(argc, argv)) {
         return EXIT_FAILURE;
@@ -55,7 +55,7 @@ int main(int argc, char** argv) {
     config.setMaxFps(arguments.isSet("fps") ? stof(arguments.getOption("fps")) : 0.0f);
     config.setVsync(arguments.isSet("vsync"));
     config.setDebug(arguments.isSet("debug"));
-    config.setDataDirectory(arguments.isSet("data") ? arguments.getOption("data") : RUBIK_DATADIR);
+    config.setDataDirectory(arguments.isSet("data") ? arguments.getOption("data") : POLANDBALL_DATADIR);
 
     PolandBall::PolandBall polandball;
     return polandball.exec();

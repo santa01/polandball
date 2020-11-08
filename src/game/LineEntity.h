@@ -23,32 +23,26 @@
 #ifndef LINEENTITY_H
 #define LINEENTITY_H
 
-#include "Entity.h"
-#include "Collider.h"
-#include "Line.h"
-
+#include <BaseEntity.h>
+// #include <Collider.h>
+#include <Line.h>
 #include <memory>
 
 namespace PolandBall {
 
 namespace Game {
 
-class LineEntity: public Entity {
+class LineEntity: public BaseEntity {
 public:
-    LineEntity():
-            line(new Opengl::Line()) {
-        this->primitive = this->line;
-    }
+    LineEntity();
+    virtual ~LineEntity() = default;
 
-    virtual ~LineEntity() {}
-
-    const std::shared_ptr<Opengl::Line>& getLine() const {
-        return this->line;
-    }
+    const std::shared_ptr<Opengl::Line>& getLine() const;
+    void setLine(const std::shared_ptr<Opengl::Line>& line);
 
 protected:
-    virtual void onCollision(const std::shared_ptr<Entity>& /*another*/, Collider::CollideSide /*side*/) {}
-    virtual void animate(float /*frameTime*/) {}
+    // virtual void onCollision(const std::shared_ptr<Entity>& /*another*/, Collider::CollideSide /*side*/) override {}
+    virtual void animate(float /*frameTime*/) override {}
 
     std::shared_ptr<Opengl::Line> line;
 };

@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-#include "SpriteEntity.h"
+#include <SpriteEntity.h>
 
 namespace PolandBall {
 
