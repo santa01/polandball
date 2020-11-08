@@ -23,53 +23,33 @@
 #ifndef RESOURCECACHE_H
 #define RESOURCECACHE_H
 
-#include "Texture.h"
-#include "Config.h"
-#include "RenderEffect.h"
-#include "NonCopyable.h"
-
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
+#include <NonCopyable.h>
+#include <Font.h>
 #include <json-c/json.h>
 #include <unordered_map>
 #include <string>
 #include <memory>
-#include <sstream>
+
+#define GetResourceCache() ResourceCache::getInstance()
 
 namespace PolandBall {
 
 namespace Utils {
 
-class ResourceCache: public Common::NonCopyable {
+class ResourceCache: public Graphene::NonCopyable {
 public:
-    std::shared_ptr<Opengl::Texture>& loadTexture(const std::string& name);
-    std::shared_ptr<Opengl::RenderEffect>& loadEffect(const std::string& name);
-    std::shared_ptr<json_object>& loadAsset(const std::string& name);
-    std::shared_ptr<TTF_Font>& loadFont(const std::string& name, unsigned int size);
+    static ResourceCache& getInstance();
 
-    void purge();
+    const std::shared_ptr<json_object>& loadAsset(const std::string& name);
+    const std::shared_ptr<Graphene::Font>& loadFont(const std::string& name, int size);
+
+    void teardown();
 
 private:
-    void insertTexture(const std::string& name, SDL_Surface* image) {
-        std::shared_ptr<Opengl::Texture> texture(new Opengl::Texture());
-        texture->load(image);
-        this->textureCache.insert(std::make_pair(name, texture));
-    }
+    ResourceCache() = default;
 
-    void insertEffect(const std::string& name, const std::string& source);
-
-    const std::string buildPath(const std::string& name) const {
-        std::stringstream fullPath;
-        fullPath << POLANDBALL_DATADIR << "/" << name;
-        return fullPath.str();
-    }
-
-    std::unique_ptr<char[]> loadSource(const std::string& name) const;
-
-    std::unordered_map<std::string, std::shared_ptr<Opengl::Texture>> textureCache;
-    std::unordered_map<std::string, std::shared_ptr<Opengl::RenderEffect>> effectCache;
     std::unordered_map<std::string, std::shared_ptr<json_object>> assetCache;
-    std::unordered_map<std::string, std::unordered_map<int, std::shared_ptr<TTF_Font>>> fontCache;
+    std::unordered_map<std::string, std::shared_ptr<Graphene::Font>> fontCache;
 };
 
 }  // namespace Utils

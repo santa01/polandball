@@ -20,180 +20,84 @@
  * SOFTWARE.
  */
 
-#include "ResourceCache.h"
-#include "Logger.h"
-#include "ShaderLoader.h"
-
+#include <ResourceCache.h>
+#include <EngineConfig.h>
+#include <Config.h>
+#include <Logger.h>
 #include <fstream>
+#include <exception>
 
 namespace PolandBall {
 
 namespace Utils {
 
-std::shared_ptr<Opengl::Texture>& ResourceCache::loadTexture(const std::string& name) {
-    if (this->textureCache.find(name) == this->textureCache.end()) {
-        Logger::getInstance().log(Logger::LOG_INFO, "Image `%s' not in cache, trying to load", name.c_str());
-
-        SDL_Surface* image = IMG_Load(this->buildPath(name).c_str());
-        if (image == nullptr) {
-            Logger::getInstance().log(Logger::LOG_ERROR, "IMG_Load() failed: %s", IMG_GetError());
-            return this->textureCache["nullptr"];
-        }
-
-        std::shared_ptr<Opengl::Texture> texture(new Opengl::Texture());
-        texture->load(image);
-        this->textureCache.insert(std::make_pair(name, texture));
-
-        SDL_FreeSurface(image);
-    } else {
-        Logger::getInstance().log(Logger::LOG_INFO, "Image `%s' picked from cache", name.c_str());
-    }
-
-    return this->textureCache.at(name);
+ResourceCache& ResourceCache::getInstance() {
+    static ResourceCache instance;
+    return instance;
 }
 
-std::shared_ptr<Opengl::RenderEffect>& ResourceCache::loadEffect(const std::string& name) {
-    if (this->effectCache.find(name) == this->effectCache.end()) {
-        Logger::getInstance().log(Logger::LOG_INFO, "Shader `%s' not in cache, trying to load", name.c_str());
-
-        std::string fullPath(this->buildPath(name).c_str());
-        auto shaderSource = this->loadSource(fullPath.c_str());
-        if (shaderSource == nullptr) {
-            Logger::getInstance().log(Logger::LOG_ERROR, "Failed to open `%s'", fullPath.c_str());
-            return this->effectCache["nullptr"];
-        }
-
-        this->insertEffect(name, shaderSource.get());
-    } else {
-        Logger::getInstance().log(Logger::LOG_INFO, "Shader `%s' picked from cache", name.c_str());
+const std::shared_ptr<json_object>& ResourceCache::loadAsset(const std::string& name) {
+    auto assetIt = this->assetCache.find(name);
+    if (assetIt != this->assetCache.end()) {
+        Graphene::LogDebug("Reuse cached '%s' asset", name.c_str());
+        return assetIt->second;
     }
 
-    return this->effectCache.at(name);
-}
+    Graphene::LogDebug("Load asset from '%s'", name.c_str());
 
-std::shared_ptr<json_object>& ResourceCache::loadAsset(const std::string& name) {
-    std::shared_ptr<json_object> object;
-
-    if (this->assetCache.find(name) == this->assetCache.end()) {
-        Logger::getInstance().log(Logger::LOG_INFO, "Asset `%s' not in cache, trying to load", name.c_str());
-
-        std::string fullPath(this->buildPath(name).c_str());
-        auto entitySource = this->loadSource(fullPath.c_str());
-        if (entitySource == nullptr) {
-            Logger::getInstance().log(Logger::LOG_ERROR, "Failed to open `%s'", fullPath.c_str());
-            return this->assetCache["nullptr"];
-        }
-
-        json_tokener_error parseError;
-        object = std::shared_ptr<json_object>(
-                json_tokener_parse_verbose(entitySource.get(), &parseError), json_object_put);
-        if (object == nullptr) {
-            Logger::getInstance().log(Logger::LOG_ERROR, "Failed to parse `%s': %s",
-                    fullPath.c_str(), json_tokener_error_desc(parseError));
-            return this->assetCache["nullptr"];
-        }
-
-        this->assetCache.insert(std::make_pair(name, object));
-    } else {
-        Logger::getInstance().log(Logger::LOG_INFO, "Asset `%s' picked from cache", name.c_str());
-    }
-
-    return this->assetCache.at(name);
-}
-
-std::shared_ptr<TTF_Font>& ResourceCache::loadFont(const std::string& name, unsigned int size) {
-    if (this->fontCache[name].find(size) == this->fontCache[name].end()) {
-        Logger::getInstance().log(Logger::LOG_INFO,
-                "Font `%s' (%dpt) not in cache, trying to load", name.c_str(), size);
-
-        std::shared_ptr<TTF_Font> font(TTF_OpenFont(this->buildPath(name).c_str(), size), TTF_CloseFont);
-        if (font == nullptr) {
-            Logger::getInstance().log(Logger::LOG_ERROR, "TTF_OpenFont() failed: %s", TTF_GetError());
-            return this->fontCache[name][-1];
-        }
-
-        this->fontCache[name].insert(std::make_pair(size, font));
-    } else {
-        Logger::getInstance().log(Logger::LOG_INFO,
-                "Font `%s' (%dpt) picked from cache", name.c_str(), size);
-    }
-
-    return this->fontCache[name][size];
-}
-
-void ResourceCache::purge() {
-    for (auto& texture: this->textureCache) {
-        if (!texture.second.unique() && texture.second != nullptr) {
-            Logger::getInstance().log(Logger::LOG_WARNING, "Texture %p has %d references left!",
-                    texture.second.get(), texture.second.use_count() - 1);
-        }
-    }
-
-    for (auto& effect: this->effectCache) {
-        if (!effect.second.unique() && effect.second != nullptr) {
-            Logger::getInstance().log(Logger::LOG_WARNING, "RenderEffect %p has %d references left!",
-                    effect.second.get(), effect.second.use_count() - 1);
-        }
-    }
-
-    for (auto& asset: this->assetCache) {
-        if (!asset.second.unique() && asset.second != nullptr) {
-            Logger::getInstance().log(Logger::LOG_WARNING, "Asset %p has %d references left!",
-                    asset.second.get(), asset.second.use_count() - 1);
-        }
-    }
-
-    for (auto& fontName: this->fontCache) {
-        for (auto& font: fontName.second) {
-            if (!font.second.unique() && font.second != nullptr) {
-                Logger::getInstance().log(Logger::LOG_WARNING, "Font %p has %d references left!",
-                        font.second.get(), font.second.use_count() - 1);
-            }
-        }
-
-        fontName.second.clear();
-    }
-
-    this->textureCache.clear();
-    this->effectCache.clear();
-    this->assetCache.clear();
-    this->fontCache.clear();
-}
-
-void ResourceCache::insertEffect(const std::string& name, const std::string& source) {
-    std::shared_ptr<Opengl::RenderEffect> effect(new Opengl::RenderEffect());
-
-    std::stringstream modifiedSource;
-    modifiedSource << "#define TYPE_VERTEX\n";
-    modifiedSource << source;
-    effect->attachShader(modifiedSource.str(), Opengl::RenderEffect::ShaderType::TYPE_VERTEX);
-
-    modifiedSource.str("");
-    modifiedSource << "#define TYPE_FRAGMENT\n";
-    modifiedSource << source;
-    effect->attachShader(modifiedSource.str(), Opengl::RenderEffect::ShaderType::TYPE_FRAGMENT);
-
-    effect->enable();  // Compile
-    this->effectCache.insert(std::make_pair(name, effect));
-}
-
-std::unique_ptr<char[]> ResourceCache::loadSource(const std::string& name) const {
-    std::fstream file(name.c_str(), std::ios::binary | std::ios::in);
-    if (!file.good()) {
-        return nullptr;
+    std::ifstream file(Graphene::GetEngineConfig().getDataDirectory() + '/' + name, std::ios::binary);
+    if (!file) {
+        throw std::runtime_error(Graphene::LogFormat("Failed to open '%s'", name.c_str()));
     }
 
     file.seekg(0, std::ios::end);
-    int sourceLength = file.tellg();
-
-    std::unique_ptr<char[]> source(new char[sourceLength + 1]);
-    source[sourceLength] = '\0';
-
+    std::ifstream::pos_type sourceLength = file.tellg();
     file.seekg(0, std::ios::beg);
-    file.read(source.get(), sourceLength);
-    file.close();
 
-    return source;
+    std::unique_ptr<char[]> source(new char[sourceLength]);
+    file.read(source.get(), sourceLength);
+
+    std::string jsonSource(source.get(), sourceLength);
+
+    json_tokener_error parseError;
+    auto jsonObject = std::shared_ptr<json_object>(json_tokener_parse_verbose(jsonSource.c_str(), &parseError), json_object_put);
+    if (jsonObject == nullptr) {
+        throw std::runtime_error(Graphene::LogFormat("Failed to parse '%s': %s", name.c_str(), json_tokener_error_desc(parseError)));
+    }
+
+    return this->assetCache.emplace(name, jsonObject).first->second;
+}
+
+const std::shared_ptr<Graphene::Font>& ResourceCache::loadFont(const std::string& name, int size) {
+    auto fontIt = this->fontCache.find(name);
+    if (fontIt != this->fontCache.end()) {
+        Graphene::LogDebug("Reuse cached '%s' font", name.c_str());
+        return fontIt->second;
+    }
+
+    Graphene::LogDebug("Load font from '%s'", name.c_str());
+    auto font = std::make_shared<Graphene::Font>(name, size);
+
+    return this->fontCache.emplace(name, font).first->second;
+}
+
+void ResourceCache::teardown() {
+    for (auto& asset: this->assetCache) {
+        long externalReferences = asset.second.use_count() - 1;
+        if (externalReferences > 0) {
+            Graphene::LogWarn("Asset '%s' has %d external references", asset.first.c_str(), externalReferences);
+        }
+    }
+
+    for (auto& font: this->fontCache) {
+        long externalReferences = font.second.use_count() - 1;
+        if (externalReferences > 0) {
+            Graphene::LogWarn("Font '%s' has %d external references", font.first.c_str(), externalReferences);
+        }
+    }
+
+    this->assetCache.clear();
+    this->fontCache.clear();
 }
 
 }  // namespace Utils

@@ -23,56 +23,45 @@
 #ifndef ENTITYFACTORY_H
 #define ENTITYFACTORY_H
 
-#include "Pack.h"
-#include "Player.h"
-#include "Weapon.h"
-#include "Widget.h"
-#include "Label.h"
-#include "ShotTrace.h"
-#include "SpriteEntity.h"
-#include "ResourceCache.h"
-#include "NonCopyable.h"
-
+// #include <Pack.h>
+// #include <Player.h>
+// #include <Weapon.h>
+// #include <Widget.h>
+// #include <Label.h>
+// #include <ShotTrace.h>
+#include <BaseEntity.h>
+#include <NonCopyable.h>
 #include <json-c/json.h>
 #include <Vec3.h>
 #include <string>
 #include <memory>
 
+#define GetEntityFactory() EntityFactory::getInstance()
+
 namespace PolandBall {
 
 namespace Game {
 
-class EntityFactory: public Common::NonCopyable {
+class EntityFactory: public Graphene::NonCopyable {
 public:
     static EntityFactory& getInstance() {
         static EntityFactory instance;
         return instance;
     }
 
-    std::shared_ptr<Utils::ResourceCache>& getResourceCache() {
-        return this->resourceCache;
-    }
-
-    void setResourceCache(const std::shared_ptr<Utils::ResourceCache>& resourceCache) {
-        this->resourceCache = resourceCache;
-    }
-
-    std::shared_ptr<Game::Pack> createPack(const std::string& name) const;
-    std::shared_ptr<Game::Player> createPlayer(const std::string& name) const;
-    std::shared_ptr<Game::Weapon> createWeapon(const std::string& name) const;
-    std::shared_ptr<Game::Widget> createWidget(const std::string& name) const;
-    std::shared_ptr<Game::ShotTrace> createTrace(const Math::Vec3& from, const Math::Vec3& to) const;
-    std::shared_ptr<Game::Label> createLabel(const std::string& fontName, unsigned int size) const;
-    std::shared_ptr<Game::SpriteEntity> createBlock(const std::string& name) const;
+    // std::shared_ptr<Game::Pack> createPack(const std::string& name) const;
+    // std::shared_ptr<Game::Player> createPlayer(const std::string& name) const;
+    // std::shared_ptr<Game::Weapon> createWeapon(const std::string& name) const;
+    // std::shared_ptr<Game::Widget> createWidget(const std::string& name) const;
+    // std::shared_ptr<Game::ShotTrace> createTrace(const Math::Vec3& from, const Math::Vec3& to) const;
+    // std::shared_ptr<Game::Label> createLabel(const std::string& fontName, unsigned int size) const;
+    std::shared_ptr<BaseEntity> createBlock(const std::string& name) const;
 
 private:
-    EntityFactory():
-            resourceCache(new Utils::ResourceCache()) {
-    }
+    EntityFactory() = default;
 
-    void loadBase(std::shared_ptr<Game::SpriteEntity> entity, const std::shared_ptr<json_object> asset) const;
-
-    std::shared_ptr<Utils::ResourceCache> resourceCache;
+    const std::shared_ptr<json_object>& loadAsset(const std::string& name);
+    void loadBase(const std::shared_ptr<BaseEntity>& entity, const std::shared_ptr<json_object>& asset) const;
 };
 
 }  // namespace Game

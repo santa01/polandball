@@ -20,286 +20,278 @@
  * SOFTWARE.
  */
 
-#include "EntityFactory.h"
-#include "Logger.h"
-
-#include <sstream>
+#include <EntityFactory.h>
+#include <ObjectManager.h>
+#include <ResourceCache.h>
+#include <SpriteEntity.h>
+#include <Material.h>
+#include <Logger.h>
 
 namespace PolandBall {
 
 namespace Game {
 
-std::shared_ptr<Pack> EntityFactory::createPack(const std::string& name) const {
-    Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Building Pack from `%s'", name.c_str());
+// std::shared_ptr<Pack> EntityFactory::createPack(const std::string& name) const {
+//     Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Building Pack from '%s'", name.c_str());
 
-    auto asset = this->resourceCache->loadAsset(name);
-    if (asset == nullptr) {
-        return nullptr;
-    }
+//     auto asset = this->resourceCache->loadAsset(name);
+//     if (asset == nullptr) {
+//         return nullptr;
+//     }
 
-    std::shared_ptr<Game::Pack> pack(new Game::Pack());
-    this->loadBase(pack, asset);
+//     std::shared_ptr<Game::Pack> pack(new Game::Pack());
+//     this->loadBase(pack, asset);
 
-    json_object* payload = nullptr;
-    if (!json_object_object_get_ex(asset.get(), "payload", &payload) ||
-            json_object_get_type(payload) != json_type_string) {
-        Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter `payload' is not set");
-    } else {
-        std::string payloadValue(json_object_get_string(payload));
-        Game::Pack::PayloadType payloadType = pack->getPayloadType();
+//     json_object* payload = nullptr;
+//     if (!json_object_object_get_ex(asset.get(), "payload", &payload) ||
+//             json_object_get_type(payload) != json_type_string) {
+//         Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter 'payload' is not set");
+//     } else {
+//         std::string payloadValue(json_object_get_string(payload));
+//         Game::Pack::PayloadType payloadType = pack->getPayloadType();
 
-        if (payloadValue == "health") {
-            payloadType = Game::Pack::PayloadType::TYPE_HEALTH;
-        } else if (payloadValue == "armor") {
-            payloadType = Game::Pack::PayloadType::TYPE_ARMOR;
-        } else if (payloadValue == "primary_ammo") {
-            payloadType = Game::Pack::PayloadType::TYPE_PRIMARY_AMMO;
-        } else if (payloadValue == "secondary_ammo") {
-            payloadType = Game::Pack::PayloadType::TYPE_SECONDARY_AMMO;
-        } else {
-            Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING,
-                    "Got unknown `payload' value `%s'", payloadValue.c_str());
-        }
+//         if (payloadValue == "health") {
+//             payloadType = Game::Pack::PayloadType::TYPE_HEALTH;
+//         } else if (payloadValue == "armor") {
+//             payloadType = Game::Pack::PayloadType::TYPE_ARMOR;
+//         } else if (payloadValue == "primary_ammo") {
+//             payloadType = Game::Pack::PayloadType::TYPE_PRIMARY_AMMO;
+//         } else if (payloadValue == "secondary_ammo") {
+//             payloadType = Game::Pack::PayloadType::TYPE_SECONDARY_AMMO;
+//         } else {
+//             Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING,
+//                     "Got unknown 'payload' value '%s'", payloadValue.c_str());
+//         }
 
-        pack->setPayloadType(payloadType);
-    }
+//         pack->setPayloadType(payloadType);
+//     }
 
-    json_object* value = nullptr;
-    if (!json_object_object_get_ex(asset.get(), "value", &value) || json_object_get_type(value) != json_type_int) {
-        Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter `value' is not set");
-    } else {
-        pack->setValue(json_object_get_int(value));
-    }
+//     json_object* value = nullptr;
+//     if (!json_object_object_get_ex(asset.get(), "value", &value) || json_object_get_type(value) != json_type_int) {
+//         Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter 'value' is not set");
+//     } else {
+//         pack->setValue(json_object_get_int(value));
+//     }
 
-    return pack;
-}
+//     return pack;
+// }
 
-std::shared_ptr<Player> EntityFactory::createPlayer(const std::string& name) const {
-    Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Building Player from `%s'", name.c_str());
+// std::shared_ptr<Player> EntityFactory::createPlayer(const std::string& name) const {
+//     Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Building Player from '%s'", name.c_str());
 
-    auto asset = this->resourceCache->loadAsset(name);
-    if (asset == nullptr) {
-        return nullptr;
-    }
+//     auto asset = this->resourceCache->loadAsset(name);
+//     if (asset == nullptr) {
+//         return nullptr;
+//     }
 
-    std::shared_ptr<Game::Player> player(new Game::Player());
-    this->loadBase(player, asset);
+//     std::shared_ptr<Game::Player> player(new Game::Player());
+//     this->loadBase(player, asset);
 
-    json_object* maxMoveSpeed = nullptr;
-    if (!json_object_object_get_ex(asset.get(), "max_move_speed", &maxMoveSpeed) ||
-            json_object_get_type(maxMoveSpeed) != json_type_double) {
-        Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter `max_move_speed' is not set");
-    } else {
-        player->setMaxMoveSpeed(json_object_get_double(maxMoveSpeed));
-    }
+//     json_object* maxMoveSpeed = nullptr;
+//     if (!json_object_object_get_ex(asset.get(), "max_move_speed", &maxMoveSpeed) ||
+//             json_object_get_type(maxMoveSpeed) != json_type_double) {
+//         Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter 'max_move_speed' is not set");
+//     } else {
+//         player->setMaxMoveSpeed(json_object_get_double(maxMoveSpeed));
+//     }
 
-    json_object* maxJumpSpeed = nullptr;
-    if (!json_object_object_get_ex(asset.get(), "max_jump_speed", &maxJumpSpeed) ||
-            json_object_get_type(maxJumpSpeed) != json_type_double) {
-        Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter `max_jump_speed' is not set");
-    } else {
-        player->setMaxJumpSpeed(json_object_get_double(maxJumpSpeed));
-    }
+//     json_object* maxJumpSpeed = nullptr;
+//     if (!json_object_object_get_ex(asset.get(), "max_jump_speed", &maxJumpSpeed) ||
+//             json_object_get_type(maxJumpSpeed) != json_type_double) {
+//         Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter 'max_jump_speed' is not set");
+//     } else {
+//         player->setMaxJumpSpeed(json_object_get_double(maxJumpSpeed));
+//     }
 
-    json_object* maxJumpTime = nullptr;
-    if (!json_object_object_get_ex(asset.get(), "max_jump_time", &maxJumpTime) ||
-            json_object_get_type(maxJumpTime) != json_type_double) {
-        Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter `max_jump_time' is not set");
-    } else {
-        player->setMaxJumpTime(json_object_get_double(maxJumpTime));
-    }
+//     json_object* maxJumpTime = nullptr;
+//     if (!json_object_object_get_ex(asset.get(), "max_jump_time", &maxJumpTime) ||
+//             json_object_get_type(maxJumpTime) != json_type_double) {
+//         Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter 'max_jump_time' is not set");
+//     } else {
+//         player->setMaxJumpTime(json_object_get_double(maxJumpTime));
+//     }
 
-    json_object* maxHealth = nullptr;
-    if (!json_object_object_get_ex(asset.get(), "max_health", &maxHealth) ||
-            json_object_get_type(maxHealth) != json_type_int) {
-        Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter `max_health' is not set");
-    } else {
-        player->setMaxHealth(json_object_get_int(maxHealth));
-    }
+//     json_object* maxHealth = nullptr;
+//     if (!json_object_object_get_ex(asset.get(), "max_health", &maxHealth) ||
+//             json_object_get_type(maxHealth) != json_type_int) {
+//         Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter 'max_health' is not set");
+//     } else {
+//         player->setMaxHealth(json_object_get_int(maxHealth));
+//     }
 
-    json_object* maxArmor = nullptr;
-    if (!json_object_object_get_ex(asset.get(), "max_armor", &maxArmor) ||
-            json_object_get_type(maxArmor) != json_type_int) {
-        Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter `max_armor' is not set");
-    } else {
-        player->setMaxArmor(json_object_get_int(maxArmor));
-    }
+//     json_object* maxArmor = nullptr;
+//     if (!json_object_object_get_ex(asset.get(), "max_armor", &maxArmor) ||
+//             json_object_get_type(maxArmor) != json_type_int) {
+//         Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter 'max_armor' is not set");
+//     } else {
+//         player->setMaxArmor(json_object_get_int(maxArmor));
+//     }
 
-    json_object* health = nullptr;
-    if (!json_object_object_get_ex(asset.get(), "health", &health) || json_object_get_type(health) != json_type_int) {
-        Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter `health' is not set");
-    } else {
-        player->setHealth(json_object_get_int(health));
-    }
+//     json_object* health = nullptr;
+//     if (!json_object_object_get_ex(asset.get(), "health", &health) || json_object_get_type(health) != json_type_int) {
+//         Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter 'health' is not set");
+//     } else {
+//         player->setHealth(json_object_get_int(health));
+//     }
 
-    json_object* armor = nullptr;
-    if (!json_object_object_get_ex(asset.get(), "armor", &armor) || json_object_get_type(armor) != json_type_int) {
-        Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter `armor' is not set");
-    } else {
-        player->setArmor(json_object_get_int(armor));
-    }
+//     json_object* armor = nullptr;
+//     if (!json_object_object_get_ex(asset.get(), "armor", &armor) || json_object_get_type(armor) != json_type_int) {
+//         Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter 'armor' is not set");
+//     } else {
+//         player->setArmor(json_object_get_int(armor));
+//     }
 
-    return player;
-}
+//     return player;
+// }
 
-std::shared_ptr<Weapon> EntityFactory::createWeapon(const std::string& name) const {
-    Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Building Weapon from `%s'", name.c_str());
+// std::shared_ptr<Weapon> EntityFactory::createWeapon(const std::string& name) const {
+//     Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Building Weapon from '%s'", name.c_str());
 
-    auto asset = this->resourceCache->loadAsset(name);
-    if (asset == nullptr) {
-        return nullptr;
-    }
+//     auto asset = this->resourceCache->loadAsset(name);
+//     if (asset == nullptr) {
+//         return nullptr;
+//     }
 
-    std::shared_ptr<Game::Weapon> weapon(new Game::Weapon());
-    this->loadBase(weapon, asset);
+//     std::shared_ptr<Game::Weapon> weapon(new Game::Weapon());
+//     this->loadBase(weapon, asset);
 
-    json_object* slot = nullptr;
-    if (!json_object_object_get_ex(asset.get(), "target_slot", &slot) ||
-            json_object_get_type(slot) != json_type_string) {
-        Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter `target_slot' is not set");
-    } else {
-        std::string slotValue(json_object_get_string(slot));
-        Game::Weapon::WeaponSlot targetSlot = weapon->getTargetSlot();
+//     json_object* slot = nullptr;
+//     if (!json_object_object_get_ex(asset.get(), "target_slot", &slot) ||
+//             json_object_get_type(slot) != json_type_string) {
+//         Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter 'target_slot' is not set");
+//     } else {
+//         std::string slotValue(json_object_get_string(slot));
+//         Game::Weapon::WeaponSlot targetSlot = weapon->getTargetSlot();
 
-        if (slotValue == "primary") {
-            targetSlot = Game::Weapon::WeaponSlot::SLOT_PRIMARY;
-        } else if (slotValue == "secondary") {
-            targetSlot = Game::Weapon::WeaponSlot::SLOT_SECONDARY;
-        } else if (slotValue == "meele") {
-            targetSlot = Game::Weapon::WeaponSlot::SLOT_MEELE;
-        } else {
-            Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING,
-                    "Got unknown `target_slot' value `%s'", slotValue.c_str());
-        }
+//         if (slotValue == "primary") {
+//             targetSlot = Game::Weapon::WeaponSlot::SLOT_PRIMARY;
+//         } else if (slotValue == "secondary") {
+//             targetSlot = Game::Weapon::WeaponSlot::SLOT_SECONDARY;
+//         } else if (slotValue == "meele") {
+//             targetSlot = Game::Weapon::WeaponSlot::SLOT_MEELE;
+//         } else {
+//             Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING,
+//                     "Got unknown 'target_slot' value '%s'", slotValue.c_str());
+//         }
 
-        weapon->setTargetSlot(targetSlot);
-    }
+//         weapon->setTargetSlot(targetSlot);
+//     }
 
-    json_object* maxAmmo = nullptr;
-    if (!json_object_object_get_ex(asset.get(), "max_ammo", &maxAmmo) ||
-            json_object_get_type(maxAmmo) != json_type_int) {
-        Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter `max_ammo' is not set");
-    } else {
-        weapon->setMaxAmmo(json_object_get_int(maxAmmo));
-    }
+//     json_object* maxAmmo = nullptr;
+//     if (!json_object_object_get_ex(asset.get(), "max_ammo", &maxAmmo) ||
+//             json_object_get_type(maxAmmo) != json_type_int) {
+//         Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter 'max_ammo' is not set");
+//     } else {
+//         weapon->setMaxAmmo(json_object_get_int(maxAmmo));
+//     }
 
-    json_object* ammo = nullptr;
-    if (!json_object_object_get_ex(asset.get(), "ammo", &ammo) || json_object_get_type(ammo) != json_type_int) {
-        Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter `ammo' is not set");
-    } else {
-        weapon->setAmmo(json_object_get_int(ammo));
-    }
+//     json_object* ammo = nullptr;
+//     if (!json_object_object_get_ex(asset.get(), "ammo", &ammo) || json_object_get_type(ammo) != json_type_int) {
+//         Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter 'ammo' is not set");
+//     } else {
+//         weapon->setAmmo(json_object_get_int(ammo));
+//     }
 
-    json_object* groupingAngle = nullptr;
-    if (!json_object_object_get_ex(asset.get(), "grouping_angle", &groupingAngle) ||
-            json_object_get_type(groupingAngle) != json_type_double) {
-        Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter `grouping_angle' is not set");
-    } else {
-        weapon->setGroupingAngle(json_object_get_double(groupingAngle));
-    }
+//     json_object* groupingAngle = nullptr;
+//     if (!json_object_object_get_ex(asset.get(), "grouping_angle", &groupingAngle) ||
+//             json_object_get_type(groupingAngle) != json_type_double) {
+//         Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter 'grouping_angle' is not set");
+//     } else {
+//         weapon->setGroupingAngle(json_object_get_double(groupingAngle));
+//     }
 
-    json_object* firingSpeed = nullptr;
-    if (!json_object_object_get_ex(asset.get(), "firing_speed", &firingSpeed) ||
-            json_object_get_type(firingSpeed) != json_type_double) {
-        Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter `firing_speed' is not set");
-    } else {
-        weapon->setFiringSpeed(json_object_get_double(firingSpeed));
-    }
+//     json_object* firingSpeed = nullptr;
+//     if (!json_object_object_get_ex(asset.get(), "firing_speed", &firingSpeed) ||
+//             json_object_get_type(firingSpeed) != json_type_double) {
+//         Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter 'firing_speed' is not set");
+//     } else {
+//         weapon->setFiringSpeed(json_object_get_double(firingSpeed));
+//     }
 
-    return weapon;
-}
+//     return weapon;
+// }
 
-std::shared_ptr<Game::Widget> EntityFactory::createWidget(const std::string& name) const {
-    Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Building Widget from `%s'", name.c_str());
+// std::shared_ptr<Game::Widget> EntityFactory::createWidget(const std::string& name) const {
+//     Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Building Widget from '%s'", name.c_str());
 
-    auto asset = this->resourceCache->loadAsset(name);
-    if (asset == nullptr) {
-        return nullptr;
-    }
+//     auto asset = this->resourceCache->loadAsset(name);
+//     if (asset == nullptr) {
+//         return nullptr;
+//     }
 
-    std::shared_ptr<Game::Widget> widget(new Game::Widget());
-    this->loadBase(widget, asset);
+//     std::shared_ptr<Game::Widget> widget(new Game::Widget());
+//     this->loadBase(widget, asset);
 
-    widget->setCollidable(false);
-    return widget;
-}
+//     widget->setCollidable(false);
+//     return widget;
+// }
 
-std::shared_ptr<Game::ShotTrace> EntityFactory::createTrace(const Math::Vec3& from, const Math::Vec3& to) const {
-    Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Building ShotTrace from (%.3f; %.3f) to (%.3f; %.3f)",
-            from.get(Math::Vec3::X), from.get(Math::Vec3::Y), to.get(Math::Vec3::X), to.get(Math::Vec3::Y));
+// std::shared_ptr<Game::ShotTrace> EntityFactory::createTrace(const Math::Vec3& from, const Math::Vec3& to) const {
+//     Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Building ShotTrace from (%.3f; %.3f) to (%.3f; %.3f)",
+//             from.get(Math::Vec3::X), from.get(Math::Vec3::Y), to.get(Math::Vec3::X), to.get(Math::Vec3::Y));
 
-    auto effect = this->resourceCache->loadEffect("shaders/trace.shader");
+//     auto effect = this->resourceCache->loadEffect("shaders/trace.shader");
 
-    std::shared_ptr<Game::ShotTrace> trace(new Game::ShotTrace(from, to));
-    trace->getLine()->setEffect(effect);
+//     std::shared_ptr<Game::ShotTrace> trace(new Game::ShotTrace(from, to));
+//     trace->getLine()->setEffect(effect);
 
-    return trace;
-}
+//     return trace;
+// }
 
-std::shared_ptr<Game::Label> EntityFactory::createLabel(const std::string& fontName, unsigned int size) const {
-    Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO,
-            "Building Label with `%s' (%dpt) font", fontName.c_str(), size);
+// std::shared_ptr<Game::Label> EntityFactory::createLabel(const std::string& fontName, unsigned int size) const {
+//     Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO,
+//             "Building Label with '%s' (%dpt) font", fontName.c_str(), size);
 
-    std::stringstream fontPath;
-    fontPath << "fonts/" << fontName << ".ttf";
-    auto font = this->resourceCache->loadFont(fontPath.str(), size);
-    auto effect = this->resourceCache->loadEffect("shaders/default.shader");
+//     std::stringstream fontPath;
+//     fontPath << "fonts/" << fontName << ".ttf";
+//     auto font = this->resourceCache->loadFont(fontPath.str(), size);
+//     auto effect = this->resourceCache->loadEffect("shaders/default.shader");
 
-    std::shared_ptr<Game::Label> label(new Game::Label());
-    label->setFont(font);
-    label->getSprite()->setEffect(effect);
+//     std::shared_ptr<Game::Label> label(new Game::Label());
+//     label->setFont(font);
+//     label->getSprite()->setEffect(effect);
 
-    return label;
-}
+//     return label;
+// }
 
-std::shared_ptr<SpriteEntity> EntityFactory::createBlock(const std::string& name) const {
-    Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Building Block from `%s'", name.c_str());
+std::shared_ptr<BaseEntity> EntityFactory::createBlock(const std::string& name) const {
+    auto entity = std::make_shared<SpriteEntity>();
 
-    auto asset = this->resourceCache->loadAsset(name);
-    if (asset == nullptr) {
-        return nullptr;
-    }
+    auto& mesh = Graphene::GetObjectManager().createQuad(Graphene::FaceWinding::WINDING_CLOCKWISE);
+    entity->addMesh(mesh);
 
-    std::shared_ptr<Game::SpriteEntity> entity(new Game::SpriteEntity());
+    auto material = std::make_shared<Graphene::Material>();
+    mesh->setMaterial(material);
+
+    auto& asset = Utils::GetResourceCache().loadAsset(name);
     this->loadBase(entity, asset);
 
     return entity;
 }
 
-void EntityFactory::loadBase(std::shared_ptr<Game::SpriteEntity> entity,
-        const std::shared_ptr<json_object> asset) const {
-    json_object* texture = nullptr;
-    if (!json_object_object_get_ex(asset.get(), "texture", &texture) ||
-            json_object_get_type(texture) != json_type_string) {
-        Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter `texture' is not set");
+void EntityFactory::loadBase(const std::shared_ptr<BaseEntity>& entity, const std::shared_ptr<json_object>& asset) const {
+    json_object* textureObject = nullptr;
+    if (!json_object_object_get_ex(asset.get(), "texture", &textureObject) || json_object_get_type(textureObject) != json_type_string) {
+        Graphene::LogWarn("Parameter 'texture' is not set");
     } else {
-        entity->getSprite()->setTexture(this->resourceCache->loadTexture(json_object_get_string(texture)));
+        auto texture = Graphene::GetObjectManager().createTexture(json_object_get_string(textureObject));
+        auto& mesh = *entity->getMeshes().begin();
+        return mesh->getMaterial()->setDiffuseTexture(texture);
     }
 
-    json_object* effect = nullptr;
-    if (!json_object_object_get_ex(asset.get(), "effect", &effect) ||
-            json_object_get_type(effect) != json_type_string) {
-        Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter `effect' is not set");
-    } else {
-        entity->getSprite()->setEffect(this->resourceCache->loadEffect(json_object_get_string(effect)));
+    json_object* visibleObject = nullptr;
+    if (json_object_object_get_ex(asset.get(), "visible", &visibleObject) && json_object_get_type(visibleObject) == json_type_boolean) {
+        entity->setVisible(json_object_get_boolean(visibleObject));
     }
 
-    json_object* visible = nullptr;
-    if (json_object_object_get_ex(asset.get(), "visible", &visible) &&
-            json_object_get_type(visible) == json_type_boolean) {
-        entity->setVisible(json_object_get_boolean(visible));
+    json_object* passiveObject = nullptr;
+    if (json_object_object_get_ex(asset.get(), "passive", &passiveObject) && json_object_get_type(passiveObject) == json_type_boolean) {
+        entity->setPassive(json_object_get_boolean(passiveObject));
     }
 
-    json_object* passive = nullptr;
-    if (json_object_object_get_ex(asset.get(), "passive", &passive) &&
-            json_object_get_type(passive) == json_type_boolean) {
-        entity->setPassive(json_object_get_boolean(passive));
-    }
-
-    json_object* collidable = nullptr;
-    if (json_object_object_get_ex(asset.get(), "collidable", &collidable) &&
-            json_object_get_type(collidable) == json_type_boolean) {
-        entity->setCollidable(json_object_get_boolean(collidable));
+    json_object* collidableObject = nullptr;
+    if (json_object_object_get_ex(asset.get(), "collidable", &collidableObject) && json_object_get_type(collidableObject) == json_type_boolean) {
+        entity->setCollidable(json_object_get_boolean(collidableObject));
     }
 }
 
