@@ -54,8 +54,8 @@ void PolandBall::onMouseButton(Graphene::MouseButton button, bool state) {
 }
 
 void PolandBall::onSetup() {
-    // glEnable(GL_LINE_SMOOTH);
-    // glLineWidth(0.5f);
+    Graphene::glEnable(GL_LINE_SMOOTH);
+    Graphene::glLineWidth(0.5f);
 
     this->setupScene();
     this->setupUI();
