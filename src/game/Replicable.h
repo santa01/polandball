@@ -20,16 +20,36 @@
  * SOFTWARE.
  */
 
-#include <SpriteEntity.h>
+#ifndef REPLICABLE_H
+#define REPLICABLE_H
+
+#include <Mat4.h>
+#include <Vec3.h>
 
 namespace PolandBall {
 
 namespace Game {
 
-SpriteEntity::SpriteEntity() {
-    this->scale(0.2f, 0.2f, 0.2f);
-}
+class Replicable {
+public:
+    virtual ~Replicable() = default;
+
+    void replicateX(float factor);
+    void replicateY(float factor);
+    void replicateZ(float factor);
+
+    void replicate(float xFactor, float yFactor, float zFactor);
+    void replicate(const Math::Vec3& factors);
+
+    Math::Vec3 getReplicationFactors() const;
+    const Math::Mat4& getReplication() const;
+
+private:
+    Math::Mat4 replication;
+};
 
 }  // namespace Game
 
 }  // namespace PolandBall
+
+#endif  // REPLICABLE_H

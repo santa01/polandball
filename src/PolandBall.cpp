@@ -77,22 +77,22 @@ void PolandBall::setupScene() {
 
     //-----------------
     auto backgroundEntity = Game::GetEntityFactory().createBlock("assets/backgrounds/sunny.asset");
-    backgroundEntity->scale(2.0f, 2.0f, 1.0f);
-    backgroundEntity->scaleX(camera->getAspectRatio());  // Scale for aspect ratio
+    backgroundEntity->translate(0.0f, 0.0f, 0.5f);
+    backgroundEntity->scale(camera->getAspectRatio() * 10.0f, 10.0f, 1.0f);
     sceneRoot->attachObject(backgroundEntity);
 
-    // //-----------------
-    // auto bricksEntity = Game::GetEntityFactory().createBlock("assets/blocks/kazakhstan.asset");
-    // bricksEntity->setPosition(0.0f, -2.0f, 0.0f);
-    // bricksEntity->scaleX(20.0f * 1.5f);  // Scale for aspect ratio
-    // bricksEntity->getSprite()->replicateX(20.0f);
-    // this->scene->addEntity(bricksEntity);
+    //-----------------
+    auto bricksEntity = Game::GetEntityFactory().createBlock("assets/blocks/kazakhstan.asset");
+    bricksEntity->translate(0.0f, -1.8f, 0.0f);
+    bricksEntity->scaleX(1.5f);
+    bricksEntity->replicateX(20.0f);
+    sceneRoot->attachObject(bricksEntity);
 
-    // //-----------------
-    // bricksEntity = Game::GetEntityFactory().createBlock("assets/blocks/kazakhstan.asset");
-    // bricksEntity->setPosition(4.0f, 1.0f, 0.0f);
-    // bricksEntity->scaleX(1.5f);  // Scale for aspect ratio
-    // this->scene->addEntity(bricksEntity);
+    //-----------------
+    bricksEntity = Game::GetEntityFactory().createBlock("assets/blocks/kazakhstan.asset");
+    bricksEntity->translate(2.0f, 0.0f, 0.0f);
+    bricksEntity->scaleX(1.5f);
+    sceneRoot->attachObject(bricksEntity);
 
     // //-----------------
     auto& player = scene->getPlayer();

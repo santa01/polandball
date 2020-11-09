@@ -23,7 +23,6 @@
 #include <EntityFactory.h>
 #include <ObjectManager.h>
 #include <ResourceCache.h>
-#include <SpriteEntity.h>
 #include <Material.h>
 #include <Logger.h>
 
@@ -254,7 +253,7 @@ namespace Game {
 //     return label;
 // }
 
-std::shared_ptr<BaseEntity> EntityFactory::createBlock(const std::string& name) const {
+std::shared_ptr<SpriteEntity> EntityFactory::createBlock(const std::string& name) const {
     auto entity = std::make_shared<SpriteEntity>();
 
     auto& mesh = Graphene::GetObjectManager().createQuad(Graphene::FaceWinding::WINDING_CLOCKWISE);

@@ -49,8 +49,8 @@ int main(int argc, char** argv) {
 
     auto& config = Graphene::GetEngineConfig();
     config.setFov(arguments.isSet("fov") ? stof(arguments.getOption("fov")) : 75.0f);
-    config.setHeight(arguments.isSet("height") ? stoi(arguments.getOption("height")) : 480);
-    config.setWidth(arguments.isSet("width") ? stoi(arguments.getOption("width")) : 640);
+    config.setHeight(arguments.isSet("height") ? stoi(arguments.getOption("height")) : 600);
+    config.setWidth(arguments.isSet("width") ? stoi(arguments.getOption("width")) : 800);
     config.setSamples(arguments.isSet("samples") ? stoi(arguments.getOption("samples")) : 0);
     config.setMaxFps(arguments.isSet("fps") ? stof(arguments.getOption("fps")) : 0.0f);
     config.setVsync(arguments.isSet("vsync"));

@@ -33,6 +33,7 @@ namespace Game {
 
 class SpriteEntity: public BaseEntity {
 public:
+    SpriteEntity();
     virtual ~SpriteEntity() = default;
 
 protected:

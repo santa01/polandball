@@ -30,6 +30,7 @@
 // #include <Label.h>
 // #include <ShotTrace.h>
 #include <BaseEntity.h>
+#include <SpriteEntity.h>
 #include <NonCopyable.h>
 #include <json-c/json.h>
 #include <Vec3.h>
@@ -55,7 +56,7 @@ public:
     // std::shared_ptr<Game::Widget> createWidget(const std::string& name) const;
     // std::shared_ptr<Game::ShotTrace> createTrace(const Math::Vec3& from, const Math::Vec3& to) const;
     // std::shared_ptr<Game::Label> createLabel(const std::string& fontName, unsigned int size) const;
-    std::shared_ptr<BaseEntity> createBlock(const std::string& name) const;
+    std::shared_ptr<SpriteEntity> createBlock(const std::string& name) const;
 
 private:
     EntityFactory() = default;
