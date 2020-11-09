@@ -70,8 +70,6 @@ set (POLANDBALL_SOURCES src/main.cpp
                         # src/game/ShotTrace.cpp
                         # src/game/Scene.cpp
                         # src/opengl/Line.cpp
-                        # src/opengl/RenderEffect.cpp
-                        # src/opengl/ShaderLoader.cpp
                         src/utils/ResourceCache.cpp
 )
 # include_directories (src src/game src/opengl src/utils ${PROJECT_BINARY_DIR} ${GRAPHENE_INCLUDE_DIRS} ${MATH_INCLUDE_DIRS} ${SIGNALS_INCLUDE_DIRS} ${JSON_C_INCLUDE_DIRS})
