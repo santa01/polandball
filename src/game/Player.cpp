@@ -20,174 +20,233 @@
  * SOFTWARE.
  */
 
-#include "Player.h"
-#include "Pack.h"
-
+#include <Player.h>
+// #include <Pack.h>
 #include <cfloat>
 
 namespace PolandBall {
 
 namespace Game {
 
-Player::Player():
-        target(Math::Vec3::UNIT_X) {
-    this->maxMoveSpeed = 8.0f;
-    this->maxJumpSpeed = 10.0f;
-    this->maxJumpTime = 0.5f;
-    this->minDropTime = 0.5f;
-    this->maxHealth = 100;
-    this->maxArmor = 100;
-
-    this->jumpTime = 0.0f;
-    this->dropTime = 0.0f;
-    this->viewAngle = 0.0f;
-    this->health = this->maxHealth;
-    this->armor = 0;
-
-    this->activeSlot = -1;
-    this->weaponHandle = -1;
-    this->state = PlayerState::STATE_IDLE;
-    this->previousState = this->state;
-
+Player::Player() {
     this->passive = false;
-    this->type = Entity::EntityType::TYPE_PLAYER;
-    this->sprite->shearX(0.0f, 2);
+    this->health = this->maxHealth;
+
+    this->shearX(1, 2);
 }
 
-void Player::pickWeapon(const std::shared_ptr<Weapon>& weapon) {
-    Weapon::WeaponSlot targetSlot = weapon->getTargetSlot();
-
-    if (this->getWeapon(targetSlot) == nullptr) {
-        this->weapons[targetSlot] = weapon;
-        this->weapons[targetSlot]->setState(Weapon::WeaponState::STATE_PICKED);
-
-        auto weaponSprite = std::dynamic_pointer_cast<Opengl::Sprite>(this->weapons[targetSlot]->getPrimitive());
-        weaponSprite->shearX(0.0f, 2);
-
-        if (targetSlot > this->activeSlot || this->activeSlot == -1) {
-            this->activateSlot(targetSlot);
-        }
-    }
+float Player::getMaxMoveSpeed() const {
+    return this->maxMoveSpeed;
 }
 
-void Player::activateSlot(Weapon::WeaponSlot slot) {
-    if (this->weapons[slot] == nullptr) {
-        return;
-    }
-
-    this->weapons[slot]->aimAt(this->target);  // Sync with player
-    this->activeSlot = slot;
-
-    if (this->weaponHandle != -1) {
-        this->positionChanged.disconnect(this->weaponHandle);
-    }
-
-    this->weaponHandle = this->positionChanged.connect(
-            std::bind(static_cast<void(Weapon::*)(const Math::Vec3&)>(&Weapon::setPosition),
-            this->weapons[slot], std::placeholders::_1));
-    this->positionChanged(this->getPosition());
+void Player::setMaxMoveSpeed(float maxMoveSpeed) {
+    this->maxMoveSpeed = maxMoveSpeed;
 }
 
-void Player::aimAt(const Math::Vec3& target) {
-    if (target == Math::Vec3::ZERO) {
-        return;
-    }
-
-    Math::Vec3 newTarget(target);
-    if (newTarget.normalize() == this->target.normalize()) {
-        return;
-    }
-
-    float deltaAngle = acosf(this->target.dot(newTarget)) * 180.0f / M_PI;
-    if (isnan(deltaAngle)) {
-        return;
-    }
-
-    Math::Vec3 normal = this->target.cross(newTarget);
-    float signCorrection = (normal.get(Math::Vec3::Z) < 0) ? -1.0f : 1.0f;
-
-    float newAngle = this->viewAngle + deltaAngle * signCorrection;
-    float shear = (cosf(newAngle * M_PI / 180.0f) < 0.0f) ? 1.0f : 0.0f;
-    this->viewAngle = newAngle;
-
-    this->roll(newAngle);
-    this->sprite->shearX(shear, 2);
-
-    if (this->activeSlot != -1) {
-        this->weapons[this->activeSlot]->aimAt(newTarget);
-    }
-
-    this->target = target;
+float Player::getMaxJumpSpeed() const {
+    return this->maxJumpSpeed;
 }
 
-void Player::onCollision(const std::shared_ptr<Entity>& another, Collider::CollideSide side) {
-    if (another->getType() == Entity::EntityType::TYPE_WEAPON) {
-        auto weapon = std::dynamic_pointer_cast<Weapon>(another);
-        if (weapon->getState() == Weapon::WeaponState::STATE_AVAILABLE) {
-            this->pickWeapon(weapon);
-            return;
-        }
-    }
-
-    if (another->getType() == Entity::EntityType::TYPE_PACK) {
-        auto pack = std::dynamic_pointer_cast<Pack>(another);
-        Weapon::WeaponSlot slot = Weapon::WeaponSlot::SLOT_MEELE;
-        int value = pack->getValue();
-        bool packStaysAlive = true;
-
-        switch (pack->getPayloadType()) {
-            case Pack::PayloadType::TYPE_ARMOR:
-                packStaysAlive = (this->armor == this->maxArmor);
-                this->armor = (this->armor + value > this->maxArmor) ? this->maxArmor : this->armor + value;
-                break;
-
-            case Pack::PayloadType::TYPE_HEALTH:
-                packStaysAlive = (this->health == this->maxHealth);
-                this->health = (this->health + value > this->maxHealth) ? this->maxHealth : this->health + value;
-                break;
-
-            case Pack::PayloadType::TYPE_PRIMARY_AMMO:
-                slot = Weapon::WeaponSlot::SLOT_PRIMARY;
-                break;
-
-            case Pack::PayloadType::TYPE_SECONDARY_AMMO:
-                slot = Weapon::WeaponSlot::SLOT_SECONDARY;
-                break;
-        }
-
-        if (slot != Weapon::WeaponSlot::SLOT_MEELE && this->weapons[slot] != nullptr) {
-            int maxAmmo = this->weapons[slot]->getMaxAmmo();
-            int ammo = this->weapons[slot]->getAmmo();
-
-            packStaysAlive = (ammo == maxAmmo);
-            this->weapons[slot]->setAmmo((ammo + value > maxAmmo) ? maxAmmo : ammo + value);
-        }
-
-        if (!packStaysAlive) {
-            pack->destroy();
-        }
-        return;
-    }
-
-    switch (side) {
-        case Collider::CollideSide::SIDE_TOP:
-            this->jumpTime = FLT_MAX;
-            break;
-
-        case Collider::CollideSide::SIDE_BOTTOM:
-            if (this->currentSpeed.get(Math::Vec3::Y) < 0.0f) {
-                this->jumpTime = 0.0f;
-            }
-            break;
-
-        default:
-            break;
-    }
+void Player::setMaxJumpSpeed(float maxJumpSpeed) {
+    this->maxJumpSpeed = maxJumpSpeed;
 }
+
+float Player::getMaxJumpTime() const {
+    return this->maxJumpTime;
+}
+
+void Player::setMaxJumpTime(float maxJumpTime) {
+    this->maxJumpTime = maxJumpTime;
+}
+
+int Player::getMaxHealth() const {
+    return this->maxHealth;
+}
+
+void Player::setMaxHealth(int maxHealth) {
+    this->maxHealth = maxHealth;
+}
+
+int Player::getMaxArmor() const {
+    return this->maxArmor;
+}
+
+void Player::setMaxArmor(int maxArmor) {
+    this->maxArmor = maxArmor;
+}
+
+PlayerState Player::getState() const {
+    return this->state;
+}
+
+void Player::setState(PlayerState state) {
+    this->state = static_cast<PlayerState>(this->state | state);
+}
+
+int Player::getHealth() const {
+    return this->health;
+}
+
+void Player::setHealth(int health) {
+    this->health = health;
+}
+
+int Player::getArmor() const {
+    return this->armor;
+}
+
+void Player::setArmor(int armor) {
+    this->armor = armor;
+}
+
+const Math::Vec3& Player::getTarget() const {
+    return this->target;
+}
+
+// const std::shared_ptr<Weapon>& Player::getWeapon(Weapon::WeaponSlot slot) {
+//     return this->weapons[slot];
+// }
+
+// void Player::pickWeapon(const std::shared_ptr<Weapon>& weapon) {
+//     Weapon::WeaponSlot targetSlot = weapon->getTargetSlot();
+
+//     if (this->getWeapon(targetSlot) == nullptr) {
+//         this->weapons[targetSlot] = weapon;
+//         this->weapons[targetSlot]->setState(Weapon::WeaponState::STATE_PICKED);
+
+//         auto weaponSprite = std::dynamic_pointer_cast<Opengl::Sprite>(this->weapons[targetSlot]->getPrimitive());
+//         weaponSprite->shearX(0.0f, 2);
+
+//         if (targetSlot > this->activeSlot || this->activeSlot == -1) {
+//             this->activateSlot(targetSlot);
+//         }
+//     }
+// }
+
+// void Player::activateSlot(Weapon::WeaponSlot slot) {
+//     if (this->weapons[slot] == nullptr) {
+//         return;
+//     }
+
+//     this->weapons[slot]->aimAt(this->target);  // Sync with player
+//     this->activeSlot = slot;
+
+//     if (this->weaponHandle != -1) {
+//         this->positionChanged.disconnect(this->weaponHandle);
+//     }
+
+//     this->weaponHandle = this->positionChanged.connect(
+//             std::bind(static_cast<void(Weapon::*)(const Math::Vec3&)>(&Weapon::setPosition),
+//             this->weapons[slot], std::placeholders::_1));
+//     this->positionChanged(this->getPosition());
+// }
+
+// void Player::aimAt(const Math::Vec3& target) {
+//     if (target == Math::Vec3::ZERO) {
+//         return;
+//     }
+
+//     Math::Vec3 newTarget(target);
+//     if (newTarget.normalize() == this->target.normalize()) {
+//         return;
+//     }
+
+//     float deltaAngle = acosf(this->target.dot(newTarget)) * 180.0f / M_PI;
+//     if (isnan(deltaAngle)) {
+//         return;
+//     }
+
+//     Math::Vec3 normal = this->target.cross(newTarget);
+//     float signCorrection = (normal.get(Math::Vec3::Z) < 0) ? -1.0f : 1.0f;
+
+//     float newAngle = this->viewAngle + deltaAngle * signCorrection;
+//     float shear = (cosf(newAngle * M_PI / 180.0f) < 0.0f) ? 1.0f : 0.0f;
+//     this->viewAngle = newAngle;
+
+//     this->roll(newAngle);
+//     this->sprite->shearX(shear, 2);
+
+//     if (this->activeSlot != -1) {
+//         this->weapons[this->activeSlot]->aimAt(newTarget);
+//     }
+
+//     this->target = target;
+// }
+
+// void Player::shoot() {
+//     if (this->activeSlot != -1) {
+//         this->weapons[this->activeSlot]->fire();
+//     }
+// }
+
+// void Player::onCollision(const std::shared_ptr<Entity>& another, Collider::CollideSide side) {
+//     if (another->getType() == Entity::EntityType::TYPE_WEAPON) {
+//         auto weapon = std::dynamic_pointer_cast<Weapon>(another);
+//         if (weapon->getState() == Weapon::WeaponState::STATE_AVAILABLE) {
+//             this->pickWeapon(weapon);
+//             return;
+//         }
+//     }
+
+//     if (another->getType() == Entity::EntityType::TYPE_PACK) {
+//         auto pack = std::dynamic_pointer_cast<Pack>(another);
+//         Weapon::WeaponSlot slot = Weapon::WeaponSlot::SLOT_MEELE;
+//         int value = pack->getValue();
+//         bool packStaysAlive = true;
+
+//         switch (pack->getPayloadType()) {
+//             case Pack::PayloadType::TYPE_ARMOR:
+//                 packStaysAlive = (this->armor == this->maxArmor);
+//                 this->armor = (this->armor + value > this->maxArmor) ? this->maxArmor : this->armor + value;
+//                 break;
+
+//             case Pack::PayloadType::TYPE_HEALTH:
+//                 packStaysAlive = (this->health == this->maxHealth);
+//                 this->health = (this->health + value > this->maxHealth) ? this->maxHealth : this->health + value;
+//                 break;
+
+//             case Pack::PayloadType::TYPE_PRIMARY_AMMO:
+//                 slot = Weapon::WeaponSlot::SLOT_PRIMARY;
+//                 break;
+
+//             case Pack::PayloadType::TYPE_SECONDARY_AMMO:
+//                 slot = Weapon::WeaponSlot::SLOT_SECONDARY;
+//                 break;
+//         }
+
+//         if (slot != Weapon::WeaponSlot::SLOT_MEELE && this->weapons[slot] != nullptr) {
+//             int maxAmmo = this->weapons[slot]->getMaxAmmo();
+//             int ammo = this->weapons[slot]->getAmmo();
+
+//             packStaysAlive = (ammo == maxAmmo);
+//             this->weapons[slot]->setAmmo((ammo + value > maxAmmo) ? maxAmmo : ammo + value);
+//         }
+
+//         if (!packStaysAlive) {
+//             pack->destroy();
+//         }
+//         return;
+//     }
+
+//     switch (side) {
+//         case Collider::CollideSide::SIDE_TOP:
+//             this->jumpTime = FLT_MAX;
+//             break;
+
+//         case Collider::CollideSide::SIDE_BOTTOM:
+//             if (this->currentSpeed.get(Math::Vec3::Y) < 0.0f) {
+//                 this->jumpTime = 0.0f;
+//             }
+//             break;
+
+//         default:
+//             break;
+//     }
+// }
 
 void Player::animate(float frameTime) {
-    float playerMoveSpeed = this->currentSpeed.get(Math::Vec3::X);
-    float playerJumpSpeed = this->currentSpeed.get(Math::Vec3::Y);
+    float playerMoveSpeed = this->speed.get(Math::Vec3::X);
+    float playerJumpSpeed = this->speed.get(Math::Vec3::Y);
 
     if ((this->state & PlayerState::STATE_JUMP) &&
             !(this->jumpTime == 0.0f && (this->previousState & PlayerState::STATE_JUMP))) {
@@ -203,7 +262,7 @@ void Player::animate(float frameTime) {
 
     if ((this->state & PlayerState::STATE_DROP_WEAPON)) {
         if (!(this->dropTime != 0.0f && (this->previousState & PlayerState::STATE_DROP_WEAPON))) {
-            this->dropWeapon();
+            // this->dropWeapon();
         }
 
         this->dropTime += frameTime;
@@ -243,39 +302,39 @@ void Player::animate(float frameTime) {
     this->state = PlayerState::STATE_IDLE;
 }
 
-void Player::dropWeapon() {
-    if (this->activeSlot == -1) {
-        return;
-    }
+// void Player::dropWeapon() {
+//     if (this->activeSlot == -1) {
+//         return;
+//     }
 
-    auto weapon = this->weapons[this->activeSlot];
-    this->weapons[this->activeSlot] = nullptr;
+//     auto weapon = this->weapons[this->activeSlot];
+//     this->weapons[this->activeSlot] = nullptr;
 
-    for (this->activeSlot = this->weapons.size() - 1; this->activeSlot > -1; this->activeSlot--) {
-        if (this->weapons[this->activeSlot] != nullptr) {
-            this->activateSlot(static_cast<Weapon::WeaponSlot>(this->activeSlot));  // TODO: Remove cast
-            break;
-        }
-    }
+//     for (this->activeSlot = this->weapons.size() - 1; this->activeSlot > -1; this->activeSlot--) {
+//         if (this->weapons[this->activeSlot] != nullptr) {
+//             this->activateSlot(static_cast<Weapon::WeaponSlot>(this->activeSlot));  // TODO: Remove cast
+//             break;
+//         }
+//     }
 
-    if (this->activeSlot < 0) {
-        this->positionChanged.disconnect(this->weaponHandle);
-        this->weaponHandle = -1;
-        this->activeSlot = -1;
-    }
+//     if (this->activeSlot < 0) {
+//         this->positionChanged.disconnect(this->weaponHandle);
+//         this->weaponHandle = -1;
+//         this->activeSlot = -1;
+//     }
 
-    float targetSignCorrection = (this->target.get(Math::Vec3::X) < 0.0f) ? -1.0f : 1.0f;
-    Math::Vec3 dropAcceleration((Math::Vec3::UNIT_X * targetSignCorrection + Math::Vec3::UNIT_Y) * 7.0f);
+//     float targetSignCorrection = (this->target.get(Math::Vec3::X) < 0.0f) ? -1.0f : 1.0f;
+//     Math::Vec3 dropAcceleration((Math::Vec3::UNIT_X * targetSignCorrection + Math::Vec3::UNIT_Y) * 7.0f);
 
-    weapon->aimAt(Math::Vec3::UNIT_X * targetSignCorrection);
-    weapon->setState(Weapon::WeaponState::STATE_THROWN);
-    weapon->setPosition(weapon->getPosition() + Math::Vec3::UNIT_Y * 0.5f);  // Don't collide from bottom
+//     weapon->aimAt(Math::Vec3::UNIT_X * targetSignCorrection);
+//     weapon->setState(Weapon::WeaponState::STATE_THROWN);
+//     weapon->setPosition(weapon->getPosition() + Math::Vec3::UNIT_Y * 0.5f);  // Don't collide from bottom
 
-    float hotizontalSpeed = this->getSpeed().get(Math::Vec3::X);
-    float verticalSpeed = this->getSpeed().get(Math::Vec3::Y);
-    weapon->setSpeed(Math::Vec3(hotizontalSpeed, (verticalSpeed > 0.0f) ? verticalSpeed : 0.0f, 0.0f));
-    weapon->accelerateBy(dropAcceleration);
-}
+//     float hotizontalSpeed = this->getSpeed().get(Math::Vec3::X);
+//     float verticalSpeed = this->getSpeed().get(Math::Vec3::Y);
+//     weapon->setSpeed(Math::Vec3(hotizontalSpeed, (verticalSpeed > 0.0f) ? verticalSpeed : 0.0f, 0.0f));
+//     weapon->accelerateBy(dropAcceleration);
+// }
 
 }  // namespace Game
 

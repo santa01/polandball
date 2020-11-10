@@ -1,6 +1,5 @@
 {
-    "texture": "textures/players/turkey.png",
-    "effect": "shaders/sprite.shader",
+    "texture": "textures/players/turkey.tga",
     "max_move_speed": 6.0,
     "max_jump_speed": 8.0,
     "max_jump_time": 0.35,

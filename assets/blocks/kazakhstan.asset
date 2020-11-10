@@ -1,4 +1,3 @@
 {
-    "texture": "textures/blocks/kazakhstan.tga",
-    "effect": "shaders/sprite.shader"
+    "texture": "textures/blocks/kazakhstan.tga"
 }

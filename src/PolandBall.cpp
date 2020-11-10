@@ -25,6 +25,9 @@
 #include <OpenGL.h>
 // #include <Sprite.h>
 #include <EntityFactory.h>
+#include <BaseEntity.h>
+#include <RenderManager.h>
+#include <RenderState.h>
 // #include <Vec3.h>
 // #include <Vec4.h>
 // #include <Mat4.h>
@@ -69,35 +72,38 @@ void PolandBall::onIdle() {
 void PolandBall::setupScene() {
     auto& scene = this->createScene();
     auto& sceneRoot = scene->getRootNode();
+    auto& player = scene->getPlayer();
 
     auto& objectManager = Graphene::GetObjectManager();
     auto camera = objectManager.createCamera(Graphene::ProjectionType::ORTHOGRAPHIC);
-    camera->setNearPlane(-1.0f);
-    camera->setFarPlane(1.0f);
+    camera->setNearPlane(-5.0f);
+    camera->setFarPlane(5.0f);
 
     //-----------------
     auto backgroundEntity = Game::GetEntityFactory().createBlock("assets/backgrounds/sunny.asset");
-    backgroundEntity->translate(0.0f, 0.0f, 0.5f);
-    backgroundEntity->scale(camera->getAspectRatio() * 10.0f, 10.0f, 1.0f);
+    backgroundEntity->scaleX(20.0f);
+    backgroundEntity->scaleY(20.0f);
+    backgroundEntity->translate(0.0f, 0.0f, 1.0f);
     sceneRoot->attachObject(backgroundEntity);
 
     //-----------------
     auto bricksEntity = Game::GetEntityFactory().createBlock("assets/blocks/kazakhstan.asset");
-    bricksEntity->translate(0.0f, -1.8f, 0.0f);
     bricksEntity->scaleX(1.5f);
+    bricksEntity->scaleX(20.0f);
     bricksEntity->replicateX(20.0f);
+    bricksEntity->translate(7.5f, -9.0f, 0.0f);
     sceneRoot->attachObject(bricksEntity);
 
     //-----------------
     bricksEntity = Game::GetEntityFactory().createBlock("assets/blocks/kazakhstan.asset");
-    bricksEntity->translate(2.0f, 0.0f, 0.0f);
     bricksEntity->scaleX(1.5f);
+    bricksEntity->translate(6.0f, -3.0f, 0.0f);
     sceneRoot->attachObject(bricksEntity);
 
-    // //-----------------
-    auto& player = scene->getPlayer();
-    // this->player = Game::GetEntityFactory().createPlayer("assets/players/turkey.asset");
-    // this->scene->addEntity(this->player);
+    //-----------------
+    auto playerEntity = Game::GetEntityFactory().createPlayer("assets/players/turkey.asset");
+    player->attachObject(playerEntity);
+    player->attachObject(backgroundEntity);
     player->attachObject(camera);
 
     // //-----------------
@@ -154,6 +160,18 @@ void PolandBall::setupScene() {
     auto& window = this->getWindow();
     auto& viewport = window->createViewport(0, 0, window->getWidth(), window->getHeight());
     viewport->setCamera(camera);
+
+    //-----------------
+    Graphene::RenderCallback renderCallback([](Graphene::RenderState* renderState, const std::shared_ptr<Graphene::Object>& object) {
+        auto& shader = renderState->getShader();
+        auto baseEntity = std::dynamic_pointer_cast<Game::BaseEntity>(object);
+
+        shader->setUniform("uvShear", baseEntity->getShear());
+        shader->setUniform("uvReplication", baseEntity->getReplication());
+    });
+
+    auto& renderState = Graphene::GetRenderManager().getRenderState(Graphene::RenderStateType::GEOMETRY);
+    renderState->setCallback(renderCallback);
 }
 
 void PolandBall::setupUI() {

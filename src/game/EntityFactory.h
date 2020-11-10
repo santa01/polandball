@@ -24,7 +24,7 @@
 #define ENTITYFACTORY_H
 
 // #include <Pack.h>
-// #include <Player.h>
+#include <Player.h>
 // #include <Weapon.h>
 // #include <Widget.h>
 // #include <Label.h>
@@ -51,7 +51,7 @@ public:
     }
 
     // std::shared_ptr<Game::Pack> createPack(const std::string& name) const;
-    // std::shared_ptr<Game::Player> createPlayer(const std::string& name) const;
+    std::shared_ptr<Game::Player> createPlayer(const std::string& name) const;
     // std::shared_ptr<Game::Weapon> createWeapon(const std::string& name) const;
     // std::shared_ptr<Game::Widget> createWidget(const std::string& name) const;
     // std::shared_ptr<Game::ShotTrace> createTrace(const Math::Vec3& from, const Math::Vec3& to) const;
@@ -61,7 +61,6 @@ public:
 private:
     EntityFactory() = default;
 
-    const std::shared_ptr<json_object>& loadAsset(const std::string& name);
     void loadBase(const std::shared_ptr<BaseEntity>& entity, const std::shared_ptr<json_object>& asset) const;
 };
 

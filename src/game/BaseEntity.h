@@ -24,6 +24,7 @@
 #define BASEENTITY_H
 
 #include <Entity.h>
+#include <Shearable.h>
 #include <Replicable.h>
 // #include <Collider.h>
 #include <Vec3.h>
@@ -36,7 +37,7 @@ namespace Game {
 
 enum class EntityType { GENERIC, PLAYER, WEAPON, PACK };
 
-class BaseEntity: public Graphene::Entity, public Replicable {
+class BaseEntity: public Graphene::Entity, public Shearable, public Replicable {
 public:
     BaseEntity();
     virtual ~BaseEntity() = default;

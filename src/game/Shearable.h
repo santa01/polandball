@@ -20,22 +20,32 @@
  * SOFTWARE.
  */
 
-#include <SpriteEntity.h>
-#include <ObjectManager.h>
-#include <Material.h>
+#ifndef SHEARABLE_H
+#define SHEARABLE_H
+
+#include <Mat4.h>
+#include <Vec3.h>
 
 namespace PolandBall {
 
 namespace Game {
 
-SpriteEntity::SpriteEntity() {
-    auto& mesh = Graphene::GetObjectManager().createQuad(Graphene::FaceWinding::WINDING_CLOCKWISE);
-    this->addMesh(mesh);
+class Shearable {
+public:
+    virtual ~Shearable() = default;
 
-    auto material = std::make_shared<Graphene::Material>();
-    mesh->setMaterial(material);
-}
+    void shearX(int slice, int totalSlices);
+    void shearY(int slice, int totalSlices);
+    void shearZ(int slice, int totalSlices);
+
+    const Math::Mat4& getShear() const;
+
+private:
+    Math::Mat4 shear;
+};
 
 }  // namespace Game
 
 }  // namespace PolandBall
+
+#endif  // SHEARABLE_H

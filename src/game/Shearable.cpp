@@ -20,20 +20,43 @@
  * SOFTWARE.
  */
 
-#include <SpriteEntity.h>
-#include <ObjectManager.h>
-#include <Material.h>
+#include <Shearable.h>
+#include <Logger.h>
+#include <stdexcept>
 
 namespace PolandBall {
 
 namespace Game {
 
-SpriteEntity::SpriteEntity() {
-    auto& mesh = Graphene::GetObjectManager().createQuad(Graphene::FaceWinding::WINDING_CLOCKWISE);
-    this->addMesh(mesh);
+void Shearable::shearX(int slice, int totalSlices) {
+    if (slice >= totalSlices) {
+        throw std::invalid_argument(Graphene::LogFormat("Slice value is invalid"));
+    }
 
-    auto material = std::make_shared<Graphene::Material>();
-    mesh->setMaterial(material);
+    this->shear.set(0, 0, 1.0f / totalSlices);
+    this->shear.set(0, 3, static_cast<float>(slice) / totalSlices);
+}
+
+void Shearable::shearY(int slice, int totalSlices) {
+    if (slice >= totalSlices) {
+        throw std::invalid_argument(Graphene::LogFormat("Slice value is invalid"));
+    }
+
+    this->shear.set(1, 1, 1.0f / totalSlices);
+    this->shear.set(1, 3, static_cast<float>(slice) / totalSlices);
+}
+
+void Shearable::shearZ(int slice, int totalSlices) {
+    if (slice >= totalSlices) {
+        throw std::invalid_argument(Graphene::LogFormat("Slice value is invalid"));
+    }
+
+    this->shear.set(2, 2, 1.0f / totalSlices);
+    this->shear.set(2, 3, static_cast<float>(slice) / totalSlices);
+}
+
+const Math::Mat4& Shearable::getShear() const {
+    return this->shear;
 }
 
 }  // namespace Game

@@ -23,140 +23,88 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "SpriteEntity.h"
-#include "Collider.h"
-#include "Weapon.h"
-
+#include <SpriteEntity.h>
+// #include <Collider.h>
+// #include <Weapon.h>
 #include <Vec3.h>
 #include <memory>
-#include <array>
+// #include <array>
 
 namespace PolandBall {
 
 namespace Game {
 
+enum PlayerState {
+    STATE_IDLE = 1 << 0,
+    STATE_LEFT_STEP = 1 << 1,
+    STATE_RIGHT_STEP = 1 << 2,
+    STATE_JUMP = 1 << 3,
+    STATE_DROP_WEAPON = 1 << 4
+};
+
 class Player: public SpriteEntity {
 public:
-    enum PlayerState {
-        STATE_IDLE = 1 << 0,
-        STATE_LEFT_STEP = 1 << 1,
-        STATE_RIGHT_STEP = 1 << 2,
-        STATE_JUMP = 1 << 3,
-        STATE_DROP_WEAPON = 1 << 4
-    };
-
     Player();
 
-    const Math::Vec3& getTarget() const {
-        return this->target;
-    }
+    float getMaxMoveSpeed() const;
+    void setMaxMoveSpeed(float maxMoveSpeed);
 
-    float getMaxMoveSpeed() const {
-        return this->maxMoveSpeed;
-    }
+    float getMaxJumpSpeed() const;
+    void setMaxJumpSpeed(float maxJumpSpeed);
 
-    void setMaxMoveSpeed(float maxMoveSpeed) {
-        this->maxMoveSpeed = maxMoveSpeed;
-    }
+    float getMaxJumpTime() const;
+    void setMaxJumpTime(float maxJumpTime);
 
-    float getMaxJumpSpeed() const {
-        return this->maxJumpSpeed;
-    }
+    int getMaxHealth() const;
+    void setMaxHealth(int maxHealth);
 
-    void setMaxJumpSpeed(float maxJumpSpeed) {
-        this->maxJumpSpeed = maxJumpSpeed;
-    }
+    int getMaxArmor() const;
+    void setMaxArmor(int maxArmor);
 
-    float getMaxJumpTime() const {
-        return this->maxJumpTime;
-    }
+    PlayerState getState() const;
+    void setState(PlayerState state);
 
-    void setMaxJumpTime(float maxJumpTime) {
-        this->maxJumpTime = maxJumpTime;
-    }
+    int getHealth() const;
+    void setHealth(int health);
 
-    int getMaxHealth() const {
-        return this->maxHealth;
-    }
+    int getArmor() const;
+    void setArmor(int armor);
 
-    void setMaxHealth(int maxHealth) {
-        this->maxHealth = maxHealth;
-    }
+    const Math::Vec3& getTarget() const;
+    // const std::shared_ptr<Weapon>& getWeapon(Weapon::WeaponSlot slot);
 
-    int getMaxArmor() const {
-        return this->maxArmor;
-    }
+    // void pickWeapon(const std::shared_ptr<Weapon>& weapon);
+    // void activateSlot(Weapon::WeaponSlot slot);
 
-    void setMaxArmor(int maxArmor) {
-        this->maxArmor = maxArmor;
-    }
-
-    int getState() const {
-        return this->state;
-    }
-
-    void setState(PlayerState state) {
-        this->state |= state;
-    }
-
-    int getHealth() const {
-        return this->health;
-    }
-
-    void setHealth(int health) {
-        this->health = health;
-    }
-
-    int getArmor() const {
-        return this->armor;
-    }
-
-    void setArmor(int armor) {
-        this->armor = armor;
-    }
-
-    std::shared_ptr<Weapon>& getWeapon(Weapon::WeaponSlot slot) {
-        return this->weapons[slot];
-    }
-
-    void pickWeapon(const std::shared_ptr<Weapon>& weapon);
-    void activateSlot(Weapon::WeaponSlot slot);
-
-    void aimAt(const Math::Vec3& target);
-    void shoot() {
-        if (this->activeSlot != -1) {
-            this->weapons[this->activeSlot]->fire();
-        }
-    }
+    // void aimAt(const Math::Vec3& target);
+    void shoot();
 
 private:
-    friend class Scene;
+    // void onCollision(const std::shared_ptr<Entity>& another, Collider::CollideSide side) override;
+    void animate(float frameTime) override;
 
-    void onCollision(const std::shared_ptr<Entity>& another, Collider::CollideSide side);
-    void animate(float frameTime);
+    // void dropWeapon();
 
-    void dropWeapon();
+    Math::Vec3 target = Math::Vec3::UNIT_X;
+    // std::array<std::shared_ptr<Weapon>, 3> weapons;
 
-    std::array<std::shared_ptr<Weapon>, 3> weapons;
-    Math::Vec3 target;
+    float maxMoveSpeed = 8.0f;
+    float maxJumpSpeed = 10.0f;
+    float maxJumpTime = 0.5f;
+    float minDropTime = 0.5f;
+    int maxHealth = 100;
+    int maxArmor = 100;
 
-    float maxMoveSpeed;
-    float maxJumpSpeed;
-    float maxJumpTime;
-    float minDropTime;
-    int maxHealth;
-    int maxArmor;
+    float jumpTime = 0.0f;
+    float dropTime = 0.0f;
+    float viewAngle = 0.0f;
+    int health = 0;
+    int armor = 0;
 
-    float jumpTime;
-    float dropTime;
-    float viewAngle;
-    int health;
-    int armor;
-
-    int activeSlot;
-    int weaponHandle;
-    int state;
-    int previousState;
+    // int activeSlot = -1;
+    // int weaponHandle = -1;
+    PlayerState state = PlayerState::STATE_IDLE;
+    PlayerState previousState = PlayerState::STATE_IDLE;
 };
 
 }  // namespace Game
