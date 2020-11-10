@@ -31,8 +31,6 @@ namespace Game {
 Player::Player() {
     this->passive = false;
     this->health = this->maxHealth;
-
-    this->shearX(1, 2);
 }
 
 float Player::getMaxMoveSpeed() const {
