@@ -23,10 +23,8 @@
 #ifndef WEAPON_H
 #define WEAPON_H
 
-#include "Entity.h"
-#include "SpriteEntity.h"
-#include "Collider.h"
-
+#include <SpriteEntity.h>
+// #include <Collider.h>
 #include <Vec3.h>
 #include <memory>
 
@@ -34,105 +32,52 @@ namespace PolandBall {
 
 namespace Game {
 
+enum WeaponSlot { SLOT_MEELE, SLOT_SECONDARY, SLOT_PRIMARY };
+enum class WeaponState { AVAILABLE, PICKED, THROWN };
+
 class Weapon: public SpriteEntity {
 public:
-    enum WeaponSlot {
-        SLOT_MEELE,
-        SLOT_SECONDARY,
-        SLOT_PRIMARY
-    };
-
-    enum WeaponState {
-        STATE_PICKED,
-        STATE_THROWN,
-        STATE_AVAILABLE
-    };
-
-    Weapon():
-            Weapon(SLOT_PRIMARY) {
-    }
-
+    Weapon();
     Weapon(WeaponSlot slot);
 
-    void setMaxAmmo(int maxAmmo) {
-        this->maxAmmo = maxAmmo;
-    }
+    void setMaxAmmo(int maxAmmo);
+    int getMaxAmmo() const;
 
-    int getMaxAmmo() const {
-        return this->maxAmmo;
-    }
+    void setAmmo(int ammo);
+    int getAmmo() const;
 
-    void setGroupingAngle(float groupingAngle) {
-        this->groupingAngle = groupingAngle;
-    }
+    void setGroupingAngle(float groupingAngle);
+    float getGroupingAngle() const;
 
-    float getGroupingAngle() const {
-        return this->groupingAngle;
-    }
+    void setFiringSpeed(float firingSpeed);
+    float getFiringSpeed() const;
 
-    void setFiringSpeed(float firingSpeed) {
-        this->firingSpeed = firingSpeed;
-    }
+    void setTargetSlot(WeaponSlot slot);
+    WeaponSlot getTargetSlot() const;
 
-    float getFiringSpeed() const {
-        return this->firingSpeed;
-    }
+    void setState(WeaponState state);
+    WeaponState getState() const;
 
-    void setAmmo(int ammo) {
-        this->ammo = ammo;
-    }
+    Math::Vec3 getTargetDirection() const;
 
-    int getAmmo() const {
-        return this->ammo;
-    }
-
-    void setTargetSlot(WeaponSlot slot) {
-        this->targetSlot = slot;
-    }
-
-    WeaponSlot getTargetSlot() const {
-        return this->targetSlot;
-    }
-
-    void setState(WeaponState state) {
-        this->state = state;
-    }
-
-    WeaponState getState() const {
-        return this->state;
-    }
-
-    void fire() {
-        this->firing = true;
-    }
-
-    void aimAt(const Math::Vec3& target);
+    void aimAt(const Math::Vec3& position);
+    void fire();
 
 private:
-    void onCollision(const std::shared_ptr<Entity>& another, Collider::CollideSide side) {
-        if (this->state == WeaponState::STATE_THROWN) {
-            if (side == Collider::CollideSide::SIDE_BOTTOM && another->isCollidable()) {
-                this->setSpeed(Math::Vec3::ZERO);
-                this->state = WeaponState::STATE_AVAILABLE;
-            }
-        }
-    }
+    // void onCollision(const std::shared_ptr<BaseEntity>& another, Collider::CollideSide side) override;
+    void animate(float frameTime) override;
 
-    void animate(float frameTime);
+    int maxAmmo = 100;
+    int ammo = 100;
+    float groupingAngle = 1.0f;
+    float firingSpeed = 3.0f;  // Shots per second
 
-    Math::Vec3 target;
-    bool firing;
+    WeaponSlot targetSlot = WeaponSlot::SLOT_MEELE;
+    WeaponState state = WeaponState::AVAILABLE;
+    bool firing = false;
 
-    float groupingAngle;
-    float firingSpeed;  // Shots per second
-    int maxAmmo;
-    int ammo;
-
-    WeaponSlot targetSlot;
-    WeaponState state;
-    float viewAngle;
-    float bounce;
-    float relaxTime;
+    float bounce = 0.0f;
+    float relaxTime = 0.0f;
 };
 
 }  // namespace Game

@@ -67,7 +67,7 @@ set (POLANDBALL_SOURCES src/main.cpp
                         src/game/SpriteEntity.cpp
                         # src/game/Pack.cpp
                         src/game/Player.cpp
-                        # src/game/Weapon.cpp
+                        src/game/Weapon.cpp
                         # src/game/LineEntity.cpp
                         # src/game/ShotTrace.cpp
                         # src/game/Scene.cpp
@@ -87,6 +87,7 @@ target_compile_options (${POLANDBALL_EXECUTABLE} PUBLIC
     $<$<CXX_COMPILER_ID:GNU>:-Wall -Wextra -Werror -pedantic>
     $<$<CXX_COMPILER_ID:MSVC>:/WX>
 )
+target_compile_definitions (${POLANDBALL_EXECUTABLE} PUBLIC _USE_MATH_DEFINES)
 
 set (POLANDBALL_LINK_LIBRARIES ${GRAPHENE_LIBRARIES} ${MATH_LIBRARIES} ${JSON_C_LIBRARIES})
 target_link_libraries (${POLANDBALL_EXECUTABLE} ${POLANDBALL_LINK_LIBRARIES})

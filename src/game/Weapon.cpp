@@ -20,95 +20,146 @@
  * SOFTWARE.
  */
 
-#include "Weapon.h"
-#include "Scene.h"
-#include "EntityFactory.h"
-
+#include <Weapon.h>
+// #include <Scene.h>
+// #include <EntityFactory.h>
+#include <Logger.h>
 #include <Quaternion.h>
+#include <Mat4.h>
+#include <Mat3.h>
+#include <stdexcept>
 #include <cmath>
 
 namespace PolandBall {
 
 namespace Game {
 
+Weapon::Weapon():
+        Weapon(WeaponSlot::SLOT_MEELE) {
+}
+
 Weapon::Weapon(WeaponSlot slot):
-        target(Math::Vec3::UNIT_X) {
-    this->targetSlot = slot;
-    this->state = WeaponState::STATE_AVAILABLE;
-
-    this->viewAngle = 0.0f;
-    this->bounce = 0.0f;
-    this->relaxTime = 0.0f;
-    this->firing = false;
-
-    this->groupingAngle = 1.0f;
-    this->firingSpeed = 3.0f;
-    this->maxAmmo = 100;
-    this->ammo = this->maxAmmo;
-
+        targetSlot(slot) {
     this->passive = false;
-    this->type = Entity::EntityType::TYPE_WEAPON;
-    sprite->shearX(0.0f, 2);
-    sprite->shearY(-0.15f, 1);
+    // this->shearY(-0.15f, 1);
 }
 
-void Weapon::aimAt(const Math::Vec3& target) {
-    if (target == Math::Vec3::ZERO) {
-        return;
-    }
-
-    Math::Vec3 newTarget(target);
-    if (newTarget.normalize() == this->target.normalize()) {
-        return;
-    }
-
-    float deltaAngle = acosf(this->target.dot(newTarget)) * 180.0f / M_PI;
-    if (isnan(deltaAngle)) {
-        return;
-    }
-
-    Math::Vec3 normal = this->target.cross(newTarget);
-    float signCorrection = (normal.get(Math::Vec3::Z) < 0.0f) ? -1.0f : 1.0f;
-    float targetSignCorrection = (newTarget.get(Math::Vec3::X) < 0.0f) ? -1.0f : 1.0f;
-
-    float newAngle = this->viewAngle + deltaAngle * signCorrection;
-    float shear = (cosf(newAngle * M_PI / 180.0f) < 0.0f) ? 1.0f : 0.0f;
-    this->viewAngle = newAngle;
-
-    this->roll(newAngle);
-    this->sprite->shearX(shear, 2);
-    this->sprite->shearY(-0.15f * targetSignCorrection, 1);
-
-    this->target = target;
+void Weapon::setMaxAmmo(int maxAmmo) {
+    this->maxAmmo = maxAmmo;
 }
+
+int Weapon::getMaxAmmo() const {
+    return this->maxAmmo;
+}
+
+void Weapon::setAmmo(int ammo) {
+    this->ammo = ammo;
+}
+
+int Weapon::getAmmo() const {
+    return this->ammo;
+}
+
+void Weapon::setGroupingAngle(float groupingAngle) {
+    this->groupingAngle = groupingAngle;
+}
+
+float Weapon::getGroupingAngle() const {
+    return this->groupingAngle;
+}
+
+void Weapon::setFiringSpeed(float firingSpeed) {
+    this->firingSpeed = firingSpeed;
+}
+
+float Weapon::getFiringSpeed() const {
+    return this->firingSpeed;
+}
+
+void Weapon::setTargetSlot(WeaponSlot slot) {
+    this->targetSlot = slot;
+}
+
+WeaponSlot Weapon::getTargetSlot() const {
+    return this->targetSlot;
+}
+
+void Weapon::setState(WeaponState state) {
+    this->state = state;
+}
+
+WeaponState Weapon::getState() const {
+    return this->state;
+}
+
+Math::Vec3 Weapon::getTargetDirection() const {
+    return this->getRight();
+}
+
+void Weapon::aimAt(const Math::Vec3& position) {
+    if (position == Math::Vec3::ZERO) {
+        throw std::invalid_argument(Graphene::LogFormat("Target cannot be of zero length"));
+    }
+
+    Math::Vec3 oldTarget(this->getTargetDirection());
+    Math::Vec3 newTarget(position - this->getPosition());
+    newTarget.normalize();
+
+    float pi = static_cast<float>(M_PI);
+    float angle = 180.0f * acosf(oldTarget.dot(newTarget)) / pi;
+
+    Math::Vec3 axis = oldTarget.cross(newTarget);
+    this->rotate(axis, angle);
+
+    float signCorrection = (axis.get(Math::Vec3::Z) < 0) ? -1.0f : 1.0f;
+
+    // int shear = (cosf(newAngle * pi / 180.0f) < 0.0f) ? 1 : 0;
+    // this->shearX(shear, 2);
+    // this->shearY(-0.15f * targetSignCorrection, 1);
+}
+
+void Weapon::fire() {
+    this->firing = true;
+}
+
+// void Weapon::onCollision(const std::shared_ptr<BaseEntity>& another, Collider::CollideSide side) {
+//     if (this->state == WeaponState::THROWN) {
+//         if (side == Collider::CollideSide::SIDE_BOTTOM && another->isCollidable()) {
+//             this->setSpeed(Math::Vec3::ZERO);
+//             this->state = WeaponState::AVAILABLE;
+//         }
+//     }
+// }
 
 void Weapon::animate(float frameTime) {
-    float targetSignCorrection = (this->target.get(Math::Vec3::X) < 0.0f) ? -1.0f : 1.0f;
+    Math::Vec3 targetDirection(this->getTargetDirection());
+    float targetSignCorrection = (targetDirection.get(Math::Vec3::X) < 0.0f) ? -1.0f : 1.0f;
 
-    if (this->state == WeaponState::STATE_AVAILABLE) {
-        this->sprite->shearY(sinf(this->bounce) / 13.33f - 0.075f * targetSignCorrection, 1);
+    if (this->state == WeaponState::AVAILABLE) {
+        // this->shearY(sinf(this->bounce) / 13.33f - 0.075f * targetSignCorrection, 1);
         this->bounce += frameTime * 6.0f;
     } else {
-        this->sprite->shearY(-0.15f * targetSignCorrection, 1);
+        // this->shearY(-0.15f * targetSignCorrection, 1);
         this->bounce = 0.0f;
     }
 
-    if (this->state == WeaponState::STATE_PICKED) {
+    if (this->state == WeaponState::PICKED) {
         if (this->firing) {
             if (this->relaxTime == 0.0f && this->ammo > 0) {
                 float shotAngle = (rand() / static_cast<float>(RAND_MAX)) * this->groupingAngle;
                 float signCorrection = (rand() % 2 == 0) ? 1.0f : -1.0f;
 
                 Math::Vec3 position(this->getPosition());
-                Math::Vec3 shotTarget(this->target);
+                Math::Vec3 shotTarget(targetDirection);
                 shotTarget.normalize();
                 shotTarget *= 10.0f;
 
-                Math::Quaternion q(Math::Vec3::UNIT_Z, shotAngle * signCorrection * M_PI / 180.0f);
+                float pi = static_cast<float>(M_PI);
+                Math::Quaternion q(Math::Vec3::UNIT_Z, shotAngle * signCorrection * pi / 180.0f);
                 shotTarget = q.extractMat4().extractMat3() * shotTarget;
 
-                auto parent = std::shared_ptr<Scene>(this->scene);
-                parent->addEntity(EntityFactory::getInstance().createTrace(position, position + shotTarget));
+                // auto parent = std::shared_ptr<Scene>(this->scene);
+                // parent->addEntity(EntityFactory::getInstance().createTrace(position, position + shotTarget));
                 this->ammo--;
             }
 

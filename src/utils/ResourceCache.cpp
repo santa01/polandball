@@ -25,7 +25,7 @@
 #include <Config.h>
 #include <Logger.h>
 #include <fstream>
-#include <exception>
+#include <stdexcept>
 
 namespace PolandBall {
 

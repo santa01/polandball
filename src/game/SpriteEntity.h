@@ -37,7 +37,7 @@ public:
     virtual ~SpriteEntity() = default;
 
 protected:
-    // virtual void onCollision(const std::shared_ptr<Entity>& /*another*/, Collider::CollideSide /*side*/) override {}
+    // virtual void onCollision(const std::shared_ptr<BaseEntity>& /*another*/, Collider::CollideSide /*side*/) override {}
     virtual void animate(float /*frameTime*/) override {}
 };
 

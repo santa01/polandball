@@ -25,10 +25,10 @@
 
 #include <SpriteEntity.h>
 // #include <Collider.h>
-// #include <Weapon.h>
+#include <Weapon.h>
 #include <Vec3.h>
 #include <memory>
-// #include <array>
+#include <array>
 
 namespace PolandBall {
 
@@ -61,32 +61,29 @@ public:
     int getMaxArmor() const;
     void setMaxArmor(int maxArmor);
 
-    PlayerState getState() const;
-    void setState(PlayerState state);
-
     int getHealth() const;
     void setHealth(int health);
 
     int getArmor() const;
     void setArmor(int armor);
 
-    const Math::Vec3& getTarget() const;
-    // const std::shared_ptr<Weapon>& getWeapon(Weapon::WeaponSlot slot);
+    PlayerState getState() const;
+    void setState(PlayerState state);
 
-    // void pickWeapon(const std::shared_ptr<Weapon>& weapon);
-    // void activateSlot(Weapon::WeaponSlot slot);
+    Math::Vec3 getTargetDirection() const;
+    const std::shared_ptr<Weapon>& getWeapon(WeaponSlot slot);
 
-    // void aimAt(const Math::Vec3& target);
+    void pickWeapon(const std::shared_ptr<Weapon>& weapon);
+    void activateSlot(WeaponSlot slot);
+
+    void aimAt(const Math::Vec3& position);
     void shoot();
 
 private:
-    // void onCollision(const std::shared_ptr<Entity>& another, Collider::CollideSide side) override;
+    // void onCollision(const std::shared_ptr<BaseEntity>& another, Collider::CollideSide side) override;
     void animate(float frameTime) override;
 
-    // void dropWeapon();
-
-    Math::Vec3 target = Math::Vec3::UNIT_X;
-    // std::array<std::shared_ptr<Weapon>, 3> weapons;
+    void dropWeapon();
 
     float maxMoveSpeed = 8.0f;
     float maxJumpSpeed = 10.0f;
@@ -97,14 +94,14 @@ private:
 
     float jumpTime = 0.0f;
     float dropTime = 0.0f;
-    float viewAngle = 0.0f;
     int health = 0;
     int armor = 0;
 
-    // int activeSlot = -1;
-    // int weaponHandle = -1;
     PlayerState state = PlayerState::STATE_IDLE;
     PlayerState previousState = PlayerState::STATE_IDLE;
+    int activeSlot = -1;
+
+    std::array<std::shared_ptr<Weapon>, 3> weapons;
 };
 
 }  // namespace Game
