@@ -71,8 +71,17 @@ void PolandBall::onIdle() {
 
 void PolandBall::setupScene() {
     auto& scene = this->createScene();
+
+    // In a scene traverse (render) order
+    auto background = scene->createNode();
+    auto terrain = scene->createNode();
+    auto items = scene->createNode();
+
     auto& sceneRoot = scene->getRootNode();
-    auto& player = scene->getPlayer();
+    sceneRoot->attachNode(background);
+    sceneRoot->attachNode(terrain);
+    sceneRoot->attachNode(items);
+    auto& player = scene->getPlayer();  // Attached last
 
     auto& objectManager = Graphene::GetObjectManager();
     auto camera = objectManager.createCamera(Graphene::ProjectionType::ORTHOGRAPHIC);
@@ -83,8 +92,7 @@ void PolandBall::setupScene() {
     auto backgroundEntity = Game::GetEntityFactory().createBlock("assets/backgrounds/sunny.asset");
     backgroundEntity->scaleX(20.0f);
     backgroundEntity->scaleY(20.0f);
-    backgroundEntity->translate(0.0f, 0.0f, 1.0f);
-    sceneRoot->attachObject(backgroundEntity);
+    background->attachObject(backgroundEntity);
 
     //-----------------
     auto bricksEntity = Game::GetEntityFactory().createBlock("assets/blocks/kazakhstan.asset");
@@ -92,74 +100,64 @@ void PolandBall::setupScene() {
     bricksEntity->scaleX(20.0f);
     bricksEntity->replicateX(20.0f);
     bricksEntity->translate(7.5f, -9.0f, 0.0f);
-    sceneRoot->attachObject(bricksEntity);
+    terrain->attachObject(bricksEntity);
 
-    //-----------------
     bricksEntity = Game::GetEntityFactory().createBlock("assets/blocks/kazakhstan.asset");
     bricksEntity->scaleX(1.5f);
     bricksEntity->translate(6.0f, -3.0f, 0.0f);
-    sceneRoot->attachObject(bricksEntity);
-
-    //-----------------
-    auto playerEntity = Game::GetEntityFactory().createPlayer("assets/players/turkey.asset");
-    player->attachObject(playerEntity);
-    player->attachObject(backgroundEntity);
-    player->attachObject(camera);
+    terrain->attachObject(bricksEntity);
 
     // //-----------------
     // auto pack_primary_ammo = Game::GetEntityFactory().createPack("assets/items/pack_primary_ammo.asset");
     // pack_primary_ammo->setPosition(-8.0f, 0.0f, 0.0f);
     // this->scene->addEntity(pack_primary_ammo);
 
-    // //-----------------
     // auto pack_secondary_ammo = Game::GetEntityFactory().createPack("assets/items/pack_secondary_ammo.asset");
     // pack_secondary_ammo->setPosition(-6.0f, 0.0f, 0.0f);
     // this->scene->addEntity(pack_secondary_ammo);
+
+    // auto pack_health = Game::GetEntityFactory().createPack("assets/items/pack_health.asset");
+    // pack_health->setPosition(10.0f, 0.0f, 0.0f);
+    // this->scene->addEntity(pack_health);
+
+    // auto pack_armor = Game::GetEntityFactory().createPack("assets/items/pack_armor.asset");
+    // pack_armor->setPosition(12.0f, 0.0f, 0.0f);
+    // this->scene->addEntity(pack_armor);
 
     // //-----------------
     // auto m4a1 = Game::GetEntityFactory().createWeapon("assets/weapons/m4a1.asset");
     // m4a1->setPosition(-4.0f, 0.0f, 0.0f);
     // this->scene->addEntity(m4a1);
 
-    // //-----------------
     // auto ak74 = Game::GetEntityFactory().createWeapon("assets/weapons/ak74.asset");
     // ak74->setPosition(-2.0f, 0.0f, 0.0f);
     // this->scene->addEntity(ak74);
 
-    // //-----------------
     // auto m1911 = Game::GetEntityFactory().createWeapon("assets/weapons/m1911.asset");
     // m1911->setPosition(2.0f, 0.0f, 0.0f);
     // this->scene->addEntity(m1911);
 
-    // //-----------------
     // auto beretta92 = Game::GetEntityFactory().createWeapon("assets/weapons/beretta92.asset");
     // beretta92->setPosition(4.0f, 0.0f, 0.0f);
     // this->scene->addEntity(beretta92);
 
-    // //-----------------
     // auto wrench = Game::GetEntityFactory().createWeapon("assets/weapons/wrench.asset");
     // wrench->setPosition(6.0f, 0.0f, 0.0f);
     // this->scene->addEntity(wrench);
 
-    // //-----------------
     // auto knife = Game::GetEntityFactory().createWeapon("assets/weapons/knife.asset");
     // knife->setPosition(8.0f, 0.0f, 0.0f);
     // this->scene->addEntity(knife);
 
-    // //-----------------
-    // auto pack_health = Game::GetEntityFactory().createPack("assets/items/pack_health.asset");
-    // pack_health->setPosition(10.0f, 0.0f, 0.0f);
-    // this->scene->addEntity(pack_health);
-
-    // //-----------------
-    // auto pack_armor = Game::GetEntityFactory().createPack("assets/items/pack_armor.asset");
-    // pack_armor->setPosition(12.0f, 0.0f, 0.0f);
-    // this->scene->addEntity(pack_armor);
+    //-----------------
+    auto playerEntity = Game::GetEntityFactory().createPlayer("assets/players/turkey.asset");
+    player->attachObject(playerEntity);
+    player->attachObject(camera);
 
     //-----------------
     auto& window = this->getWindow();
-    auto& viewport = window->createViewport(0, 0, window->getWidth(), window->getHeight());
-    viewport->setCamera(camera);
+    auto& overlay = window->createOverlay(0, 0, window->getWidth(), window->getHeight());
+    overlay->setCamera(camera);
 
     //-----------------
     Graphene::RenderCallback renderCallback([](Graphene::RenderState* renderState, const std::shared_ptr<Graphene::Object>& object) {
@@ -170,7 +168,7 @@ void PolandBall::setupScene() {
         shader->setUniform("uvReplication", baseEntity->getReplication());
     });
 
-    auto& renderState = Graphene::GetRenderManager().getRenderState(Graphene::RenderStateType::GEOMETRY);
+    auto& renderState = Graphene::GetRenderManager().getRenderState(Graphene::RenderStateType::OVERLAY);
     renderState->setCallback(renderCallback);
 }
 

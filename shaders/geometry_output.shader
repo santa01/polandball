@@ -11,9 +11,6 @@ uniform mat4 modelViewProjection;
 uniform mat4 normalRotation;
 uniform mat4 localWorld;
 
-uniform mat4 uvShear;
-uniform mat4 uvReplication;
-
 smooth out vec3 fragmentPosition;
 smooth out vec3 fragmentNormal;
 smooth out vec2 fragmentUV;
@@ -25,7 +22,7 @@ void main() {
 
     fragmentPosition = vec3(vertexWorldPosition);
     fragmentNormal = vec3(vertexWorldNormal);
-    fragmentUV = (uvShear * uvReplication * vec4(vertexUV, 0.0f, 1.0f)).st;
+    fragmentUV = vertexUV;
 }
 
 #endif
