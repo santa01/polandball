@@ -125,29 +125,29 @@ void PolandBall::setupScene() {
     // this->scene->addEntity(pack_armor);
 
     // //-----------------
-    // auto m4a1 = Game::GetEntityFactory().createWeapon("assets/weapons/m4a1.asset");
-    // m4a1->setPosition(-4.0f, 0.0f, 0.0f);
-    // this->scene->addEntity(m4a1);
+    auto m4a1 = Game::GetEntityFactory().createWeapon("assets/weapons/m4a1.asset");
+    m4a1->translate(-4.0f, 0.0f, 0.0f);
+    items->attachObject(m4a1);
 
-    // auto ak74 = Game::GetEntityFactory().createWeapon("assets/weapons/ak74.asset");
-    // ak74->setPosition(-2.0f, 0.0f, 0.0f);
-    // this->scene->addEntity(ak74);
+    auto ak74 = Game::GetEntityFactory().createWeapon("assets/weapons/ak74.asset");
+    ak74->translate(-2.0f, 0.0f, 0.0f);
+    items->attachObject(ak74);
 
-    // auto m1911 = Game::GetEntityFactory().createWeapon("assets/weapons/m1911.asset");
-    // m1911->setPosition(2.0f, 0.0f, 0.0f);
-    // this->scene->addEntity(m1911);
+    auto m1911 = Game::GetEntityFactory().createWeapon("assets/weapons/m1911.asset");
+    m1911->translate(2.0f, 0.0f, 0.0f);
+    items->attachObject(m1911);
 
-    // auto beretta92 = Game::GetEntityFactory().createWeapon("assets/weapons/beretta92.asset");
-    // beretta92->setPosition(4.0f, 0.0f, 0.0f);
-    // this->scene->addEntity(beretta92);
+    auto beretta92 = Game::GetEntityFactory().createWeapon("assets/weapons/beretta92.asset");
+    beretta92->translate(4.0f, 0.0f, 0.0f);
+    items->attachObject(beretta92);
 
-    // auto wrench = Game::GetEntityFactory().createWeapon("assets/weapons/wrench.asset");
-    // wrench->setPosition(6.0f, 0.0f, 0.0f);
-    // this->scene->addEntity(wrench);
+    auto wrench = Game::GetEntityFactory().createWeapon("assets/weapons/wrench.asset");
+    wrench->translate(6.0f, 0.0f, 0.0f);
+    items->attachObject(wrench);
 
-    // auto knife = Game::GetEntityFactory().createWeapon("assets/weapons/knife.asset");
-    // knife->setPosition(8.0f, 0.0f, 0.0f);
-    // this->scene->addEntity(knife);
+    auto knife = Game::GetEntityFactory().createWeapon("assets/weapons/knife.asset");
+    knife->translate(8.0f, 0.0f, 0.0f);
+    items->attachObject(knife);
 
     //-----------------
     auto playerEntity = Game::GetEntityFactory().createPlayer("assets/players/turkey.asset");

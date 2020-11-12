@@ -1,6 +1,5 @@
 {
-    "texture": "textures/weapons/knife.png",
-    "effect": "shaders/sprite.shader",
+    "texture": "textures/weapons/knife.tga",
     "target_slot": "meele",
     "max_ammo": 999,
     "ammo": 999,

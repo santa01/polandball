@@ -1,6 +1,5 @@
 {
-    "texture": "textures/weapons/beretta92.png",
-    "effect": "shaders/sprite.shader",
+    "texture": "textures/weapons/beretta92.tga",
     "target_slot": "secondary",
     "max_ammo": 40,
     "ammo": 8,

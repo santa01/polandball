@@ -1,6 +1,5 @@
 {
-    "texture": "textures/weapons/ak74.png",
-    "effect": "shaders/sprite.shader",
+    "texture": "textures/weapons/ak74.tga",
     "target_slot": "primary",
     "max_ammo": 120,
     "ammo": 30,

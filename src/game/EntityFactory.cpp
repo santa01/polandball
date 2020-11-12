@@ -75,130 +75,96 @@ namespace Game {
 //     return pack;
 // }
 
-std::shared_ptr<Player> EntityFactory::createPlayer(const std::string& name) const {
-    auto player = std::make_shared<Player>();
+const std::shared_ptr<Player> EntityFactory::createPlayer(const std::string& name) const {
     auto& asset = Utils::GetResourceCache().loadAsset(name);
+    auto player = std::make_shared<Player>();
 
-    this->loadBase(player, asset);
+    this->loadBase(asset, player);
 
-    json_object* maxMoveSpeedObject = nullptr;
-    if (!json_object_object_get_ex(asset.get(), "max_move_speed", &maxMoveSpeedObject) || json_object_get_type(maxMoveSpeedObject) != json_type_double) {
-        Graphene::LogWarn("Parameter 'max_move_speed' is not set");
-    } else {
+    json_object* maxMoveSpeedObject = this->getJsonObject(asset, "max_move_speed", json_type_double);
+    if (maxMoveSpeedObject != nullptr) {
         player->setMaxMoveSpeed(static_cast<float>(json_object_get_double(maxMoveSpeedObject)));
     }
 
-    json_object* maxJumpSpeedObject = nullptr;
-    if (!json_object_object_get_ex(asset.get(), "max_jump_speed", &maxJumpSpeedObject) || json_object_get_type(maxJumpSpeedObject) != json_type_double) {
-        Graphene::LogWarn("Parameter 'max_jump_speed' is not set");
-    } else {
+    json_object* maxJumpSpeedObject = this->getJsonObject(asset, "max_jump_speed", json_type_double);
+    if (maxJumpSpeedObject != nullptr) {
         player->setMaxJumpSpeed(static_cast<float>(json_object_get_double(maxJumpSpeedObject)));
     }
 
-    json_object* maxJumpTimeObject = nullptr;
-    if (!json_object_object_get_ex(asset.get(), "max_jump_time", &maxJumpTimeObject) || json_object_get_type(maxJumpTimeObject) != json_type_double) {
-        Graphene::LogWarn("Parameter 'max_jump_time' is not set");
-    } else {
+    json_object* maxJumpTimeObject = this->getJsonObject(asset, "max_jump_time", json_type_double);
+    if (maxJumpTimeObject != nullptr) {
         player->setMaxJumpTime(static_cast<float>(json_object_get_double(maxJumpTimeObject)));
     }
 
-    json_object* maxHealthObject = nullptr;
-    if (!json_object_object_get_ex(asset.get(), "max_health", &maxHealthObject) || json_object_get_type(maxHealthObject) != json_type_int) {
-        Graphene::LogWarn("Parameter 'max_health' is not set");
-    } else {
+    json_object* maxHealthObject = this->getJsonObject(asset, "max_health", json_type_int);
+    if (maxHealthObject != nullptr) {
         player->setMaxHealth(json_object_get_int(maxHealthObject));
     }
 
-    json_object* maxArmorObject = nullptr;
-    if (!json_object_object_get_ex(asset.get(), "max_armor", &maxArmorObject) || json_object_get_type(maxArmorObject) != json_type_int) {
-        Graphene::LogWarn("Parameter 'max_armor' is not set");
-    } else {
+    json_object* maxArmorObject = this->getJsonObject(asset, "max_armor", json_type_int);
+    if (maxArmorObject != nullptr) {
         player->setMaxArmor(json_object_get_int(maxArmorObject));
     }
 
-    json_object* healthObject = nullptr;
-    if (!json_object_object_get_ex(asset.get(), "health", &healthObject) || json_object_get_type(healthObject) != json_type_int) {
-        Graphene::LogWarn("Parameter 'health' is not set");
-    } else {
+    json_object* healthObject = this->getJsonObject(asset, "health", json_type_int);
+    if (healthObject != nullptr) {
         player->setHealth(json_object_get_int(healthObject));
     }
 
-    json_object* armorObject = nullptr;
-    if (!json_object_object_get_ex(asset.get(), "armor", &armorObject) || json_object_get_type(armorObject) != json_type_int) {
-        Graphene::LogWarn("Parameter 'armor' is not set");
-    } else {
+    json_object* armorObject = this->getJsonObject(asset, "armor", json_type_int);
+    if (armorObject != nullptr) {
         player->setArmor(json_object_get_int(armorObject));
     }
 
     return player;
 }
 
-// std::shared_ptr<Weapon> EntityFactory::createWeapon(const std::string& name) const {
-//     Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Building Weapon from '%s'", name.c_str());
+const std::shared_ptr<Weapon> EntityFactory::createWeapon(const std::string& name) const {
+    auto& asset = Utils::GetResourceCache().loadAsset(name);
+    auto weapon = std::make_shared<Weapon>();
 
-//     auto asset = this->resourceCache->loadAsset(name);
-//     if (asset == nullptr) {
-//         return nullptr;
-//     }
+    this->loadBase(asset, weapon);
 
-//     std::shared_ptr<Game::Weapon> weapon(new Game::Weapon());
-//     this->loadBase(weapon, asset);
+    json_object* slotObject = this->getJsonObject(asset, "target_slot", json_type_string);
+    if (slotObject != nullptr) {
+        std::string slotValue(json_object_get_string(slotObject));
+        Game::WeaponSlot targetSlot = weapon->getTargetSlot();
 
-//     json_object* slot = nullptr;
-//     if (!json_object_object_get_ex(asset.get(), "target_slot", &slot) ||
-//             json_object_get_type(slot) != json_type_string) {
-//         Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter 'target_slot' is not set");
-//     } else {
-//         std::string slotValue(json_object_get_string(slot));
-//         Game::Weapon::WeaponSlot targetSlot = weapon->getTargetSlot();
+        if (slotValue == "primary") {
+            targetSlot = Game::WeaponSlot::SLOT_PRIMARY;
+        } else if (slotValue == "secondary") {
+            targetSlot = Game::WeaponSlot::SLOT_SECONDARY;
+        } else if (slotValue == "meele") {
+            targetSlot = Game::WeaponSlot::SLOT_MEELE;
+        } else {
+            Graphene::LogWarn("Unknown 'target_slot' value '%s'", slotValue.c_str());
+        }
 
-//         if (slotValue == "primary") {
-//             targetSlot = Game::Weapon::WeaponSlot::SLOT_PRIMARY;
-//         } else if (slotValue == "secondary") {
-//             targetSlot = Game::Weapon::WeaponSlot::SLOT_SECONDARY;
-//         } else if (slotValue == "meele") {
-//             targetSlot = Game::Weapon::WeaponSlot::SLOT_MEELE;
-//         } else {
-//             Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING,
-//                     "Got unknown 'target_slot' value '%s'", slotValue.c_str());
-//         }
+        weapon->setTargetSlot(targetSlot);
+    }
 
-//         weapon->setTargetSlot(targetSlot);
-//     }
+    json_object* maxAmmoObject = this->getJsonObject(asset, "max_ammo", json_type_int);
+    if (maxAmmoObject != nullptr) {
+        weapon->setMaxAmmo(json_object_get_int(maxAmmoObject));
+    }
 
-//     json_object* maxAmmo = nullptr;
-//     if (!json_object_object_get_ex(asset.get(), "max_ammo", &maxAmmo) ||
-//             json_object_get_type(maxAmmo) != json_type_int) {
-//         Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter 'max_ammo' is not set");
-//     } else {
-//         weapon->setMaxAmmo(json_object_get_int(maxAmmo));
-//     }
+    json_object* ammoObject = this->getJsonObject(asset, "ammo", json_type_int);
+    if (ammoObject != nullptr) {
+        weapon->setAmmo(json_object_get_int(ammoObject));
+    }
 
-//     json_object* ammo = nullptr;
-//     if (!json_object_object_get_ex(asset.get(), "ammo", &ammo) || json_object_get_type(ammo) != json_type_int) {
-//         Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter 'ammo' is not set");
-//     } else {
-//         weapon->setAmmo(json_object_get_int(ammo));
-//     }
+    json_object* groupingAngleObject = this->getJsonObject(asset, "grouping_angle", json_type_double);
+    if (groupingAngleObject != nullptr) {
+        weapon->setGroupingAngle(static_cast<float>(json_object_get_double(groupingAngleObject)));
+    }
 
-//     json_object* groupingAngle = nullptr;
-//     if (!json_object_object_get_ex(asset.get(), "grouping_angle", &groupingAngle) ||
-//             json_object_get_type(groupingAngle) != json_type_double) {
-//         Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter 'grouping_angle' is not set");
-//     } else {
-//         weapon->setGroupingAngle(json_object_get_double(groupingAngle));
-//     }
+    json_object* firingSpeedObject = this->getJsonObject(asset, "firing_speed", json_type_double);
+    if (firingSpeedObject != nullptr) {
+        weapon->setFiringSpeed(static_cast<float>(json_object_get_double(firingSpeedObject)));
+    }
 
-//     json_object* firingSpeed = nullptr;
-//     if (!json_object_object_get_ex(asset.get(), "firing_speed", &firingSpeed) ||
-//             json_object_get_type(firingSpeed) != json_type_double) {
-//         Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter 'firing_speed' is not set");
-//     } else {
-//         weapon->setFiringSpeed(json_object_get_double(firingSpeed));
-//     }
-
-//     return weapon;
-// }
+    return weapon;
+}
 
 // std::shared_ptr<Game::Widget> EntityFactory::createWidget(const std::string& name) const {
 //     Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Building Widget from '%s'", name.c_str());
@@ -243,20 +209,33 @@ std::shared_ptr<Player> EntityFactory::createPlayer(const std::string& name) con
 //     return label;
 // }
 
-std::shared_ptr<SpriteEntity> EntityFactory::createBlock(const std::string& name) const {
-    auto entity = std::make_shared<SpriteEntity>();
+const std::shared_ptr<SpriteEntity> EntityFactory::createBlock(const std::string& name) const {
     auto& asset = Utils::GetResourceCache().loadAsset(name);
+    auto entity = std::make_shared<SpriteEntity>();
 
-    this->loadBase(entity, asset);
-
+    this->loadBase(asset, entity);
     return entity;
 }
 
-void EntityFactory::loadBase(const std::shared_ptr<BaseEntity>& entity, const std::shared_ptr<json_object>& asset) const {
-    json_object* textureObject = nullptr;
-    if (!json_object_object_get_ex(asset.get(), "texture", &textureObject) || json_object_get_type(textureObject) != json_type_string) {
-        Graphene::LogWarn("Parameter 'texture' is not set");
-    } else {
+json_object* EntityFactory::getJsonObject(const std::shared_ptr<json_object>& asset, const std::string& name, json_type objectType) const {
+    json_object* jsonObject = nullptr;
+    if (!json_object_object_get_ex(asset.get(), name.c_str(), &jsonObject)) {
+        Graphene::LogWarn("Parameter '%s' is not set", name.c_str());
+        return nullptr;
+    }
+
+    json_type jsonType = json_object_get_type(jsonObject);
+    if (jsonType != objectType) {
+        Graphene::LogWarn("Parameter '%s' is '%s' but '%s' is expected", name.c_str(), json_type_to_name(jsonType), json_type_to_name(objectType));
+        return nullptr;
+    }
+
+    return jsonObject;
+}
+
+void EntityFactory::loadBase(const std::shared_ptr<json_object>& asset, const std::shared_ptr<BaseEntity>& entity) const {
+    json_object* textureObject = this->getJsonObject(asset, "texture", json_type_string);
+    if (textureObject != nullptr) {
         auto texture = Graphene::GetObjectManager().createTexture(json_object_get_string(textureObject));
         auto& mesh = *entity->getMeshes().begin();
         return mesh->getMaterial()->setDiffuseTexture(texture);

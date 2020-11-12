@@ -1,6 +1,5 @@
 {
-    "texture": "textures/weapons/m4a1.png",
-    "effect": "shaders/sprite.shader",
+    "texture": "textures/weapons/m4a1.tga",
     "target_slot": "primary",
     "max_ammo": 160,
     "ammo": 20,
