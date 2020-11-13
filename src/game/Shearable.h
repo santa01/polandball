@@ -34,9 +34,9 @@ class Shearable {
 public:
     virtual ~Shearable() = default;
 
-    void shearX(int slice, int totalSlices);
-    void shearY(int slice, int totalSlices);
-    void shearZ(int slice, int totalSlices);
+    void shearX(float slice, int totalSlices);
+    void shearY(float slice, int totalSlices);
+    void shearZ(float slice, int totalSlices);
 
     const Math::Mat4& getShear() const;
 

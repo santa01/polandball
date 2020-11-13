@@ -35,7 +35,7 @@ SpriteEntity::SpriteEntity() {
     auto material = std::make_shared<Graphene::Material>();
     mesh->setMaterial(material);
 
-    this->shearX(1, 2);
+    this->shearX(1.0f, 2);
 }
 
 }  // namespace Game

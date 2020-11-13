@@ -114,7 +114,7 @@ void Player::pickWeapon(const std::shared_ptr<Weapon>& weapon) {
         this->weapons[targetSlot] = weapon;
 
         weapon->setState(WeaponState::PICKED);
-        weapon->shearX(0, 2);
+        weapon->shearX(0.0f, 2);
 
         if (targetSlot > this->activeSlot || this->activeSlot == -1) {
             this->activateSlot(targetSlot);
@@ -148,7 +148,7 @@ void Player::aimAt(const Math::Vec3& position) {
 
     float signCorrection = (axis.get(Math::Vec3::Z) < 0) ? -1.0f : 1.0f;
 
-    // int shear = (cosf(newAngle * pi / 180.0f) < 0.0f) ? 1 : 0;
+    // float shear = (cosf(newAngle * pi / 180.0f) < 0.0f) ? 1.0f : 0.0f;
     // this->shearX(shear, 2);
 
     if (this->activeSlot != -1) {

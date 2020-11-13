@@ -41,7 +41,7 @@ Weapon::Weapon():
 Weapon::Weapon(WeaponSlot slot):
         targetSlot(slot) {
     this->passive = false;
-    // this->shearY(-0.15f, 1);
+    this->shearY(-0.15f, 1);
 }
 
 void Weapon::setMaxAmmo(int maxAmmo) {
@@ -113,7 +113,7 @@ void Weapon::aimAt(const Math::Vec3& position) {
 
     float signCorrection = (axis.get(Math::Vec3::Z) < 0) ? -1.0f : 1.0f;
 
-    // int shear = (cosf(newAngle * pi / 180.0f) < 0.0f) ? 1 : 0;
+    // float shear = (cosf(newAngle * pi / 180.0f) < 0.0f) ? 1.0f : 0.0f;
     // this->shearX(shear, 2);
     // this->shearY(-0.15f * targetSignCorrection, 1);
 }
@@ -136,10 +136,10 @@ void Weapon::animate(float frameTime) {
     float targetSignCorrection = (targetDirection.get(Math::Vec3::X) < 0.0f) ? -1.0f : 1.0f;
 
     if (this->state == WeaponState::AVAILABLE) {
-        // this->shearY(sinf(this->bounce) / 13.33f - 0.075f * targetSignCorrection, 1);
+        this->shearY(sinf(this->bounce) / 13.33f - 0.075f * targetSignCorrection, 1);
         this->bounce += frameTime * 6.0f;
     } else {
-        // this->shearY(-0.15f * targetSignCorrection, 1);
+        this->shearY(-0.15f * targetSignCorrection, 1);
         this->bounce = 0.0f;
     }
 
