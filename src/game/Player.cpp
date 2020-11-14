@@ -146,10 +146,9 @@ void Player::aimAt(const Math::Vec3& position) {
     Math::Vec3 axis = oldTarget.cross(newTarget);
     this->rotate(axis, angle);
 
-    float signCorrection = (axis.get(Math::Vec3::Z) < 0) ? -1.0f : 1.0f;
-
-    // float shear = (cosf(newAngle * pi / 180.0f) < 0.0f) ? 1.0f : 0.0f;
-    // this->shearX(shear, 2);
+    float rotationAngle = this->getRotationAngles().get(Math::Vec3::Z);
+    float shear = (cosf(rotationAngle * pi / 180.0f) < 0.0f) ? 1.0f : 0.0f;
+    this->shearX(shear, 2);
 
     if (this->activeSlot != -1) {
         this->weapons[this->activeSlot]->aimAt(newTarget);
@@ -245,7 +244,7 @@ void Player::animate(float frameTime) {
 
     if ((this->state & PlayerState::STATE_DROP_WEAPON)) {
         if (!(this->dropTime != 0.0f && (this->previousState & PlayerState::STATE_DROP_WEAPON))) {
-            // this->dropWeapon();
+            this->dropWeapon();
         }
 
         this->dropTime += frameTime;

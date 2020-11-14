@@ -51,9 +51,9 @@ void PolandBall::onMouseMotion(int x, int y) {
 }
 
 void PolandBall::onMouseButton(Graphene::MouseButton button, bool state) {
-    // if (button == Graphene::MouseButton::BUTTON_LEFT && state) {
-    //     this->player->shoot();
-    // }
+    if (button == Graphene::MouseButton::BUTTON_LEFT && state) {
+        this->player->shoot();
+    }
 }
 
 void PolandBall::onSetup() {
@@ -150,8 +150,8 @@ void PolandBall::setupScene() {
     items->attachObject(knife);
 
     //-----------------
-    auto playerEntity = Game::GetEntityFactory().createPlayer("assets/players/turkey.asset");
-    player->attachObject(playerEntity);
+    this->player = Game::GetEntityFactory().createPlayer("assets/players/turkey.asset");
+    player->attachObject(this->player);
     player->attachObject(camera);
 
     //-----------------
@@ -311,33 +311,33 @@ void PolandBall::updateScene() {
     if (keyboardState[Graphene::KeyboardKey::KEY_ESCAPE]) {
         this->exit(0);
     }
-    // if (keyboardState[Graphene::KeyboardKey::KEY_RIGHT]) {
-    //     this->player->setState(Game::Player::PlayerState::STATE_RIGHT_STEP);
-    // }
-    // if (keyboardState[Graphene::KeyboardKey::KEY_LEFT]) {
-    //     this->player->setState(Game::Player::PlayerState::STATE_LEFT_STEP);
-    // }
-    // if (keyboardState[Graphene::KeyboardKey::KEY_UP]) {
-    //     this->player->setState(Game::Player::PlayerState::STATE_JUMP);
-    // }
-    // if (keyboardState[Graphene::KeyboardKey::KEY_ENTER]) {
-    //     this->player->setState(Game::Player::PlayerState::STATE_DROP_WEAPON);
-    // }
-    // if (keyboardState[Graphene::KeyboardKey::KEY_1]) {
-    //     this->player->activateSlot(Game::Weapon::WeaponSlot::SLOT_PRIMARY);
-    // }
-    // if (keyboardState[Graphene::KeyboardKey::KEY_2]) {
-    //     this->player->activateSlot(Game::Weapon::WeaponSlot::SLOT_SECONDARY);
-    // }
-    // if (keyboardState[Graphene::KeyboardKey::KEY_3]) {
-    //     this->player->activateSlot(Game::Weapon::WeaponSlot::SLOT_MEELE);
-    // }
+    if (keyboardState[Graphene::KeyboardKey::KEY_RIGHT]) {
+        this->player->setState(Game::PlayerState::STATE_RIGHT_STEP);
+    }
+    if (keyboardState[Graphene::KeyboardKey::KEY_LEFT]) {
+        this->player->setState(Game::PlayerState::STATE_LEFT_STEP);
+    }
+    if (keyboardState[Graphene::KeyboardKey::KEY_UP]) {
+        this->player->setState(Game::PlayerState::STATE_JUMP);
+    }
+    if (keyboardState[Graphene::KeyboardKey::KEY_ENTER]) {
+        this->player->setState(Game::PlayerState::STATE_DROP_WEAPON);
+    }
+    if (keyboardState[Graphene::KeyboardKey::KEY_1]) {
+        this->player->activateSlot(Game::WeaponSlot::SLOT_PRIMARY);
+    }
+    if (keyboardState[Graphene::KeyboardKey::KEY_2]) {
+        this->player->activateSlot(Game::WeaponSlot::SLOT_SECONDARY);
+    }
+    if (keyboardState[Graphene::KeyboardKey::KEY_3]) {
+        this->player->activateSlot(Game::WeaponSlot::SLOT_MEELE);
+    }
 
-    // const Graphene::MouseState& mouseState = this->getWindow()->getMouseState();
+    const Graphene::MouseState& mouseState = this->getWindow()->getMouseState();
 
-    // if (mouseState[Graphene::MouseButton::BUTTON_LEFT]) {
-    //     this->player->shoot();
-    // }
+    if (mouseState[Graphene::MouseButton::BUTTON_LEFT]) {
+        this->player->shoot();
+    }
 }
 
 void PolandBall::updateUI() {

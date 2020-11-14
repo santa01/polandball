@@ -24,9 +24,9 @@
 #define POLANDBALL_H
 
 #include <Engine.h>
-#include <BaseEntity.h>
+#include <SpriteEntity.h>
 #include <Label.h>
-// #include <Player.h>
+#include <Player.h>
 #include <memory>
 #include <utility>
 
@@ -44,12 +44,12 @@ private:
     void updateScene();
     void updateUI();
 
-    // std::shared_ptr<Game::Player> player;
-    std::shared_ptr<Game::BaseEntity> cursor;
+    std::shared_ptr<Game::Player> player;
+    std::shared_ptr<Game::SpriteEntity> cursor;
 
-    // Requires sync if Weapon::WeaponSlot is updated
-    std::pair<std::shared_ptr<Game::BaseEntity>, std::shared_ptr<Graphene::Label>> weapons[3];
-    std::shared_ptr<Game::BaseEntity> emptySlot;
+    // Requires sync if Game::WeaponSlot is updated
+    std::pair<std::shared_ptr<Game::Weapon>, std::shared_ptr<Graphene::Label>> weapons[3];
+    std::shared_ptr<Game::Weapon> emptySlot;
     std::shared_ptr<Graphene::Label> health;
     std::shared_ptr<Graphene::Label> armor;
 };

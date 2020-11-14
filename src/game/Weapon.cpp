@@ -111,11 +111,13 @@ void Weapon::aimAt(const Math::Vec3& position) {
     Math::Vec3 axis = oldTarget.cross(newTarget);
     this->rotate(axis, angle);
 
-    float signCorrection = (axis.get(Math::Vec3::Z) < 0) ? -1.0f : 1.0f;
+    float rotationAngle = this->getRotationAngles().get(Math::Vec3::Z);
+    float shear = (cosf(rotationAngle * pi / 180.0f) < 0.0f) ? 1.0f : 0.0f;
+    this->shearX(shear, 2);
 
-    // float shear = (cosf(newAngle * pi / 180.0f) < 0.0f) ? 1.0f : 0.0f;
-    // this->shearX(shear, 2);
-    // this->shearY(-0.15f * targetSignCorrection, 1);
+    Math::Vec3 targetDirection(this->getTargetDirection());
+    float targetSignCorrection = (targetDirection.get(Math::Vec3::X) < 0.0f) ? -1.0f : 1.0f;
+    this->shearY(-0.15f * targetSignCorrection, 1);
 }
 
 void Weapon::fire() {
