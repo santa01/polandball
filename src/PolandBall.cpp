@@ -107,24 +107,24 @@ void PolandBall::setupScene() {
     bricksEntity->translate(6.0f, -3.0f, 0.0f);
     terrain->attachObject(bricksEntity);
 
-    // //-----------------
-    // auto pack_primary_ammo = Game::GetEntityFactory().createPack("assets/items/pack_primary_ammo.asset");
-    // pack_primary_ammo->setPosition(-8.0f, 0.0f, 0.0f);
-    // this->scene->addEntity(pack_primary_ammo);
+    //-----------------
+    auto packPrimaryAmmo = Game::GetEntityFactory().createPack("assets/items/pack_primary_ammo.asset");
+    packPrimaryAmmo->translate(-8.0f, 0.0f, 0.0f);
+    items->attachObject(packPrimaryAmmo);
 
-    // auto pack_secondary_ammo = Game::GetEntityFactory().createPack("assets/items/pack_secondary_ammo.asset");
-    // pack_secondary_ammo->setPosition(-6.0f, 0.0f, 0.0f);
-    // this->scene->addEntity(pack_secondary_ammo);
+    auto packSecondaryAmmo = Game::GetEntityFactory().createPack("assets/items/pack_secondary_ammo.asset");
+    packSecondaryAmmo->translate(-6.0f, 0.0f, 0.0f);
+    items->attachObject(packSecondaryAmmo);
 
-    // auto pack_health = Game::GetEntityFactory().createPack("assets/items/pack_health.asset");
-    // pack_health->setPosition(10.0f, 0.0f, 0.0f);
-    // this->scene->addEntity(pack_health);
+    auto packHealth = Game::GetEntityFactory().createPack("assets/items/pack_health.asset");
+    packHealth->translate(10.0f, 0.0f, 0.0f);
+    items->attachObject(packHealth);
 
-    // auto pack_armor = Game::GetEntityFactory().createPack("assets/items/pack_armor.asset");
-    // pack_armor->setPosition(12.0f, 0.0f, 0.0f);
-    // this->scene->addEntity(pack_armor);
+    auto packArmor = Game::GetEntityFactory().createPack("assets/items/pack_armor.asset");
+    packArmor->translate(12.0f, 0.0f, 0.0f);
+    items->attachObject(packArmor);
 
-    // //-----------------
+    //-----------------
     auto m4a1 = Game::GetEntityFactory().createWeapon("assets/weapons/m4a1.asset");
     m4a1->translate(-4.0f, 0.0f, 0.0f);
     items->attachObject(m4a1);

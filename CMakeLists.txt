@@ -65,12 +65,11 @@ set (POLANDBALL_SOURCES src/main.cpp
                         src/game/BaseEntity.cpp
                         src/game/EntityFactory.cpp
                         src/game/SpriteEntity.cpp
-                        # src/game/Pack.cpp
+                        src/game/Pack.cpp
                         src/game/Player.cpp
                         src/game/Weapon.cpp
                         # src/game/LineEntity.cpp
                         # src/game/ShotTrace.cpp
-                        # src/game/Scene.cpp
                         # src/opengl/Line.cpp
                         src/utils/ResourceCache.cpp
 )

@@ -30,50 +30,39 @@ namespace PolandBall {
 
 namespace Game {
 
-// std::shared_ptr<Pack> EntityFactory::createPack(const std::string& name) const {
-//     Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Building Pack from '%s'", name.c_str());
+const std::shared_ptr<Pack> EntityFactory::createPack(const std::string& name) const {
+    auto& asset = Utils::GetResourceCache().loadAsset(name);
+    auto pack = std::make_shared<Pack>();
 
-//     auto asset = this->resourceCache->loadAsset(name);
-//     if (asset == nullptr) {
-//         return nullptr;
-//     }
+    this->loadBase(asset, pack);
 
-//     std::shared_ptr<Game::Pack> pack(new Game::Pack());
-//     this->loadBase(pack, asset);
+    json_object* payloadObject = this->getJsonObject(asset, "payload", json_type_string);
+    if (payloadObject != nullptr) {
+        std::string payloadValue(json_object_get_string(payloadObject));
+        Game::PayloadType payloadType = pack->getPayloadType();
 
-//     json_object* payload = nullptr;
-//     if (!json_object_object_get_ex(asset.get(), "payload", &payload) ||
-//             json_object_get_type(payload) != json_type_string) {
-//         Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter 'payload' is not set");
-//     } else {
-//         std::string payloadValue(json_object_get_string(payload));
-//         Game::Pack::PayloadType payloadType = pack->getPayloadType();
+        if (payloadValue == "health") {
+            payloadType = Game::PayloadType::HEALTH;
+        } else if (payloadValue == "armor") {
+            payloadType = Game::PayloadType::ARMOR;
+        } else if (payloadValue == "primary_ammo") {
+            payloadType = Game::PayloadType::PRIMARY_AMMO;
+        } else if (payloadValue == "secondary_ammo") {
+            payloadType = Game::PayloadType::SECONDARY_AMMO;
+        } else {
+            Graphene::LogWarn("Got unknown 'payload' value '%s'", payloadValue.c_str());
+        }
 
-//         if (payloadValue == "health") {
-//             payloadType = Game::Pack::PayloadType::TYPE_HEALTH;
-//         } else if (payloadValue == "armor") {
-//             payloadType = Game::Pack::PayloadType::TYPE_ARMOR;
-//         } else if (payloadValue == "primary_ammo") {
-//             payloadType = Game::Pack::PayloadType::TYPE_PRIMARY_AMMO;
-//         } else if (payloadValue == "secondary_ammo") {
-//             payloadType = Game::Pack::PayloadType::TYPE_SECONDARY_AMMO;
-//         } else {
-//             Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING,
-//                     "Got unknown 'payload' value '%s'", payloadValue.c_str());
-//         }
+        pack->setPayloadType(payloadType);
+    }
 
-//         pack->setPayloadType(payloadType);
-//     }
+    json_object* valueObject = this->getJsonObject(asset, "value", json_type_int);
+    if (valueObject != nullptr) {
+        pack->setValue(json_object_get_int(valueObject));
+    }
 
-//     json_object* value = nullptr;
-//     if (!json_object_object_get_ex(asset.get(), "value", &value) || json_object_get_type(value) != json_type_int) {
-//         Utils::Logger::getInstance().log(Utils::Logger::LOG_WARNING, "Parameter 'value' is not set");
-//     } else {
-//         pack->setValue(json_object_get_int(value));
-//     }
-
-//     return pack;
-// }
+    return pack;
+}
 
 const std::shared_ptr<Player> EntityFactory::createPlayer(const std::string& name) const {
     auto& asset = Utils::GetResourceCache().loadAsset(name);
@@ -165,21 +154,6 @@ const std::shared_ptr<Weapon> EntityFactory::createWeapon(const std::string& nam
 
     return weapon;
 }
-
-// std::shared_ptr<Game::Widget> EntityFactory::createWidget(const std::string& name) const {
-//     Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Building Widget from '%s'", name.c_str());
-
-//     auto asset = this->resourceCache->loadAsset(name);
-//     if (asset == nullptr) {
-//         return nullptr;
-//     }
-
-//     std::shared_ptr<Game::Widget> widget(new Game::Widget());
-//     this->loadBase(widget, asset);
-
-//     widget->setCollidable(false);
-//     return widget;
-// }
 
 // std::shared_ptr<Game::ShotTrace> EntityFactory::createTrace(const Math::Vec3& from, const Math::Vec3& to) const {
 //     Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO, "Building ShotTrace from (%.3f; %.3f) to (%.3f; %.3f)",

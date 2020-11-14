@@ -23,7 +23,7 @@
 #ifndef ENTITYFACTORY_H
 #define ENTITYFACTORY_H
 
-// #include <Pack.h>
+#include <Pack.h>
 #include <Player.h>
 #include <Weapon.h>
 // #include <Widget.h>
@@ -50,10 +50,9 @@ public:
         return instance;
     }
 
-    // std::shared_ptr<Game::Pack> createPack(const std::string& name) const;
+    const std::shared_ptr<Game::Pack> createPack(const std::string& name) const;
     const std::shared_ptr<Game::Player> createPlayer(const std::string& name) const;
     const std::shared_ptr<Game::Weapon> createWeapon(const std::string& name) const;
-    // std::shared_ptr<Game::Widget> createWidget(const std::string& name) const;
     // std::shared_ptr<Game::ShotTrace> createTrace(const Math::Vec3& from, const Math::Vec3& to) const;
     // std::shared_ptr<Game::Label> createLabel(const std::string& fontName, unsigned int size) const;
     const std::shared_ptr<SpriteEntity> createBlock(const std::string& name) const;

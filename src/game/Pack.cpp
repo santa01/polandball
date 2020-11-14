@@ -20,11 +20,41 @@
  * SOFTWARE.
  */
 
-#include "Pack.h"
+#include <Pack.h>
 
 namespace PolandBall {
 
 namespace Game {
+
+Pack::Pack():
+        Pack(PayloadType::HEALTH) {
+}
+
+Pack::Pack(PayloadType payload):
+        payload(payload) {
+    this->passive = false;
+}
+
+PayloadType Pack::getPayloadType() const {
+    return this->payload;
+}
+
+void Pack::setPayloadType(PayloadType payload) {
+    this->payload = payload;
+}
+
+int Pack::getValue() const {
+    return this->value;
+}
+
+void Pack::setValue(int value) {
+    this->value = value;
+}
+
+void Pack::animate(float frameTime) {
+    this->shearY(sinf(this->bounce) / 13.33f - 0.075f, 1);
+    this->bounce += frameTime * 6.0f;
+}
 
 }  // namespace Game
 

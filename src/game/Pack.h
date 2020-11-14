@@ -23,60 +23,32 @@
 #ifndef PACK_H
 #define PACK_H
 
-#include "SpriteEntity.h"
+#include <SpriteEntity.h>
 
 namespace PolandBall {
 
 namespace Game {
 
+enum class PayloadType { HEALTH, ARMOR, PRIMARY_AMMO, SECONDARY_AMMO };
+
 class Pack: public SpriteEntity {
 public:
-    enum PayloadType {
-        TYPE_HEALTH,
-        TYPE_ARMOR,
-        TYPE_PRIMARY_AMMO,
-        TYPE_SECONDARY_AMMO
-    };
+    Pack();
+    Pack(PayloadType payload);
 
-    Pack():
-            Pack(TYPE_PRIMARY_AMMO) {
-    }
+    PayloadType getPayloadType() const;
+    void setPayloadType(PayloadType payload);
 
-    Pack(PayloadType payload) {
-        this->payload = payload;
-        this->value = 10;
-        this->bounce = 0.0f;
-
-        this->passive = false;
-        this->type = Entity::EntityType::TYPE_PACK;
-    }
-
-    PayloadType getPayloadType() const {
-        return this->payload;
-    }
-
-    void setPayloadType(PayloadType payload) {
-        this->payload = payload;
-    }
-
-    int getValue() const {
-        return this->value;
-    }
-
-    void setValue(int value) {
-        this->value = value;
-    }
+    int getValue() const;
+    void setValue(int value);
 
 private:
-    void animate(float frameTime) {
-        this->sprite->shearY(sinf(this->bounce) / 13.33f - 0.075f, 1);
-        this->bounce += frameTime * 6.0f;
-    }
+    void animate(float frameTime) override;
 
-    PayloadType payload;
+    PayloadType payload = PayloadType::HEALTH;
+    int value = 10;
 
-    float bounce;
-    int value;
+    float bounce = 0.0f;
 };
 
 }  // namespace Game
