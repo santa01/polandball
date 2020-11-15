@@ -1,6 +1,5 @@
 {
-    "texture": "textures/items/pack_armor.png",
-    "effect": "shaders/sprite.shader",
+    "texture": "textures/items/pack_armor.tga",
     "payload": "armor",
     "value": 25
 }

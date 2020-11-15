@@ -1,6 +1,5 @@
 {
-    "texture": "textures/items/pack_primary_ammo.png",
-    "effect": "shaders/sprite.shader",
+    "texture": "textures/items/pack_primary_ammo.tga",
     "payload": "primary_ammo",
     "value": 20
 }

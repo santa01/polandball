@@ -1,6 +1,5 @@
 {
-    "texture": "textures/items/pack_health.png",
-    "effect": "shaders/sprite.shader",
+    "texture": "textures/items/pack_health.tga",
     "payload": "health",
     "value": 25
 }
