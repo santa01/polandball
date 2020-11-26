@@ -124,7 +124,7 @@ void Weapon::fire() {
     this->firing = true;
 }
 
-// void Weapon::onCollision(const std::shared_ptr<BaseEntity>& another, Collider::CollideSide side) {
+// void Weapon::onCollision(const std::shared_ptr<SpriteEntity>& another, Collider::CollideSide side) {
 //     if (this->state == WeaponState::THROWN) {
 //         if (side == Collider::CollideSide::SIDE_BOTTOM && another->isCollidable()) {
 //             this->setSpeed(Math::Vec3::ZERO);

@@ -23,7 +23,7 @@
 #ifndef LINEENTITY_H
 #define LINEENTITY_H
 
-#include <BaseEntity.h>
+#include <SpriteEntity.h>
 // #include <Collider.h>
 #include <Line.h>
 #include <memory>
@@ -32,7 +32,7 @@ namespace PolandBall {
 
 namespace Game {
 
-class LineEntity: public BaseEntity {
+class LineEntity: public SpriteEntity {
 public:
     LineEntity();
     virtual ~LineEntity() = default;

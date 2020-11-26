@@ -24,8 +24,8 @@
 #define POLANDBALL_H
 
 #include <Engine.h>
+#include <Entity.h>
 #include <SpriteEntity.h>
-#include <Label.h>
 #include <Player.h>
 #include <memory>
 #include <utility>
@@ -48,10 +48,10 @@ private:
     std::shared_ptr<Game::SpriteEntity> cursor;
 
     // Requires sync if Game::WeaponSlot is updated
-    std::pair<std::shared_ptr<Game::Weapon>, std::shared_ptr<Graphene::Label>> weapons[3];
+    std::pair<std::shared_ptr<Game::Weapon>, std::shared_ptr<Graphene::Entity>> weapons[3];
     std::shared_ptr<Game::Weapon> emptySlot;
-    std::shared_ptr<Graphene::Label> health;
-    std::shared_ptr<Graphene::Label> armor;
+    std::shared_ptr<Graphene::Entity> health;
+    std::shared_ptr<Graphene::Entity> armor;
 };
 
 }  // namespace PolandBall

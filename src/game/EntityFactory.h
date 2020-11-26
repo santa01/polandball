@@ -27,9 +27,7 @@
 #include <Player.h>
 #include <Weapon.h>
 // #include <Widget.h>
-// #include <Label.h>
 // #include <ShotTrace.h>
-#include <BaseEntity.h>
 #include <SpriteEntity.h>
 #include <NonCopyable.h>
 #include <json-c/json.h>
@@ -54,7 +52,6 @@ public:
     const std::shared_ptr<Game::Player> createPlayer(const std::string& name) const;
     const std::shared_ptr<Game::Weapon> createWeapon(const std::string& name) const;
     // std::shared_ptr<Game::ShotTrace> createTrace(const Math::Vec3& from, const Math::Vec3& to) const;
-    // std::shared_ptr<Game::Label> createLabel(const std::string& fontName, unsigned int size) const;
     const std::shared_ptr<SpriteEntity> createBlock(const std::string& name) const;
 
 private:
@@ -62,7 +59,7 @@ private:
 
     json_object* getJsonObject(const std::shared_ptr<json_object>& asset, const std::string& name, json_type type) const;
 
-    void loadBase(const std::shared_ptr<json_object>& asset, const std::shared_ptr<BaseEntity>& entity) const;
+    void loadBase(const std::shared_ptr<json_object>& asset, const std::shared_ptr<SpriteEntity>& entity) const;
 };
 
 }  // namespace Game

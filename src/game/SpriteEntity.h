@@ -23,22 +23,54 @@
 #ifndef SPRITEENTITY_H
 #define SPRITEENTITY_H
 
-#include <BaseEntity.h>
+#include <Entity.h>
+#include <Shearable.h>
+#include <Replicable.h>
 // #include <Collider.h>
+#include <Vec3.h>
 #include <memory>
+#include <utility>
 
 namespace PolandBall {
 
 namespace Game {
 
-class SpriteEntity: public BaseEntity {
+enum class EntityType { GENERIC, PLAYER, WEAPON, PACK };
+
+class SpriteEntity: public Graphene::Entity, public Shearable, public Replicable {
 public:
     SpriteEntity();
     virtual ~SpriteEntity() = default;
 
+    EntityType getType() const;
+
+    const Math::Vec3& getSpeed() const;
+    void setSpeed(const Math::Vec3& speed);
+    void accelerateBy(const Math::Vec3& acceleration);
+
+    bool isPassive() const;
+    void setPassive(bool passive);
+
+    bool isCollidable() const;
+    void setCollidable(bool collidable);
+
+    void destroy();
+
+    // const std::shared_ptr<Collider>& getCollider() const;
+    // void setCollider(const std::shared_ptr<Collider>& collider);
+
 protected:
-    // virtual void onCollision(const std::shared_ptr<BaseEntity>& /*another*/, Collider::CollideSide /*side*/) override {}
-    virtual void animate(float /*frameTime*/) override {}
+    // virtual void onCollision(const std::shared_ptr<SpriteEntity>& another, Collider::CollideSide side) { };
+    virtual void animate(float frameTime) { };
+
+    EntityType type = EntityType::GENERIC;
+    Math::Vec3 speed;
+
+    bool passive = true;
+    bool collidable = true;
+    bool destroyed = false;
+
+    // std::shared_ptr<Collider> collider;
 };
 
 }  // namespace Game

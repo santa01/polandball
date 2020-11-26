@@ -161,7 +161,7 @@ void Player::shoot() {
     }
 }
 
-// void Player::onCollision(const std::shared_ptr<BaseEntity>& another, Collider::CollideSide side) {
+// void Player::onCollision(const std::shared_ptr<SpriteEntity>& another, Collider::CollideSide side) {
 //     if (another->getType() == Entity::EntityType::TYPE_WEAPON) {
 //         auto weapon = std::dynamic_pointer_cast<Weapon>(another);
 //         if (weapon->getState() == WeaponState::AVAILABLE) {

@@ -21,22 +21,59 @@
  */
 
 #include <SpriteEntity.h>
-#include <ObjectManager.h>
-#include <Material.h>
 
 namespace PolandBall {
 
 namespace Game {
 
 SpriteEntity::SpriteEntity() {
-    auto& mesh = Graphene::GetObjectManager().createQuad(Graphene::FaceWinding::WINDING_CLOCKWISE);
-    this->addMesh(mesh);
-
-    auto material = std::make_shared<Graphene::Material>();
-    mesh->setMaterial(material);
-
+        // collider(std::make_shared<Collider>()) {
     this->shearX(1.0f, 2);
 }
+
+EntityType SpriteEntity::getType() const {
+    return this->type;
+}
+
+const Math::Vec3& SpriteEntity::getSpeed() const {
+    return this->speed;
+}
+
+void SpriteEntity::setSpeed(const Math::Vec3& speed) {
+    this->speed = speed;
+}
+
+void SpriteEntity::accelerateBy(const Math::Vec3& acceleration) {
+    this->speed += acceleration;
+}
+
+bool SpriteEntity::isPassive() const {
+    return this->passive;
+}
+
+void SpriteEntity::setPassive(bool passive) {
+    this->passive = passive;
+}
+
+bool SpriteEntity::isCollidable() const {
+    return this->collidable;
+}
+
+void SpriteEntity::setCollidable(bool collidable) {
+    this->collidable = collidable;
+}
+
+void SpriteEntity::destroy() {
+    this->destroyed = true;
+}
+
+// const std::shared_ptr<Collider>& SpriteEntity::getCollider() const {
+//     return this->collider;
+// }
+
+// void SpriteEntity::setCollider(const std::shared_ptr<Collider>& collider) {
+//     this->collider = collider;
+// }
 
 }  // namespace Game
 

@@ -23,6 +23,7 @@
 #include <EntityFactory.h>
 #include <ObjectManager.h>
 #include <ResourceCache.h>
+#include <GraphicsComponent.h>
 #include <Material.h>
 #include <Logger.h>
 
@@ -167,22 +168,6 @@ const std::shared_ptr<Weapon> EntityFactory::createWeapon(const std::string& nam
 //     return trace;
 // }
 
-// std::shared_ptr<Game::Label> EntityFactory::createLabel(const std::string& fontName, unsigned int size) const {
-//     Utils::Logger::getInstance().log(Utils::Logger::LOG_INFO,
-//             "Building Label with '%s' (%dpt) font", fontName.c_str(), size);
-
-//     std::stringstream fontPath;
-//     fontPath << "fonts/" << fontName << ".ttf";
-//     auto font = this->resourceCache->loadFont(fontPath.str(), size);
-//     auto effect = this->resourceCache->loadEffect("shaders/default.shader");
-
-//     std::shared_ptr<Game::Label> label(new Game::Label());
-//     label->setFont(font);
-//     label->getSprite()->setEffect(effect);
-
-//     return label;
-// }
-
 const std::shared_ptr<SpriteEntity> EntityFactory::createBlock(const std::string& name) const {
     auto& asset = Utils::GetResourceCache().loadAsset(name);
     auto entity = std::make_shared<SpriteEntity>();
@@ -207,12 +192,19 @@ json_object* EntityFactory::getJsonObject(const std::shared_ptr<json_object>& as
     return jsonObject;
 }
 
-void EntityFactory::loadBase(const std::shared_ptr<json_object>& asset, const std::shared_ptr<BaseEntity>& entity) const {
+void EntityFactory::loadBase(const std::shared_ptr<json_object>& asset, const std::shared_ptr<SpriteEntity>& entity) const {
+    auto material = std::make_shared<Graphene::Material>();
+    auto mesh = Graphene::GetObjectManager().createQuad(Graphene::FaceWinding::WINDING_CLOCKWISE);
+
+    auto graphicsComponent = std::make_shared<Graphene::GraphicsComponent>();
+    graphicsComponent->addGraphics(material, mesh);
+
+    entity->addComponent(graphicsComponent);
+
     json_object* textureObject = this->getJsonObject(asset, "texture", json_type_string);
     if (textureObject != nullptr) {
         auto texture = Graphene::GetObjectManager().createTexture(json_object_get_string(textureObject));
-        auto& mesh = *entity->getMeshes().begin();
-        return mesh->getMaterial()->setDiffuseTexture(texture);
+        material->setDiffuseTexture(texture);
     }
 
     json_object* visibleObject = nullptr;

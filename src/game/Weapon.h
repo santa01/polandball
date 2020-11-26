@@ -64,7 +64,7 @@ public:
     void fire();
 
 private:
-    // void onCollision(const std::shared_ptr<BaseEntity>& another, Collider::CollideSide side) override;
+    // void onCollision(const std::shared_ptr<SpriteEntity>& another, Collider::CollideSide side) override;
     void animate(float frameTime) override;
 
     int maxAmmo = 100;

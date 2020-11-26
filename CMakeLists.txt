@@ -62,7 +62,6 @@ set (POLANDBALL_SOURCES src/main.cpp
                         # src/game/Collider.cpp
                         src/game/Shearable.cpp
                         src/game/Replicable.cpp
-                        src/game/BaseEntity.cpp
                         src/game/EntityFactory.cpp
                         src/game/SpriteEntity.cpp
                         src/game/Pack.cpp
