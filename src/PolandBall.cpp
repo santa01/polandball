@@ -185,15 +185,15 @@ void PolandBall::setupUI() {
 
     auto& objectManager = Graphene::GetObjectManager();
     auto uiCamera = objectManager.createCamera(Graphene::ProjectionType::ORTHOGRAPHIC);
-    uiCamera->setNearPlane(-1.0f);
-    uiCamera->setFarPlane(1.0f);
+    uiCamera->setNearPlane(-1.0f);  // NDC for 1:1 scale
+    uiCamera->setFarPlane(1.0f);  // NDC for 1:1 scale
     uiSceneRoot->addObject(uiCamera);
 
 //     //-----------------
 //     this->emptySlot = Game::GetEntityFactory().createWidget("assets/ui/slot_empty.asset");
 
 //     //-----------------
-    auto primaryWeaponLabel = objectManager.createLabel(100, 20, "fonts/dejavu-sans.ttf", 14);
+    auto primaryWeaponLabel = objectManager.createLabel(100, 20, "fonts/dejavu-sans.ttf", 12);
     uiSceneRoot->addObject(primaryWeaponLabel);
 
     auto& primaryWeapon = this->weapons[Game::WeaponSlot::SLOT_PRIMARY];
@@ -209,7 +209,7 @@ void PolandBall::setupUI() {
 //     this->scene->addEntity(primaryWeaponBorder);
 
 //     //-----------------
-    auto secondaryWeaponLabel = objectManager.createLabel(100, 20, "fonts/dejavu-sans.ttf", 14);
+    auto secondaryWeaponLabel = objectManager.createLabel(100, 20, "fonts/dejavu-sans.ttf", 12);
     uiSceneRoot->addObject(secondaryWeaponLabel);
 
     auto& secondaryWeapon = this->weapons[Game::WeaponSlot::SLOT_SECONDARY];
@@ -225,7 +225,7 @@ void PolandBall::setupUI() {
 //     this->scene->addEntity(secondaryWeaponBorder);
 
 //     //-----------------
-    auto meeleWeaponLabel = objectManager.createLabel(100, 20, "fonts/dejavu-sans.ttf", 14);
+    auto meeleWeaponLabel = objectManager.createLabel(100, 20, "fonts/dejavu-sans.ttf", 12);
     uiSceneRoot->addObject(meeleWeaponLabel);
 
     auto& meeleWeapon = this->weapons[Game::WeaponSlot::SLOT_MEELE];
@@ -246,7 +246,7 @@ void PolandBall::setupUI() {
 //     armorShield->setOrigin(armorShieldOrigin.extractVec3());
 //     this->scene->addEntity(armorShield);
 
-    auto armorLabel = objectManager.createLabel(100, 20, "fonts/dejavu-sans.ttf", 14);
+    auto armorLabel = objectManager.createLabel(100, 20, "fonts/dejavu-sans.ttf", 12);
     uiSceneRoot->addObject(armorLabel);
 
     this->armor = armorLabel->getComponent<Graphene::TextComponent>();
@@ -257,7 +257,7 @@ void PolandBall::setupUI() {
 //     healthShield->setOrigin(healthShieldOrigin.extractVec3());
 //     this->scene->addEntity(healthShield);
 
-    auto healthLabel = objectManager.createLabel(100, 20, "fonts/dejavu-sans.ttf", 14);
+    auto healthLabel = objectManager.createLabel(100, 20, "fonts/dejavu-sans.ttf", 12);
     uiSceneRoot->addObject(healthLabel);
 
     this->health = healthLabel->getComponent<Graphene::TextComponent>();
