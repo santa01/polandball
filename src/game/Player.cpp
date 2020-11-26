@@ -25,6 +25,7 @@
 #include <Logger.h>
 #include <stdexcept>
 #include <cmath>
+#include <cfloat>
 
 namespace PolandBall {
 

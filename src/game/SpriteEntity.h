@@ -60,8 +60,8 @@ public:
     // void setCollider(const std::shared_ptr<Collider>& collider);
 
 protected:
-    // virtual void onCollision(const std::shared_ptr<SpriteEntity>& another, Collider::CollideSide side) { };
-    virtual void animate(float frameTime) { };
+    // virtual void onCollision(const std::shared_ptr<SpriteEntity>& /*another*/, Collider::CollideSide /*side*/) { };
+    virtual void animate(float /*frameTime*/) { };
 
     EntityType type = EntityType::GENERIC;
     Math::Vec3 speed;

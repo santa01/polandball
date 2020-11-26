@@ -22,6 +22,7 @@
 
 #include <PolandBall.h>
 #include <ObjectManager.h>
+#include <TextComponent.h>
 #include <OpenGL.h>
 // #include <Sprite.h>
 #include <EntityFactory.h>
@@ -31,11 +32,11 @@
 // #include <Vec3.h>
 // #include <Vec4.h>
 // #include <Mat4.h>
-// #include <sstream>
+#include <sstream>
 
 namespace PolandBall {
 
-void PolandBall::onMouseMotion(int x, int y) {
+void PolandBall::onMouseMotion(int /*x*/, int /*y*/) {
     // Math::Mat4 ndc;
     // ndc.set(0, 0, 2.0f / (this->width / 1.0f));
     // ndc.set(0, 3, -1.0f);
@@ -71,13 +72,13 @@ void PolandBall::onIdle() {
 
 void PolandBall::setupScene() {
     auto& scene = this->createScene();
+    auto& sceneRoot = scene->getRoot();
 
     // In a scene traverse (render) order
     auto background = std::make_shared<Graphene::ObjectGroup>();
     auto terrain = std::make_shared<Graphene::ObjectGroup>();
     auto items = std::make_shared<Graphene::ObjectGroup>();
 
-    auto& sceneRoot = scene->getRoot();
     sceneRoot->addObject(background);
     sceneRoot->addObject(terrain);
     sceneRoot->addObject(items);
@@ -161,11 +162,16 @@ void PolandBall::setupScene() {
 
     //-----------------
     Graphene::RenderStateCallback callback([](Graphene::RenderState* renderState, const std::shared_ptr<Graphene::Object>& object) {
+        auto& shader = renderState->getShader();
         auto baseEntity = std::dynamic_pointer_cast<Game::SpriteEntity>(object);
+
         if (baseEntity != nullptr) {
-            auto& shader = renderState->getShader();
             shader->setUniform("uvShear", baseEntity->getShear());
             shader->setUniform("uvReplication", baseEntity->getReplication());
+        } else {
+            Math::Mat4 identityMatrix;
+            shader->setUniform("uvShear", identityMatrix);
+            shader->setUniform("uvReplication", identityMatrix);
         }
     });
 
@@ -174,20 +180,24 @@ void PolandBall::setupScene() {
 }
 
 void PolandBall::setupUI() {
-//     Math::Mat4 ndc;
-//     ndc.set(0, 0, 2.0f / (this->width / 1.0f));
-//     ndc.set(0, 3, -1.0f);
-//     ndc.set(1, 1, -2.0f / (this->height / 1.0f));
-//     ndc.set(1, 3, 1.0f);
+    auto& uiScene = this->createScene();
+    auto& uiSceneRoot = uiScene->getRoot();
 
-//     Math::Mat4 world(this->scene->getCamera().getProjection());
-//     world.invert();
+    auto& objectManager = Graphene::GetObjectManager();
+    auto uiCamera = objectManager.createCamera(Graphene::ProjectionType::ORTHOGRAPHIC);
+    uiCamera->setNearPlane(-1.0f);
+    uiCamera->setFarPlane(1.0f);
+    uiSceneRoot->addObject(uiCamera);
 
 //     //-----------------
 //     this->emptySlot = Game::GetEntityFactory().createWidget("assets/ui/slot_empty.asset");
 
 //     //-----------------
-//     auto& primaryWeapon = this->weapons[Game::Weapon::WeaponSlot::SLOT_PRIMARY];
+    auto primaryWeaponLabel = objectManager.createLabel(100, 20, "fonts/dejavu-sans.ttf", 14);
+    uiSceneRoot->addObject(primaryWeaponLabel);
+
+    auto& primaryWeapon = this->weapons[Game::WeaponSlot::SLOT_PRIMARY];
+    primaryWeapon.second = primaryWeaponLabel->getComponent<Graphene::TextComponent>();
 
 //     primaryWeapon.first = Game::GetEntityFactory().createWidget("assets/ui/slot_empty.asset");
 //     Math::Vec4 primaryWeaponOrigin = (world * ndc) * Math::Vec4(40.0f, 40.0f, 0.0f, 1.0f);
@@ -198,13 +208,12 @@ void PolandBall::setupUI() {
 //     primaryWeaponBorder->setOrigin(primaryWeaponOrigin.extractVec3());
 //     this->scene->addEntity(primaryWeaponBorder);
 
-//     primaryWeapon.second = Game::GetEntityFactory().createLabel("dejavu-sans", 14);
-//     Math::Vec4 primaryLabelOrigin = (world * ndc) * Math::Vec4(40.0f, 80.0f, 0.0f, 1.0f);
-//     primaryWeapon.second->setOrigin(primaryLabelOrigin.extractVec3());
-//     this->scene->addEntity(primaryWeapon.second);
-
 //     //-----------------
-//     auto& secondaryWeapon = this->weapons[Game::Weapon::WeaponSlot::SLOT_SECONDARY];
+    auto secondaryWeaponLabel = objectManager.createLabel(100, 20, "fonts/dejavu-sans.ttf", 14);
+    uiSceneRoot->addObject(secondaryWeaponLabel);
+
+    auto& secondaryWeapon = this->weapons[Game::WeaponSlot::SLOT_SECONDARY];
+    secondaryWeapon.second = secondaryWeaponLabel->getComponent<Graphene::TextComponent>();
 
 //     secondaryWeapon.first = Game::GetEntityFactory().createWidget("assets/ui/slot_empty.asset");
 //     Math::Vec4 secondaryWeaponOrigin = (world * ndc) * Math::Vec4(110.0f, 40.0f, 0.0f, 1.0f);
@@ -215,13 +224,12 @@ void PolandBall::setupUI() {
 //     secondaryWeaponBorder->setOrigin(secondaryWeaponOrigin.extractVec3());
 //     this->scene->addEntity(secondaryWeaponBorder);
 
-//     secondaryWeapon.second = Game::GetEntityFactory().createLabel("dejavu-sans", 14);
-//     Math::Vec4 secondaryLabelOrigin = (world * ndc) * Math::Vec4(110.0f, 80.0f, 0.0f, 1.0f);
-//     secondaryWeapon.second->setOrigin(secondaryLabelOrigin.extractVec3());
-//     this->scene->addEntity(secondaryWeapon.second);
-
 //     //-----------------
-//     auto& meeleWeapon = this->weapons[Game::Weapon::WeaponSlot::SLOT_MEELE];
+    auto meeleWeaponLabel = objectManager.createLabel(100, 20, "fonts/dejavu-sans.ttf", 14);
+    uiSceneRoot->addObject(meeleWeaponLabel);
+
+    auto& meeleWeapon = this->weapons[Game::WeaponSlot::SLOT_MEELE];
+    meeleWeapon.second = meeleWeaponLabel->getComponent<Graphene::TextComponent>();
 
 //     meeleWeapon.first = Game::GetEntityFactory().createWidget("assets/ui/slot_empty.asset");
 //     Math::Vec4 meeleWeaponOrigin = (world * ndc) * Math::Vec4(180.0f, 40.0f, 0.0f, 1.0f);
@@ -232,21 +240,16 @@ void PolandBall::setupUI() {
 //     meeleWeaponBorder->setOrigin(meeleWeaponOrigin.extractVec3());
 //     this->scene->addEntity(meeleWeaponBorder);
 
-//     meeleWeapon.second = Game::GetEntityFactory().createLabel("dejavu-sans", 14);
-//     Math::Vec4 meeleLabelOrigin = (world * ndc) * Math::Vec4(180.0f, 80.0f, 0.0f, 1.0f);
-//     meeleWeapon.second->setOrigin(meeleLabelOrigin.extractVec3());
-//     this->scene->addEntity(meeleWeapon.second);
-
 //     //-----------------
 //     auto armorShield = Game::GetEntityFactory().createWidget("assets/ui/shield_armor.asset");
 //     Math::Vec4 armorShieldOrigin = (world * ndc) * Math::Vec4(Math::Vec3(this->width - 40.0f, 40.0f, 0.0f), 1.0f);
 //     armorShield->setOrigin(armorShieldOrigin.extractVec3());
 //     this->scene->addEntity(armorShield);
 
-//     this->armor = Game::GetEntityFactory().createLabel("dejavu-sans", 14);
-//     Math::Vec4 armorLabelOrigin = (world * ndc) * Math::Vec4(Math::Vec3(this->width - 40.0f, 80.0f, 0.0f), 1.0f);
-//     this->armor->setOrigin(armorLabelOrigin.extractVec3());
-//     this->scene->addEntity(this->armor);
+    auto armorLabel = objectManager.createLabel(100, 20, "fonts/dejavu-sans.ttf", 14);
+    uiSceneRoot->addObject(armorLabel);
+
+    this->armor = armorLabel->getComponent<Graphene::TextComponent>();
 
 //     //-----------------
 //     auto healthShield = Game::GetEntityFactory().createWidget("assets/ui/shield_health.asset");
@@ -254,47 +257,10 @@ void PolandBall::setupUI() {
 //     healthShield->setOrigin(healthShieldOrigin.extractVec3());
 //     this->scene->addEntity(healthShield);
 
-//     this->health = Game::GetEntityFactory().createLabel("dejavu-sans", 14);
-//     Math::Vec4 healthLabelOrigin = (world * ndc) * Math::Vec4(Math::Vec3(this->width - 100.0f, 80.0f, 0.0f), 1.0f);
-//     this->health->setOrigin(healthLabelOrigin.extractVec3());
-//     this->scene->addEntity(this->health);
+    auto healthLabel = objectManager.createLabel(100, 20, "fonts/dejavu-sans.ttf", 14);
+    uiSceneRoot->addObject(healthLabel);
 
-//     //-----------------
-//     Game::Camera& camera = this->scene->getCamera();
-
-//     for (auto& weapon: this->weapons) {
-//         camera.positionChanged.connect(
-//             std::bind(static_cast<void(Game::Entity::*)(const Math::Vec3&)>(&Game::Entity::setPosition),
-//             weapon.first, std::placeholders::_1));
-//         camera.positionChanged.connect(
-//             std::bind(static_cast<void(Game::Entity::*)(const Math::Vec3&)>(&Game::Entity::setPosition),
-//             weapon.second, std::placeholders::_1));
-//     }
-
-//     camera.positionChanged.connect(
-//         std::bind(static_cast<void(Game::Entity::*)(const Math::Vec3&)>(&Game::Entity::setPosition),
-//         primaryWeaponBorder, std::placeholders::_1));
-//     camera.positionChanged.connect(
-//         std::bind(static_cast<void(Game::Entity::*)(const Math::Vec3&)>(&Game::Entity::setPosition),
-//         secondaryWeaponBorder, std::placeholders::_1));
-//     camera.positionChanged.connect(
-//         std::bind(static_cast<void(Game::Entity::*)(const Math::Vec3&)>(&Game::Entity::setPosition),
-//         meeleWeaponBorder, std::placeholders::_1));
-
-//     //-----------------
-//     camera.positionChanged.connect(
-//         std::bind(static_cast<void(Game::Entity::*)(const Math::Vec3&)>(&Game::Entity::setPosition),
-//         healthShield, std::placeholders::_1));
-//     camera.positionChanged.connect(
-//         std::bind(static_cast<void(Game::Entity::*)(const Math::Vec3&)>(&Game::Entity::setPosition),
-//         armorShield, std::placeholders::_1));
-
-//     camera.positionChanged.connect(
-//         std::bind(static_cast<void(Game::Entity::*)(const Math::Vec3&)>(&Game::Entity::setPosition),
-//         this->health, std::placeholders::_1));
-//     camera.positionChanged.connect(
-//         std::bind(static_cast<void(Game::Entity::*)(const Math::Vec3&)>(&Game::Entity::setPosition),
-//         this->armor, std::placeholders::_1));
+    this->health = healthLabel->getComponent<Graphene::TextComponent>();
 
 //     //-----------------
 //     this->cursor = Game::GetEntityFactory().createWidget("assets/ui/cursor_aim.asset");
@@ -304,6 +270,20 @@ void PolandBall::setupUI() {
 //     this->player->positionChanged.connect(
 //         std::bind(static_cast<void(Game::Entity::*)(const Math::Vec3&)>(&Game::Entity::setPosition),
 //         this->cursor, std::placeholders::_1));
+
+    //-----------------
+    auto& window = this->getWindow();
+
+    auto uiLayout = std::make_shared<Graphene::Layout>();
+    uiLayout->addComponent(primaryWeaponLabel, 40, 80);
+    uiLayout->addComponent(secondaryWeaponLabel, 110, 80);
+    uiLayout->addComponent(meeleWeaponLabel, 180, 80);
+    uiLayout->addComponent(armorLabel, window->getWidth() - 70, 80);
+    uiLayout->addComponent(healthLabel, window->getWidth() - 130, 80);
+
+    auto& overlay = window->createOverlay(0, 0, window->getWidth(), window->getHeight());
+    overlay->setCamera(uiCamera);
+    overlay->setLayout(uiLayout);
 }
 
 void PolandBall::updateScene() {
@@ -342,45 +322,42 @@ void PolandBall::updateScene() {
 }
 
 void PolandBall::updateUI() {
-//     std::stringstream text;
-//     int weaponAmmo = 0;
+    std::wostringstream text;
+    int weaponAmmo = 0;
 
-//     for (int slot = 0; slot < 3; slot++) {
-//         auto& weapon = this->player->getWeapon(static_cast<Game::Weapon::WeaponSlot>(slot));
-//         auto weaponSprite = std::dynamic_pointer_cast<Opengl::Sprite>(this->weapons[slot].first->getPrimitive());
+    for (int slot = 0; slot < 3; slot++) {
+        auto& weapon = this->player->getWeapon(static_cast<Game::WeaponSlot>(slot));
+        // auto weaponSprite = std::dynamic_pointer_cast<Opengl::Sprite>(this->weapons[slot].first->getPrimitive());
 
-//         if (weapon != nullptr) {
-//             weaponAmmo = weapon->getAmmo();
-//             text.str("");
+        if (weapon != nullptr) {
+            weaponAmmo = weapon->getAmmo();
+            text.str(L"");
 
-//             if (weaponAmmo >= 999) {
-//                 text << "--/--";  // Infinite
-//             } else {
-//                 text << weaponAmmo;
-//             }
+            if (weaponAmmo >= 999) {
+                text << L"--/--";  // Infinite
+            } else {
+                text << weaponAmmo;
+            }
 
-//             auto playerWeaponSprite = std::dynamic_pointer_cast<Opengl::Sprite>(weapon->getPrimitive());
-//             weaponSprite->setTexture(playerWeaponSprite->getTexture());
-//             weaponSprite->shearX(0.0f, 2);
-//             this->weapons[slot].first->roll(45.0f);
-//             this->weapons[slot].second->setText(text.str());
-//         } else {
-//             auto emptySprite = std::dynamic_pointer_cast<Opengl::Sprite>(this->emptySlot->getPrimitive());
-//             weaponSprite->setTexture(emptySprite->getTexture());
-//             this->weapons[slot].second->clear();
-//         }
-//     }
+            // auto playerWeaponSprite = std::dynamic_pointer_cast<Opengl::Sprite>(weapon->getPrimitive());
+            // weaponSprite->setTexture(playerWeaponSprite->getTexture());
+            // weaponSprite->shearX(0.0f, 2);
+            // this->weapons[slot].first->roll(45.0f);
+            this->weapons[slot].second->setText(text.str());
+        } else {
+            // auto emptySprite = std::dynamic_pointer_cast<Opengl::Sprite>(this->emptySlot->getPrimitive());
+            // weaponSprite->setTexture(emptySprite->getTexture());
+            this->weapons[slot].second->setText(L"");
+        }
+    }
 
-//     text.str("");
-//     text << this->player->getHealth();
-//     this->health->setText(text.str());
+    text.str(L"");
+    text << this->player->getHealth();
+    this->health->setText(text.str());
 
-//     text.str("");
-//     text << this->player->getArmor();
-//     this->armor->setText(text.str());
-
-//     this->scene->update(this->frameTime, this->frameStep);
-//     this->scene->render();
+    text.str(L"");
+    text << this->player->getArmor();
+    this->armor->setText(text.str());
 }
 
 }  // namespace PolandBall

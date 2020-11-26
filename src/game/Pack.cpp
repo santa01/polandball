@@ -21,6 +21,7 @@
  */
 
 #include <Pack.h>
+#include <cmath>
 
 namespace PolandBall {
 
