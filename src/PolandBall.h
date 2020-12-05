@@ -48,8 +48,8 @@ private:
     std::shared_ptr<Game::SpriteEntity> cursor;
 
     // Requires sync if Game::WeaponSlot is updated
-    std::pair<std::shared_ptr<Game::Weapon>, std::shared_ptr<Graphene::TextComponent>> weapons[3];
     std::shared_ptr<Game::Weapon> emptySlot;
+    std::pair<std::shared_ptr<Game::Weapon>, std::shared_ptr<Graphene::TextComponent>> weapons[3];
     std::shared_ptr<Graphene::TextComponent> health;
     std::shared_ptr<Graphene::TextComponent> armor;
 };

@@ -168,12 +168,12 @@ const std::shared_ptr<Weapon> EntityFactory::createWeapon(const std::string& nam
 //     return trace;
 // }
 
-const std::shared_ptr<SpriteEntity> EntityFactory::createBlock(const std::string& name) const {
+const std::shared_ptr<SpriteEntity> EntityFactory::createSprite(const std::string& name) const {
     auto& asset = Utils::GetResourceCache().loadAsset(name);
-    auto entity = std::make_shared<SpriteEntity>();
+    auto sprite = std::make_shared<SpriteEntity>();
 
-    this->loadBase(asset, entity);
-    return entity;
+    this->loadBase(asset, sprite);
+    return sprite;
 }
 
 json_object* EntityFactory::getJsonObject(const std::shared_ptr<json_object>& asset, const std::string& name, json_type objectType) const {

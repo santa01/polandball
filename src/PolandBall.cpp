@@ -90,20 +90,20 @@ void PolandBall::setupScene() {
     camera->setFarPlane(5.0f);
 
     //-----------------
-    auto backgroundEntity = Game::GetEntityFactory().createBlock("assets/backgrounds/sunny.asset");
+    auto backgroundEntity = Game::GetEntityFactory().createSprite("assets/backgrounds/sunny.asset");
     backgroundEntity->scaleX(20.0f);
     backgroundEntity->scaleY(20.0f);
     background->addObject(backgroundEntity);
 
     //-----------------
-    auto bricksEntity = Game::GetEntityFactory().createBlock("assets/blocks/kazakhstan.asset");
+    auto bricksEntity = Game::GetEntityFactory().createSprite("assets/blocks/kazakhstan.asset");
     bricksEntity->scaleX(1.5f);
     bricksEntity->scaleX(20.0f);
     bricksEntity->replicateX(20.0f);
     bricksEntity->translate(7.5f, -9.0f, 0.0f);
     terrain->addObject(bricksEntity);
 
-    bricksEntity = Game::GetEntityFactory().createBlock("assets/blocks/kazakhstan.asset");
+    bricksEntity = Game::GetEntityFactory().createSprite("assets/blocks/kazakhstan.asset");
     bricksEntity->scaleX(1.5f);
     bricksEntity->translate(6.0f, -3.0f, 0.0f);
     terrain->addObject(bricksEntity);

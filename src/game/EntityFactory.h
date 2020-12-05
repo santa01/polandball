@@ -52,7 +52,7 @@ public:
     const std::shared_ptr<Game::Player> createPlayer(const std::string& name) const;
     const std::shared_ptr<Game::Weapon> createWeapon(const std::string& name) const;
     // std::shared_ptr<Game::ShotTrace> createTrace(const Math::Vec3& from, const Math::Vec3& to) const;
-    const std::shared_ptr<SpriteEntity> createBlock(const std::string& name) const;
+    const std::shared_ptr<SpriteEntity> createSprite(const std::string& name) const;
 
 private:
     EntityFactory() = default;
