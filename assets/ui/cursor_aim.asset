@@ -1,4 +1,3 @@
 {
-    "texture": "textures/ui/cursor_aim.png",
-    "effect": "shaders/sprite.shader"
+    "texture": "textures/ui/cursor_aim.tga"
 }

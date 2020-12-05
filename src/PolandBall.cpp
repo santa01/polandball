@@ -63,6 +63,8 @@ void PolandBall::onSetup() {
 
     this->setupScene();
     this->setupUI();
+
+    this->getWindow()->captureMouse(true);
 }
 
 void PolandBall::onIdle() {
@@ -189,6 +191,12 @@ void PolandBall::setupUI() {
     uiCamera->setFarPlane(1.0f);  // NDC for 1:1 scale
     uiSceneRoot->addObject(uiCamera);
 
+    //-----------------
+    this->cursor = Game::GetEntityFactory().createSprite("assets/ui/cursor_aim.asset");
+    uiSceneRoot->addObject(this->cursor);
+    this->cursor->scaleX(0.2f);
+    this->cursor->scaleY(0.2f);
+
 //     //-----------------
 //     this->emptySlot = Game::GetEntityFactory().createWidget("assets/ui/slot_empty.asset");
 
@@ -261,15 +269,6 @@ void PolandBall::setupUI() {
     uiSceneRoot->addObject(healthLabel);
 
     this->health = healthLabel->getComponent<Graphene::TextComponent>();
-
-//     //-----------------
-//     this->cursor = Game::GetEntityFactory().createWidget("assets/ui/cursor_aim.asset");
-//     this->scene->addEntity(this->cursor);
-
-//     //-----------------
-//     this->player->positionChanged.connect(
-//         std::bind(static_cast<void(Game::Entity::*)(const Math::Vec3&)>(&Game::Entity::setPosition),
-//         this->cursor, std::placeholders::_1));
 
     //-----------------
     auto& window = this->getWindow();
