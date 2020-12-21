@@ -24,6 +24,7 @@
 #include <ObjectManager.h>
 #include <ResourceCache.h>
 #include <GraphicsComponent.h>
+#include <QuadComponent.h>
 #include <Material.h>
 #include <Logger.h>
 
@@ -167,6 +168,15 @@ const std::shared_ptr<Weapon> EntityFactory::createWeapon(const std::string& nam
 
 //     return trace;
 // }
+
+const std::shared_ptr<SpriteEntity> EntityFactory::createWidget(const std::string& name) const {
+    auto widget = this->createSprite(name);
+
+    auto quadComponent = std::make_shared<Graphene::QuadComponent>(48, 48);
+    widget->addComponent(quadComponent);
+
+    return widget;
+}
 
 const std::shared_ptr<SpriteEntity> EntityFactory::createSprite(const std::string& name) const {
     auto& asset = Utils::GetResourceCache().loadAsset(name);

@@ -26,6 +26,7 @@
 #include <Engine.h>
 #include <TextComponent.h>
 #include <SpriteEntity.h>
+#include <Layout.h>
 #include <Player.h>
 #include <memory>
 #include <utility>
@@ -46,6 +47,7 @@ private:
 
     std::shared_ptr<Game::Player> player;
     std::shared_ptr<Game::SpriteEntity> cursor;
+    std::shared_ptr<Graphene::Layout> uiLayout;
 
     // Requires sync if Game::WeaponSlot is updated
     std::shared_ptr<Game::Weapon> emptySlot;

@@ -22,33 +22,30 @@
 
 #include <PolandBall.h>
 #include <ObjectManager.h>
-#include <TextComponent.h>
 #include <OpenGL.h>
 // #include <Sprite.h>
 #include <EntityFactory.h>
 #include <SpriteEntity.h>
 #include <RenderManager.h>
 #include <RenderState.h>
-// #include <Vec3.h>
-// #include <Vec4.h>
-// #include <Mat4.h>
+#include <Mat4.h>
+#include <algorithm>
 #include <sstream>
 
 namespace PolandBall {
 
-void PolandBall::onMouseMotion(int /*x*/, int /*y*/) {
-    // Math::Mat4 ndc;
-    // ndc.set(0, 0, 2.0f / (this->width / 1.0f));
-    // ndc.set(0, 3, -1.0f);
-    // ndc.set(1, 1, -2.0f / (this->height / 1.0f));
-    // ndc.set(1, 3, 1.0f);
+void PolandBall::onMouseMotion(int x, int y) {
+    auto& window = this->getWindow();
+    static int xCurrent = window->getWidth() / 2;
+    static int yCurrent = window->getHeight() / 2;
 
-    // Math::Mat4 world(this->scene->getCamera().getProjection());
-    // world.invert();
+    xCurrent = std::min<int>(std::max<int>(0, xCurrent + x), window->getWidth() - 1);
+    yCurrent = std::min<int>(std::max<int>(0, yCurrent - y), window->getHeight() - 1);
 
-    // Math::Vec4 cursorPosition = (world * ndc) * Math::Vec4(x, y, 0.0f, 1.0f);
-    // this->cursor->setOrigin(cursorPosition.extractVec3());
-    // this->player->aimAt(cursorPosition.extractVec3());
+    this->uiLayout->addEntity(this->cursor, xCurrent, yCurrent);
+    this->uiLayout->arrange();
+
+    // this->player->aimAt(this->cursor->getPosition());
 }
 
 void PolandBall::onMouseButton(Graphene::MouseButton button, bool state) {
@@ -192,10 +189,8 @@ void PolandBall::setupUI() {
     uiSceneRoot->addObject(uiCamera);
 
     //-----------------
-    this->cursor = Game::GetEntityFactory().createSprite("assets/ui/cursor_aim.asset");
+    this->cursor = Game::GetEntityFactory().createWidget("assets/ui/cursor_aim.asset");
     uiSceneRoot->addObject(this->cursor);
-    this->cursor->scaleX(0.2f);
-    this->cursor->scaleY(0.2f);
 
 //     //-----------------
 //     this->emptySlot = Game::GetEntityFactory().createWidget("assets/ui/slot_empty.asset");
@@ -273,16 +268,18 @@ void PolandBall::setupUI() {
     //-----------------
     auto& window = this->getWindow();
 
-    auto uiLayout = std::make_shared<Graphene::Layout>();
-    uiLayout->addComponent(primaryWeaponLabel, 40, 80);
-    uiLayout->addComponent(secondaryWeaponLabel, 110, 80);
-    uiLayout->addComponent(meeleWeaponLabel, 180, 80);
-    uiLayout->addComponent(armorLabel, window->getWidth() - 70, 80);
-    uiLayout->addComponent(healthLabel, window->getWidth() - 130, 80);
+    this->uiLayout = std::make_shared<Graphene::Layout>();
+    this->uiLayout->addEntity(this->cursor, window->getWidth() / 2, window->getHeight() / 2);
+
+    this->uiLayout->addEntity(primaryWeaponLabel, 40, 80);
+    this->uiLayout->addEntity(secondaryWeaponLabel, 110, 80);
+    this->uiLayout->addEntity(meeleWeaponLabel, 180, 80);
+    this->uiLayout->addEntity(armorLabel, window->getWidth() - 70, 80);
+    this->uiLayout->addEntity(healthLabel, window->getWidth() - 130, 80);
 
     auto& overlay = window->createOverlay(0, 0, window->getWidth(), window->getHeight());
     overlay->setCamera(uiCamera);
-    overlay->setLayout(uiLayout);
+    overlay->setLayout(this->uiLayout);
 }
 
 void PolandBall::updateScene() {
