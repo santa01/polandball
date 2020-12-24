@@ -134,7 +134,7 @@ void Player::activateSlot(WeaponSlot slot) {
 
 void Player::aimAt(const Math::Vec3& position) {
     if (position == Math::Vec3::ZERO) {
-        throw std::invalid_argument(Graphene::LogFormat("Target cannot be of zero length"));
+        return;
     }
 
     Math::Vec3 oldTarget(this->getTargetDirection());
@@ -143,12 +143,19 @@ void Player::aimAt(const Math::Vec3& position) {
 
     float pi = static_cast<float>(M_PI);
     float angle = 180.0f * acosf(oldTarget.dot(newTarget)) / pi;
+    if (std::isnan(angle)) {
+        return;
+    }
 
     Math::Vec3 axis = oldTarget.cross(newTarget);
+    if (axis == Math::Vec3::ZERO) {
+        return;
+    }
+
     this->rotate(axis, angle);
 
     float rotationAngle = this->getRotationAngles().get(Math::Vec3::Z);
-    float shear = (cosf(rotationAngle * pi / 180.0f) < 0.0f) ? 1.0f : 0.0f;
+    float shear = (cosf(rotationAngle * pi / 180.0f) < 0.0f) ? 0.0f : 1.0f;
     this->shearX(shear, 2);
 
     if (this->activeSlot != -1) {

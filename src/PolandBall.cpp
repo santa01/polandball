@@ -45,7 +45,7 @@ void PolandBall::onMouseMotion(int x, int y) {
     this->uiLayout->addEntity(this->cursor, xCurrent, yCurrent);
     this->uiLayout->arrange();
 
-    // this->player->aimAt(this->cursor->getPosition());
+    this->player->aimAt(this->cursor->getPosition());
 }
 
 void PolandBall::onMouseButton(Graphene::MouseButton button, bool state) {
