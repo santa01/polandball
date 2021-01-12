@@ -34,8 +34,6 @@
 
 namespace PolandBall {
 
-namespace Utils {
-
 class ResourceCache: public Graphene::NonCopyable {
 public:
     static ResourceCache& getInstance();
@@ -51,8 +49,6 @@ private:
     std::unordered_map<std::string, std::shared_ptr<json_object>> assetCache;
     std::unordered_map<std::string, std::shared_ptr<Graphene::Font>> fontCache;
 };
-
-}  // namespace Utils
 
 }  // namespace PolandBall
 

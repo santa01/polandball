@@ -70,10 +70,10 @@ set (POLANDBALL_SOURCES src/main.cpp
                         # src/game/LineEntity.cpp
                         # src/game/ShotTrace.cpp
                         # src/opengl/Line.cpp
-                        src/utils/ResourceCache.cpp
+                        src/ResourceCache.cpp
 )
-# include_directories (src src/game src/opengl src/utils ${PROJECT_BINARY_DIR} ${GRAPHENE_INCLUDE_DIRS} ${MATH_INCLUDE_DIRS} ${SIGNALS_INCLUDE_DIRS} ${JSON_C_INCLUDE_DIRS})
-include_directories (src src/game src/utils ${PROJECT_BINARY_DIR} ${GRAPHENE_INCLUDE_DIRS} ${MATH_INCLUDE_DIRS} ${SIGNALS_INCLUDE_DIRS} ${JSON_C_INCLUDE_DIRS})
+# include_directories (src src/game src/opengl ${PROJECT_BINARY_DIR} ${GRAPHENE_INCLUDE_DIRS} ${MATH_INCLUDE_DIRS} ${SIGNALS_INCLUDE_DIRS} ${JSON_C_INCLUDE_DIRS})
+include_directories (src src/game ${PROJECT_BINARY_DIR} ${GRAPHENE_INCLUDE_DIRS} ${MATH_INCLUDE_DIRS} ${SIGNALS_INCLUDE_DIRS} ${JSON_C_INCLUDE_DIRS})
 
 add_executable (${POLANDBALL_EXECUTABLE} ${POLANDBALL_SOURCES})
 set_target_properties (${POLANDBALL_EXECUTABLE} PROPERTIES

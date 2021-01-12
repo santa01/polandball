@@ -33,7 +33,7 @@ namespace PolandBall {
 namespace Game {
 
 const std::shared_ptr<Pack> EntityFactory::createPack(const std::string& name) const {
-    auto& asset = Utils::GetResourceCache().loadAsset(name);
+    auto& asset = GetResourceCache().loadAsset(name);
     auto pack = std::make_shared<Pack>();
 
     this->loadBase(asset, pack);
@@ -67,7 +67,7 @@ const std::shared_ptr<Pack> EntityFactory::createPack(const std::string& name) c
 }
 
 const std::shared_ptr<Player> EntityFactory::createPlayer(const std::string& name) const {
-    auto& asset = Utils::GetResourceCache().loadAsset(name);
+    auto& asset = GetResourceCache().loadAsset(name);
     auto player = std::make_shared<Player>();
 
     this->loadBase(asset, player);
@@ -111,7 +111,7 @@ const std::shared_ptr<Player> EntityFactory::createPlayer(const std::string& nam
 }
 
 const std::shared_ptr<Weapon> EntityFactory::createWeapon(const std::string& name) const {
-    auto& asset = Utils::GetResourceCache().loadAsset(name);
+    auto& asset = GetResourceCache().loadAsset(name);
     auto weapon = std::make_shared<Weapon>();
 
     this->loadBase(asset, weapon);
@@ -179,7 +179,7 @@ const std::shared_ptr<SpriteEntity> EntityFactory::createWidget(const std::strin
 }
 
 const std::shared_ptr<SpriteEntity> EntityFactory::createSprite(const std::string& name) const {
-    auto& asset = Utils::GetResourceCache().loadAsset(name);
+    auto& asset = GetResourceCache().loadAsset(name);
     auto sprite = std::make_shared<SpriteEntity>();
 
     this->loadBase(asset, sprite);

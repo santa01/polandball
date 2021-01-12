@@ -29,8 +29,6 @@
 
 namespace PolandBall {
 
-namespace Utils {
-
 ResourceCache& ResourceCache::getInstance() {
     static ResourceCache instance;
     return instance;
@@ -99,7 +97,5 @@ void ResourceCache::teardown() {
     this->assetCache.clear();
     this->fontCache.clear();
 }
-
-}  // namespace Utils
 
 }  // namespace PolandBall
