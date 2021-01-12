@@ -154,8 +154,8 @@ void Player::aimAt(const Math::Vec3& position) {
 
     this->rotate(axis, angle);
 
-    float rotationAngle = this->getRotationAngles().get(Math::Vec3::Z);
-    float shear = (cosf(rotationAngle * pi / 180.0f) < 0.0f) ? 0.0f : 1.0f;
+    Math::Vec3 defaultTarget(Math::Vec3::UNIT_X);
+    float shear = (defaultTarget.dot(newTarget) < 0.0f) ? 0.0f : 1.0f;
     this->shearX(shear, 2);
 
     if (this->activeSlot != -1) {
